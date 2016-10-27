@@ -136,4 +136,22 @@
 
 #define NR_VFS_CALLS		64	/* highest number from base plus one */
 
+/*===========================================================================*
+ *				Calls to mcast server			     *
+ *===========================================================================*/
+
+#define MCAST_BASE		0x200
+
+#define IS_MCAST_CALL(type)	(((type) & ~0xff) == MCAST_BASE)
+
+#define MCAST_TEST		(MCAST_BASE + 0)
+#define MCAST_MSEND		(MCAST_BASE + 1)
+#define MCAST_MRECEIVE		(MCAST_BASE + 2)
+#define MCAST_OPENGROUP		(MCAST_BASE + 3)
+#define MCAST_CLOSEGROUP	(MCAST_BASE + 4)
+#define MCAST_RECOVERGROUP	(MCAST_BASE + 5)
+
+#define NR_MCAST_CALLS		6	/* highest number from base plus one */
+
+
 #endif /* !_MINIX_CALLNR_H */

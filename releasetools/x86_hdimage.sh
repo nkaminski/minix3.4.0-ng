@@ -20,12 +20,12 @@ then
 	exit 1
 fi
 
-# we create a disk image of about 2 gig's
+# we create a disk image of about 4.5 gig's
 # for alignment reasons, prefer sizes which are multiples of 4096 bytes
 : ${BOOTXX_SECS=32}
-: ${ROOT_SIZE=$((  128*(2**20) - ${BOOTXX_SECS} * 512 ))}
-: ${HOME_SIZE=$((  128*(2**20) ))}
-: ${USR_SIZE=$((  1792*(2**20) ))}
+: ${ROOT_SIZE=$((  256*(2**20) - ${BOOTXX_SECS} * 512 ))}
+: ${HOME_SIZE=$((  256*(2**20) ))}
+: ${USR_SIZE=$((  4096*(2**20) ))}
 : ${EFI_SIZE=$((  0  ))}
 
 # set up disk creation environment

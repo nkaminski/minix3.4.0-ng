@@ -41,6 +41,7 @@
 ./service/fxp                                           minix-base
 ./service/hgfs                                          minix-base
 ./service/lance                                         minix-base
+./service/mcast                                         minix-base
 ./service/pci                                           minix-base
 ./service/pckbd                                         minix-base
 ./service/printer                                       minix-base

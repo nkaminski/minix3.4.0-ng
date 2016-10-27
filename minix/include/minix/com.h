@@ -65,7 +65,8 @@
 #define VM_PROC_NR   ((endpoint_t) 8)   /* memory server */
 #define PFS_PROC_NR  ((endpoint_t) 9)  /* pipe filesystem */
 #define MFS_PROC_NR  ((endpoint_t) 10)  /* minix root filesystem */
-#define LAST_SPECIAL_PROC_NR	11	/* An untyped version for
+#define MCAST_PROC_NR  ((endpoint_t) 11)  /* multicast server */
+#define LAST_SPECIAL_PROC_NR	12	/* An untyped version for
                                            computation in macros.*/
 #define INIT_PROC_NR ((endpoint_t) LAST_SPECIAL_PROC_NR)  /* init
                                                         -- goes multiuser */
