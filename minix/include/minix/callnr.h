@@ -140,7 +140,7 @@
  *				Calls to mcast server			     *
  *===========================================================================*/
 
-#define MCAST_BASE		0x200
+#define MCAST_BASE		0x1900
 
 #define IS_MCAST_CALL(type)	(((type) & ~0xff) == MCAST_BASE)
 

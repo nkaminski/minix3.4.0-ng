@@ -30,6 +30,7 @@
  *   0x1600 - 0x16FF	VirtualBox (VBOX) requests (see vboxif.h)
  *   0x1700 - 0x17FF	PTYFS requests
  *   0x1800 - 0x18FF	Management Information Base (MIB) requests
+ *   0x1900 - 0x19FF	Multicast IPC requests
  *
  * Zero and negative values are widely used for OK and error responses.
  */

@@ -167,6 +167,7 @@ autoboot|start)
 	edit memory
 	edit mib
 	edit pfs
+	edit mcast
 	edit init
 	#
 	# Keep a copy around to recover the root FS from crashes
