@@ -11,5 +11,6 @@ SUBDIR+=	ministat
 SUBDIR+=	mtop
 SUBDIR+=	toproto
 SUBDIR+=	trace
+SUBDIR+=	syscalltest
 
 .include <bsd.subdir.mk>

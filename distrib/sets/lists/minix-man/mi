@@ -357,6 +357,7 @@
 ./usr/man/man1/svc.1                                    minix-man       obsolete
 ./usr/man/man1/svrctl.1                                 minix-man
 ./usr/man/man1/synctree.1                               minix-man
+./usr/man/man1/syscalltest.1				minix-man
 ./usr/man/man1/sysenv.1                                 minix-man
 ./usr/man/man1/sz.1                                     minix-man
 ./usr/man/man1/tail.1                                   minix-man

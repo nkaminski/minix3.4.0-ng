@@ -26,7 +26,7 @@ SRCS+= 	accept.c access.c adjtime.c bind.c brk.c sbrk.c m_closefrom.c getsid.c \
 	getrusage.c setrlimit.c setpgid.c __sysctl.c
 
 # Minix specific syscalls / utils.
-SRCS+= kernel_utils.c sprofile.c stack_utils.c _mcontext.c
+SRCS+= kernel_utils.c sprofile.c stack_utils.c _mcontext.c closegroup.c mreceive.c msend.c mtest.c opengroup.c recovergroup.c 
 
 # Emulation for missing lchown/lchmod/lchflags
 OBJS+= lchflags.o lchmod.o lchown.o

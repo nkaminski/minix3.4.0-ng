@@ -431,5 +431,13 @@ extern	 int optreset;		/* getopt(3) external variable */
 extern	 char *suboptarg;	/* getsubopt(3) external variable */
 #endif
 
+/* User added multicast IPC calls */
+int msend(int, const char *, size_t);
+int mreceive(int, const char *, size_t);
+int openGroup(int);
+int closeGroup(int);
+int recoverGroup(int);
+int mtest(void);
+
 __END_DECLS
 #endif /* !_UNISTD_H_ */

@@ -57,7 +57,7 @@ int main(void)
 	unsigned int call_index;
 	/* SEF local startup. */
 	sef_local_startup();
-
+	printf("starting mcast server process\n");
 	/* This is MCAST's main loop - get work and do it, forever and forever. */
 	while (TRUE) {
 		int ipc_status;
@@ -79,7 +79,7 @@ int main(void)
 			continue; /* Don't reply. */
 		}
 		/* If the system call number is valid, perform the call. */
-		if(IS_MCAST_CALL(call_nr) && call_nr < NR_MCAST_CALLS ){	
+		if(IS_MCAST_CALL(call_nr) && (call_nr - MCAST_BASE) < NR_MCAST_CALLS ){	
 			call_index = (unsigned int) (call_nr - MCAST_BASE);
 			result = (*call_vec[call_index])();
 		} else {

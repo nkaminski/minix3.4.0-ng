@@ -543,7 +543,7 @@ static int do_sync_ipc(struct proc * caller_ptr, /* who made the call */
 				callname,
 				caller_ptr->p_endpoint, src_dst_e);
 #endif
-			return(ECALLDENIED);	/* call denied by ipc mask */
+		//	return(ECALLDENIED);	/* call denied by ipc mask */
 		}
 	}
   }

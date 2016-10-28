@@ -493,6 +493,7 @@
 ./usr/bin/svrctl                                        minix-base
 ./usr/bin/swifi                                         minix-base
 ./usr/bin/synctree                                      minix-base
+./usr/bin/syscalltest                                   minix-base
 ./usr/bin/sz                                            minix-base
 ./usr/bin/tail                                          minix-base
 ./usr/bin/tar                                           minix-base

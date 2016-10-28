@@ -38,6 +38,7 @@ struct boot_image_sys boot_image_sys_table[] = {
   { PM_PROC_NR,       SRVR_SF                           },
   { SCHED_PROC_NR,    SRVR_SF                           },
   { VFS_PROC_NR,      SRVR_SF                           },
+  { MCAST_PROC_NR,    SRV_SF                            },
   { MFS_PROC_NR,      0                                 },
   { DEFAULT_BOOT_NR,  SRV_SF                            } /* default entry */
 };
