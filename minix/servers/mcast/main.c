@@ -3,7 +3,7 @@
  */
 
 #define _MAIN
-
+#define MIN(a, b) (((a)<(b)) ? (a) : (b))
 #include "mcast.h"
 
 extern int (* const call_vec[])(void);
@@ -18,7 +18,8 @@ int call_nr;	/* system call number */
 int who_e;	/* caller's endpoint */
 int result;	/* result to system call */
 endpoint_t bproc;
-
+vir_bytes dstaddr;
+int dstlen;
 /*===========================================================================*
  *				handlers				     *
  *===========================================================================*/
@@ -28,19 +29,26 @@ int do_test(void){
 	return(OK);
 }
 int do_msend(void){
+	int rv;
 	printf("msend called\n");
 	if(bproc != -1){
 		printf("msend unblock %d\n", bproc);
 		m_out.m_type = OK;           /* build reply message */
 		m_out.m_source = MCAST_PROC_NR;
+		/* copy from the sender to the receiver */
+		printf("Attempt to copy %d bytes \n", MIN(dstlen,m_in.m_m1.m1i2));
+		rv = sys_datacopy(who_e, (vir_bytes)m_in.m_m1.m1p1, bproc, dstaddr, MIN(dstlen,(vir_bytes)m_in.m_m1.m1i2));		
 		reply(bproc, &m_out);
 		bproc = -1;
 	}
-	return(OK);
+	return rv;
 }
 int do_mreceive(void){
 	printf("mreceive called\n");
+	/* save parameters of caller */
 	bproc = who_e;
+	dstaddr = (vir_bytes)m_in.m_m1.m1p1;
+	dstlen = m_in.m_m1.m1i2;
 	return(SUSPEND);
 }
 int do_opengroup(void){
