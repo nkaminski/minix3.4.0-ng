@@ -457,6 +457,7 @@
 ./usr/bin/rcp                                           minix-base      obsolete
 ./usr/bin/readlink                                      minix-base
 ./usr/bin/recwave                                       minix-base
+./usr/bin/receive_test_0                                minix-base
 ./usr/bin/remsync                                       minix-base
 ./usr/bin/renice                                        minix-base
 ./usr/bin/repartition                                   minix-base
@@ -472,6 +473,7 @@
 ./usr/bin/screendump                                    minix-base
 ./usr/bin/sdiff                                         minix-base
 ./usr/bin/sed                                           minix-base
+./usr/bin/send_test_0                                   minix-base
 ./usr/bin/seq                                           minix-base
 ./usr/bin/sha1                                          minix-base
 ./usr/bin/shar                                          minix-base

@@ -12,5 +12,7 @@ SUBDIR+=	mtop
 SUBDIR+=	toproto
 SUBDIR+=	trace
 SUBDIR+=	syscalltest
+SUBDIR+=	receive_test_0
+SUBDIR+=	send_test_0
 
 .include <bsd.subdir.mk>

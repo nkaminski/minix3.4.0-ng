@@ -13,38 +13,46 @@ static void sef_local_startup(void);
 static void reply(endpoint_t who_e, message *m_ptr);
 
 /* globals */
-message m_in;	/* the incoming message itself is kept here. */
+message m_in,m_out;	/* the incoming message itself is kept here. */
 int call_nr;	/* system call number */
 int who_e;	/* caller's endpoint */
 int result;	/* result to system call */
-
+endpoint_t bproc;
 
 /*===========================================================================*
  *				handlers				     *
  *===========================================================================*/
 
 int do_test(void){
-	printf("test of mcast server process");
+	printf("test of mcast server process\n");
 	return(OK);
 }
 int do_msend(void){
-	printf("msend called");
+	printf("msend called\n");
+	if(bproc != -1){
+		printf("msend unblock %d\n", bproc);
+		m_out.m_type = OK;           /* build reply message */
+		m_out.m_source = MCAST_PROC_NR;
+		reply(bproc, &m_out);
+		bproc = -1;
+	}
 	return(OK);
 }
 int do_mreceive(void){
-	printf("mreceive called");
-	return(OK);
+	printf("mreceive called\n");
+	bproc = who_e;
+	return(SUSPEND);
 }
 int do_opengroup(void){
-	printf("opengroup called");
+	printf("opengroup called\n");
 	return(OK);
 }
 int do_closegroup(void){
-	printf("closegroup called");
+	printf("closegroup called\n");
 	return(OK);
 }
 int do_recovergroup(void){
-	printf("recovergroup called");
+	printf("recovergroup called\n");
 	return(OK);
 }
 /*===========================================================================*
@@ -58,6 +66,7 @@ int main(void)
 	/* SEF local startup. */
 	sef_local_startup();
 	printf("starting mcast server process\n");
+	bproc = -1;
 	/* This is MCAST's main loop - get work and do it, forever and forever. */
 	while (TRUE) {
 		int ipc_status;
