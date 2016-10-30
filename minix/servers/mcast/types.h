@@ -5,12 +5,13 @@ typedef struct {
 	unsigned char valid;
 	endpoint_t pid;
 	unsigned char blocked;
+
 	vir_addr dataptr;
 	int datasize;
 } mc_member_t;
 
 typedef struct {
-	int groupnr;
+	//group number implied as index in list
 	int nmembers;
 	mc_member_t[MAX_PROCS];
 } mc_group_t;
