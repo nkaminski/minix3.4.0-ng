@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <minix/const.h>
 #include <minix/callnr.h>
+#include <stdlib.h>
 
 #include <minix/syslib.h>
 #include <minix/sysutil.h>

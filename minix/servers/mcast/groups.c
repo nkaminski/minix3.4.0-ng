@@ -1,39 +1,19 @@
-#include <string.h>
-#include <stdlib.h>
+#include "mcast.h"
 #include "types.h"
+#include "groups.h"
 
 /* Decide Messages Structure
  * Each member in group should have pointer
  * to next object to get
  */
 //unistd.h for msend
-
-int msend(char *src, size_t size, int gid);
-int mrecv(void *dest, int index, int gid);
-int valid_index(int index);
-int msg_add(void *src);
-int msend(char *src, size_t size, int gid);
-int mrecv(void *dest, int index, int gid);
-void opengroup(int gid, int *index);
-void closegroup(int gid,int index);
-void add_group(int gid);
-void rm_group(int gid);
-void add_member(int gid, int *index);
-void rm_member(int gid, int index);
-int valid_index(int index);
-int valid_gid(int gid);
-int valid_member(int gid, int index);
-size_t get_next_size(int index);
-void *get_next(int index);
-int msg_add(void *src);
-void init();
-
-int main(int argv, char **argc)
+/* int main(int argv, char **argc)
 {
 	init();
 	return 0;
 }
-void init()
+*/
+void init_groups()
 {
 	int i;
 	for(i = 0; i < MAX_GROUPS; i++)
@@ -52,14 +32,14 @@ int msend(char *src, size_t size, int gid)
 {
 	//ensure valid type,src,index gid
 	if(!valid_gid(gid))
-		return -1;
+		return -EINVAL;
 	//>0 members in grpu
 	//Check if src is valid?
 	
 	//ATOMIC {
 	//Add message to msg list
 	if(msg_add(src) != 0)
-		return -1;
+		return -EINVAL;
 
 	//For each process in grp
 	//if blocked waiting
@@ -81,9 +61,9 @@ int msend(char *src, size_t size, int gid)
 int mrecv(void *dest, int index, int gid)
 {
 	if(!valid_gid(gid))
-		return -1;
+		return -EINVAL;
 	if(!valid_member(gid,index))	
-		return -1;
+		return -EINVAL;
 
 	//Will need to be changed
 	size_t size = get_next_size(index);
@@ -101,8 +81,11 @@ int mrecv(void *dest, int index, int gid)
 	return 0;
 }
 //Returns a index to process
-void opengroup(int gid, int *index)
+int opengroup(int gid, int *index)
 {
+	if(gid > MAX_GROUPS || index == NULL || *index < 0 || *index > MAX_PROCS){
+		return -EINVAL;
+	}
 	if(valid_gid(gid))
 		add_member(gid,index);
 	else
@@ -110,8 +93,9 @@ void opengroup(int gid, int *index)
 		add_group(gid);
 		add_member(gid,index);
 	}
+	return OK;
 }
-void closegroup(int gid,int index)
+int closegroup(int gid,int index)
 {
 	if(valid_gid(gid) && valid_member(gid,index))
 	{
@@ -120,9 +104,11 @@ void closegroup(int gid,int index)
 		if(group_list[gid].nmembers == 0)
 			rm_group(gid);
 			*/
+		return OK;
+	} else {
+		return -EINVAL;
 	}
 }
-/*
 void add_group(int gid)
 {
 	if(gid < 32)
@@ -132,13 +118,10 @@ void add_group(int gid)
 		group_list[gid] = group;
 	}
 }
-*/
-/*
 void rm_group(int gid)
 {
 	group_list[gid].valid = 0;
 }
-*/
 void add_member(int gid, int *index)
 {
 	if(!valid_member(gid,*index)) //Not already a member	
@@ -172,7 +155,7 @@ int valid_index(int index)
 }
 int valid_gid(int gid)
 {
-	if(gid < 32)
+	if(gid < MAX_GROUPS && gid >= 0)
 		return 1;
 	return 0;
 }
@@ -200,3 +183,4 @@ int msg_add(void *src)
 {
 	return 0;
 }
+

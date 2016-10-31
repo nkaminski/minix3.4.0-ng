@@ -7,7 +7,7 @@ typedef struct {
 	endpoint_t pid;
 	unsigned char blocked;
 
-	vir_addr dataptr;
+	struct vir_addr dataptr;
 	int datasize;
 } mc_member_t;
 
@@ -15,6 +15,7 @@ typedef mc_member_t *member_list_t[MAX_PROCS];
 
 typedef struct {
 	//group number implied as index in list
+	unsigned char valid;
 	int nmembers;
 	member_list_t member_list;
 } mc_group_t;

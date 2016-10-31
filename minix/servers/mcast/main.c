@@ -5,15 +5,18 @@
 #define _MAIN
 #define MIN(a, b) (((a)<(b)) ? (a) : (b))
 #include "mcast.h"
+#include "reply.h"
+#include "groups.h"
 
 extern int (* const call_vec[])(void);
 
 /* Declare some local functions. */
 static void sef_local_startup(void);
-static void reply(endpoint_t who_e, message *m_ptr);
+static int sef_cb_init_fresh(int, sef_init_info_t *);
+static void sef_cb_signal_handler(int);
 
 /* globals */
-message m_in,m_out;	/* the incoming message itself is kept here. */
+message m_in;	/* the incoming message itself is kept here. */
 int call_nr;	/* system call number */
 int who_e;	/* caller's endpoint */
 int result;	/* result to system call */
@@ -28,30 +31,37 @@ int do_test(void){
 	printf("test of mcast server process\n");
 	return(OK);
 }
+/*
 int do_msend(void){
 	int rv;
 	printf("msend called\n");
 	if(bproc != -1){
 		printf("msend unblock %d\n", bproc);
-		m_out.m_type = OK;           /* build reply message */
-		m_out.m_source = MCAST_PROC_NR;
-		/* copy from the sender to the receiver */
+			 copy from the sender to the receiver 
 		printf("Attempt to copy %d bytes \n", MIN(dstlen,m_in.m_m1.m1i2));
-		rv = sys_datacopy(who_e, (vir_bytes)m_in.m_m1.m1p1, bproc, dstaddr, MIN(dstlen,(vir_bytes)m_in.m_m1.m1i2));		
-		//reply to each process in group here
-		reply(bproc, &m_out);
+		rv = sys_datacopy(who_e, (vir_bytes)m_in.m_m1.m1p1, bproc, dstaddr, MIN(dstlen,(vir_bytes)m_in.m_m1.m1i2));
+		wake_up(bproc,OK);	
 		bproc = -1;
 	}
 	return rv;
 }
 int do_mreceive(void){
 	printf("mreceive called\n");
-	/* save parameters of caller */
+	 save parameters of caller 
 	bproc = who_e;
 	dstaddr = (vir_bytes)m_in.m_m1.m1p1;
 	dstlen = m_in.m_m1.m1i2;
 	return(SUSPEND);
 }
+*/
+int do_msend(void){
+	return(OK);	
+}
+
+int do_mreceive(void){
+	return(OK);
+}
+
 int do_opengroup(void){
 	printf("opengroup called\n");
 	return(OK);
@@ -64,6 +74,7 @@ int do_recovergroup(void){
 	printf("recovergroup called\n");
 	return(OK);
 }
+	
 /*===========================================================================*
  *				main loop				     *
  *===========================================================================*/
@@ -114,25 +125,43 @@ int main(void)
 }
 
 /*===========================================================================*
- *				reply					     *
+ *			       sef_local_startup			     *
  *===========================================================================*/
-static void reply(endpoint_t who_e, message *m_ptr)
+static void sef_local_startup()
 {
-	int s = ipc_send(who_e, m_ptr);    /* send the message */
-	if (OK != s)
-		printf("MCAST: unable to send reply to %d: %d\n", who_e, s);
+  /* Register init callbacks. */
+  sef_setcb_init_fresh(sef_cb_init_fresh);
+//  sef_setcb_init_lu(sef_cb_init_fresh);
+  sef_setcb_init_restart(sef_cb_init_fresh);
+
+  /* Register signal callbacks. */
+  sef_setcb_signal_handler(sef_cb_signal_handler);
+
+  /* Let SEF perform startup. */
+  sef_startup();
 }
 
 /*===========================================================================*
- *			       sef_local_startup			     *
+ *		            sef_cb_init_fresh                                *
  *===========================================================================*/
-static void sef_local_startup(void)
+static int sef_cb_init_fresh(int UNUSED(type), sef_init_info_t *UNUSED(info))
 {
-	/* Register init callbacks. */
+/* Initialize mcast server */
+	init_groups();
 
-	/* No signal callbacks for now. */
+  return(OK);
+}
 
-	/* Let SEF perform startup. */
-	sef_startup();
+/*===========================================================================*
+ *		            sef_cb_signal_handler                            *
+ *===========================================================================*/
+static void sef_cb_signal_handler(int signo)
+{
+  /* Only check for termination signal, ignore anything else. */
+  if (signo != SIGTERM) return;
+  printf("MCAST: exiting on SIGTERM\n");
+  /* Shutting down. */ 
+
+  exit(0);
 }
 

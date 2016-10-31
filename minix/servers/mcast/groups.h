@@ -1,0 +1,23 @@
+#include <string.h>
+#include <stdlib.h>
+
+int msend(char *src, size_t size, int gid);
+int mrecv(void *dest, int index, int gid);
+int valid_index(int index);
+int msg_add(void *src);
+int msend(char *src, size_t size, int gid);
+int mrecv(void *dest, int index, int gid);
+int opengroup(int gid, int *index);
+int closegroup(int gid,int index);
+void add_group(int gid);
+void rm_group(int gid);
+void add_member(int gid, int *index);
+void rm_member(int gid, int index);
+int valid_index(int index);
+int valid_gid(int gid);
+int valid_member(int gid, int index);
+size_t get_next_size(int index);
+void *get_next(int index);
+int msg_add(void *src);
+void init_groups();
+
