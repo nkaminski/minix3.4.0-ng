@@ -421,8 +421,8 @@ void deadlock_init()								//Initialize all lists
 		}
 }
 
-int main()
+/*int main()
 {
 	deadlock_init();
 	do_deadlock_test2();
-}
+}*/
