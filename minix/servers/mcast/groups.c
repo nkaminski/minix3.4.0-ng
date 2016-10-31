@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "types.h"
+#include "deadlock.c"
 
 /* Decide Messages Structure
  * Each member in group should have pointer
@@ -38,6 +39,7 @@ void init()
 	int i;
 	for(i = 0; i < MAX_GROUPS; i++)
 		group_list[i].nmembers = 0;
+	deadlock_init();
 }
 
 //MESSAGE APPENDING MUST BE ATOMIC
@@ -48,9 +50,14 @@ void init()
  *
  * return: 0 on success, -1 failure
  */
-int msend(char *src, size_t size, int gid)
+int msend(endpoint_t pid, char *src, size_t size, int gid)
 {
 	//ensure valid type,src,index gid
+	int t=FindIndex((int)pid);
+	if (t==-1)
+		return -1;
+	//Check if sender is in the process list
+
 	if(!valid_gid(gid))
 		return -1;
 	//>0 members in grpu
@@ -60,6 +67,12 @@ int msend(char *src, size_t size, int gid)
 	//Add message to msg list
 	if(msg_add(src) != 0)
 		return -1;
+
+	if (SendSafe(t,gid)==0)
+	{
+		EnterSend(t,gid);
+		//Do the message delivery between EnterSend() and ExitSend()
+
 
 	//For each process in grp
 	//if blocked waiting
@@ -72,19 +85,34 @@ int msend(char *src, size_t size, int gid)
 	//index msg pointer should skip own data
 	//advance index pointer to next msg
 	//}
+
+
+		ExitSend(t,gid);
+	}
 	return 0;
 }
 /*Dest is destination location
  *index is index of calling process in group
  *gid is group id
  */
-int mrecv(void *dest, int index, int gid)
+int mrecv(endpoint_t pid, void *dest, int index, int gid)
 {
+	int t=FindIndex((int)pid);
+	if (t==-1)
+		return -1;
+	//Check if sender is in the process list
+
 	if(!valid_gid(gid))
 		return -1;
 	if(!valid_member(gid,index))	
 		return -1;
 
+	if (ReceiveSafe(t,gid)==0)
+	{
+		EnterReceive(t,gid);
+		//Do the message delivery between EnterSend() and ExitSend()
+
+		
 	//Will need to be changed
 	size_t size = get_next_size(index);
 	const void *src = get_next(index);
@@ -98,6 +126,8 @@ int mrecv(void *dest, int index, int gid)
 
 	//i
 	//memcpy(dest,src,size);
+		ExitReceive(t,gid);
+	}
 	return 0;
 }
 //Returns a index to process
