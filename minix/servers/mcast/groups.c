@@ -1,7 +1,9 @@
 #include "mcast.h"
 #include "types.h"
+#include "deadlock.h"
 #include "groups.h"
 
+group_list_t group_list;
 /* Decide Messages Structure
  * Each member in group should have pointer
  * to next object to get
@@ -18,6 +20,7 @@ void init_groups()
 	int i;
 	for(i = 0; i < MAX_GROUPS; i++)
 		group_list[i].nmembers = 0;
+	deadlock_init();
 }
 
 //MESSAGE APPENDING MUST BE ATOMIC
@@ -28,9 +31,14 @@ void init_groups()
  *
  * return: 0 on success, -1 failure
  */
-int msend(char *src, size_t size, int gid)
+int msend(endpoint_t pid, char *src, size_t size, int gid)
 {
 	//ensure valid type,src,index gid
+	int t=FindIndex((int)pid);
+	if (t==-1)
+		return -1;
+	//Check if sender is in the process list
+
 	if(!valid_gid(gid))
 		return -EINVAL;
 	//>0 members in grpu
@@ -40,6 +48,12 @@ int msend(char *src, size_t size, int gid)
 	//Add message to msg list
 	if(msg_add(src) != 0)
 		return -EINVAL;
+
+	if (SendSafe(t,gid)==0)
+	{
+		EnterSend(t,gid);
+		//Do the message delivery between EnterSend() and ExitSend()
+
 
 	//For each process in grp
 	//if blocked waiting
@@ -52,19 +66,34 @@ int msend(char *src, size_t size, int gid)
 	//index msg pointer should skip own data
 	//advance index pointer to next msg
 	//}
+
+
+		ExitSend(t,gid);
+	}
 	return 0;
 }
 /*Dest is destination location
  *index is index of calling process in group
  *gid is group id
  */
-int mrecv(void *dest, int index, int gid)
+int mrecv(endpoint_t pid, void *dest, int index, int gid)
 {
+	int t=FindIndex((int)pid);
+	if (t==-1)
+		return -1;
+	//Check if sender is in the process list
+
 	if(!valid_gid(gid))
 		return -EINVAL;
 	if(!valid_member(gid,index))	
 		return -EINVAL;
 
+	if (ReceiveSafe(t,gid)==0)
+	{
+		EnterReceive(t,gid);
+		//Do the message delivery between EnterSend() and ExitSend()
+
+		
 	//Will need to be changed
 	size_t size = get_next_size(index);
 	const void *src = get_next(index);
@@ -78,12 +107,14 @@ int mrecv(void *dest, int index, int gid)
 
 	//i
 	//memcpy(dest,src,size);
+		ExitReceive(t,gid);
+	}
 	return 0;
 }
 //Returns a index to process
 int opengroup(int gid, int *index)
 {
-	if(gid > MAX_GROUPS || index == NULL || *index < 0 || *index > MAX_PROCS){
+	if(gid > MAX_GROUPS || index == NULL || *index < 0 || *index > NR_PROCS){
 		return -EINVAL;
 	}
 	if(valid_gid(gid))
@@ -128,7 +159,7 @@ void add_member(int gid, int *index)
 	{
 		group_list[gid].nmembers++;
 		int i;
-		for(i = 0; i < MAX_PROCS; i++)
+		for(i = 0; i < NR_PROCS; i++)
 		{
 			if(group_list[gid].member_list[i] == NULL)
 			{

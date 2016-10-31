@@ -7,6 +7,7 @@
 #include "mcast.h"
 #include "reply.h"
 #include "groups.h"
+#include "deadlock.h"
 
 extern int (* const call_vec[])(void);
 
@@ -147,8 +148,9 @@ static void sef_local_startup()
 static int sef_cb_init_fresh(int UNUSED(type), sef_init_info_t *UNUSED(info))
 {
 /* Initialize mcast server */
+	printf("MCAST: sef_cb_init_fresh called, initializing\n");
 	init_groups();
-
+	deadlock_init();
   return(OK);
 }
 
