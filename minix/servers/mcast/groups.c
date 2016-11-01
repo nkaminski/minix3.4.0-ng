@@ -43,6 +43,12 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
         int i, procnr;
         size_t com_size;
 
+        /* Check for a preexisting blocked sender */
+        if(group_list[gid].b_sender.pid > 0){
+                printf("One sender at a time can send to a group!\n");
+                return (EAGAIN);
+        }
+
         /* Register the sender */
         group_list[gid].b_sender.pid = pid;
         ProcessRegister(&(group_list[gid].b_sender));
@@ -64,10 +70,6 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
         /* if(msg_add(src) != 0)
            return -EINVAL;
          */
-        if(group_list[gid].b_sender.pid > 0){
-                printf("One sender at a time can send to a group!\n");
-                return (EAGAIN);
-        }
         if (SendSafe(t,gid)!=0)
         {
                 return (ELOCKED);
@@ -118,7 +120,8 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
                 group_list[gid].b_sender.datasize = size;
                 return (SUSPEND);
         }
-        //else return
+        //else return and invalidate the blocked sender pid
+        group_list[gid].b_sender.pid = -1;
         ExitSend(t,gid);
         if(ProcessDelete(ProcessList[t]->pid) != 0){
                 printf("Unable to deregister sender from process list after send completed!\n");
