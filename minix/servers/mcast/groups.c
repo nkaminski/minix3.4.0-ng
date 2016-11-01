@@ -209,8 +209,9 @@ int opengroup(endpoint_t pid, int gid, int *index)
         return OK;
 }
 //TODO need to be able to closegroup given an endpoint_t/PID
-int closegroup(int gid,int index)
+int closegroup(endpoint_t pid, int gid)
 {
+
         if(valid_gid(gid) && valid_member(gid,index))
         {
                 rm_member(gid,index);
@@ -222,6 +223,9 @@ int closegroup(int gid,int index)
         } else {
                 return EINVAL;
         }
+}
+mc_member_t* find_member_index( endpoint_t pid, int gid){
+
 }
 void add_group(int gid)
 {
