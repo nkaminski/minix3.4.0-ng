@@ -214,7 +214,8 @@ int closegroup(endpoint_t pid, int gid)
 
         if(valid_gid(gid) && valid_member(gid,index))
         {
-                rm_member(gid,index);
+				find_member_index(pid,gid) = NULL;
+                //rm_member(gid,index);
                 /*
                    if(group_list[gid].nmembers == 0)
                    rm_group(gid);
@@ -224,7 +225,16 @@ int closegroup(endpoint_t pid, int gid)
                 return EINVAL;
         }
 }
-mc_member_t* find_member_index( endpoint_t pid, int gid){
+mc_member_t* find_member_index( endpoint_t pid, int gid)
+{
+	mc_member_t *p;
+	for(p = group_list[gid].member_list; p != NULL; p++)
+	{
+		if(p->pid == pid)
+			return p;
+	}
+	return NULL;
+}
 
 }
 void add_group(int gid)
@@ -250,7 +260,16 @@ void add_member(endpoint_t pid, int gid, int *index)
                 {
                         if(group_list[gid].member_list[i] == NULL)
                         {
+							//TODO only malloc if it isnt in the process list
+							if(FindIndex(pid) == -1)
+							{
                                 group_list[gid].member_list[i] = malloc(sizeof(mc_member_t));
+                                ProcessRegister(group_list[gid].member_list[i]);
+							}
+							else
+							{
+
+							}
                                 *index = i; //Set index, index
                                 //INSTANTIATE VARS
                                 group_list[gid].member_list[i]->pending = 0;
@@ -269,7 +288,8 @@ void rm_member(int gid, int index)
         {
                 group_list[gid].nmembers--;
                 ProcessDelete(group_list[gid].member_list[index]->pid);
-                free(group_list[gid].member_list[index]);
+				//TODO only remove if it isnt part of another group	
+                //free(group_list[gid].member_list[index]);
                 group_list[gid].member_list[index] = NULL;
         }
 }

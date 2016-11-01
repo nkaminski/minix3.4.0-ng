@@ -10,6 +10,7 @@ typedef struct {
 	unsigned char blocked;
 	unsigned char pending;
 	vir_bytes dataptr;
+	size_t numgroups; //Number of groups member is part of
 	size_t datasize;
 } mc_member_t;
 
