@@ -63,74 +63,6 @@ void printReceiveMatrix()							//Print the receiving matrix
 	puts("");
 }
 
-void do_deadlock_test2()
-{
-	mc_member_t p0,p1,p2,p3,p4,p5,p6;
-	p0.pid=(int)100;
-	p1.pid=(int)101;
-	p2.pid=(int)102;
-	p3.pid=(int)103;
-	p4.pid=(int)104;
-	p5.pid=(int)105;
-	ProcessRegister(p0);
-	ProcessRegister(p1);
-	ProcessRegister(p2);
-	ProcessRegister(p3);
-	ProcessRegister(p4);
-	ProcessRegister(p5);
-	printProcessList();
-
-	ProcessDelete(100);
-	printProcessList();
-
-	/*OpenGroup(100,0);
-	OpenGroup(101,0);
-	OpenGroup(102,1);
-	OpenGroup(103,1);
-	OpenGroup(104,2);
-	OpenGroup(105,2);*/
-	printGroup();
-
-	//CloseGroup(102,1);
-	printGroup();
-
-	//OpenGroup(p2,1);
-	
-
-	int t;
-	/*t=SendSafe((int)p0.pid,1);
-	EnterSend((int)p0.pid,1);
-	printSendMatrix();
-
-	t=SendSafe((int)p1.pid,1);
-	EnterSend((int)p1.pid,1);
-	printSendMatrix();
-
-	t=SendSafe((int)p2.pid,2);
-	if (t==0) EnterSend((int)p2.pid,2);
-	printSendMatrix();
-
-	t=SendSafe((int)p4.pid,1);
-	if (t==0) EnterSend((int)p4.pid,1);
-	printSendMatrix();*/
-
-	t=ReceiveSafe((int)p0.pid,1);
-	if (t==0) EnterReceive((int)p0.pid,1);
-	printReceiveMatrix();
-
-	t=ReceiveSafe((int)p1.pid,1);
-	if (t==0) EnterReceive((int)p1.pid,1);
-	printReceiveMatrix();
-
-	t=ReceiveSafe((int)p2.pid,2);
-	if (t==0) EnterReceive((int)p2.pid,2);
-	printReceiveMatrix();
-
-	t=ReceiveSafe((int)p4.pid,1);
-	if (t==0) EnterReceive((int)p4.pid,1);
-	printReceiveMatrix();
-}
-
 void printAll()										//For debug
 {
 	printProcessList();
@@ -345,36 +277,6 @@ int ProcessDelete(int pid)							//Delete a process from process list
 	return 0;
 }
 
-/*int OpenGroup(int pid, int GIndex)					//Open a new group for a list of processes. Returns the index of new group on success, -1 on failure
-{
-	int t=FindIndex(pid);
-	if (t==-1) return -1;										//Error : Pid not found
-	int i;
-	for (i=0;i<group_list[GIndex].nmembers;i++)
-		if ((int)group_list[GIndex].member_list[i]->pid==pid) return -1;	//Error : process already in group
-	group_list[GIndex].member_list[group_list[GIndex].nmembers]=&ProcessList[t];
-	group_list[GIndex].nmembers++;
-	return 0;
-}
-
-int CloseGroup(int pid, int GIndex)					//Close a group. Returns 1 on success, -1 if the group doesn't exist
-{
-	int t=FindIndex(pid);
-	if (t==-1) return -1;										//Error : Pid not found
-	if (PorcessActive(pid)==-1) return -1;						//Error : Process still active
-	int i;
-	for (i=0;i<group_list[GIndex].nmembers;i++)
-		if ((int)group_list[GIndex].member_list[i]->pid==pid)
-		{
-			int j;
-			for (j=i;j<group_list[GIndex].nmembers-1;j++)
-				group_list[GIndex].member_list[j]=group_list[GIndex].mc_member_list_t[j+1];
-			group_list[GIndex].nmembers--;
-			return 0;											//Success
-		}
-	return -1;													//Error : process not in this group
-}*/
-
 void deadlock_init()								//Initialize all lists
 {
 	int i,j;
@@ -386,9 +288,3 @@ void deadlock_init()								//Initialize all lists
 			Receive[i][j]=0;
 		}
 }
-
-/*int main()
-{
-	deadlock_init();
-	do_deadlock_test2();
-}*/
