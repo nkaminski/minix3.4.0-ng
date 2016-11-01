@@ -6,19 +6,20 @@
 //int ProcessList[NR_PROCS];
 
 typedef struct {
-	unsigned char valid;
 	endpoint_t pid;
 	unsigned char blocked;
-
-	struct vir_addr dataptr;
-	int datasize;
+	unsigned char pending;
+	vir_bytes dataptr;
+	size_t datasize;
 } mc_member_t;
 
 typedef mc_member_t *mc_member_list_t[NR_PROCS];
 
 typedef struct {
-	//group number implied as index in list
 	unsigned char valid;
+	//group number implied as index in list
+	mc_member_t b_sender;
+	int npending;
 	int nmembers;
 	mc_member_list_t member_list;
 } mc_group_t;

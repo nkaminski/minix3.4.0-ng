@@ -1,6 +1,7 @@
 #include "mcast.h"
 #include "types.h"
 #include "deadlock.h"
+#include "reply.h"
 #include "groups.h"
 
 group_list_t group_list;
@@ -29,93 +30,150 @@ void init_groups()
  * index - who sent from
  * gid - group id
  *
- * return: 0 on success, -1 failure
+ * return: (OK) on success, (SUSPEND) to block sender, - on failure
  */
 int msend(endpoint_t pid, char *src, size_t size, int gid)
 {
+	int i;
+	unsigned char block_sender = 0;
+	size_t com_size;
 	//ensure valid type,src,index gid
 	int t=FindIndex((int)pid);
+	
 	if (t==-1)
 		return -1;
 	//Check if sender is in the process list
 
 	if(!valid_gid(gid))
-		return -EINVAL;
+		return EINVAL;
 	//>0 members in grpu
 	//Check if src is valid?
 	
 	//ATOMIC {
 	//Add message to msg list
-	if(msg_add(src) != 0)
+/*	if(msg_add(src) != 0)
 		return -EINVAL;
-
-	if (SendSafe(t,gid)==0)
+*/
+	if(group_list[gid].b_sender.pid > 0){
+		printf("One sender at a time can send to a group!\n");
+		return (EAGAIN);
+	}
+	if (SendSafe(t,gid)!=0)
 	{
-		EnterSend(t,gid);
-		//Do the message delivery between EnterSend() and ExitSend()
-
-
+		return (ELOCKED);
+	}
+	EnterSend(t,gid);
 	//For each process in grp
-	//if blocked waiting
-	//deliver msg and unblock
-	//else mark as pending
-	//
-	//if any process was marked as pending
-	//block sender
+	for(i=0;i<MAX_GROUPS;i++){
+		/* skip sender and warn since this should have been caught sooner*/
+		if(i == t){
+			printf("Sender was in group, but deadlock detection did not find!\n");	
+			ExitSend(t,gid);
+			return EGENERIC;
+		}
+		if(group_list[gid].member_list[i] == NULL)
+			continue;
+		//if blocked waiting
+		if(group_list[gid].member_list[i]->blocked < 1){
+			//else mark as pending
+			printf("Process %d not blocked, block sender after this!\n", group_list[gid].member_list[i]->pid);
+			group_list[gid].member_list[i]->pending = 1;
+			group_list[gid].npending++;
+			continue;
+		}
+		/* proc is blocked */
+		//deliver msg and unblock
+		com_size = MIN(group_list[gid].member_list[i]->datasize,size);
+		printf("Attempting to copy %d bytes to ep %d\n", com_size, group_list[gid].member_list[i]->pid);
+	        sys_datacopy(pid, (vir_bytes)src, group_list[gid].member_list[i]->pid, group_list[gid].member_list[i]->dataptr, com_size);
+		/* Clear blocked flag */
+		group_list[gid].member_list[i]->blocked = 0;
+		/* reciever is going to exit so tell deadlock detector */
+		ExitReceive(FindIndex(group_list[gid].member_list[i]->pid),gid);
+		/* unblock receiver */
+		wake_up(group_list[gid].member_list[i]->pid, (OK));
+	}
+	//if any process is/was marked as pending
+	if(group_list[gid].npending > 0){
+		//block sender
+		group_list[gid].b_sender.pid = pid;
+		group_list[gid].b_sender.dataptr = (vir_bytes)src;
+		group_list[gid].b_sender.datasize = size;
+		return (SUSPEND);
+	}
+	//else return
+	ExitSend(t,gid);
+	return (OK);
+
+	//Do the message delivery between EnterSend() and ExitSend()
+
 
 	//index msg pointer should skip own data
 	//advance index pointer to next msg
 	//}
 
-
-		ExitSend(t,gid);
-	}
-	return 0;
 }
 /*Dest is destination location
- *index is index of calling process in group
  *gid is group id
  */
-int mrecv(endpoint_t pid, void *dest, int index, int gid)
+int mrecv(endpoint_t pid, void *dest, size_t size, int gid)
 {
 	int t=FindIndex((int)pid);
+	size_t com_size;
 	if (t==-1)
 		return -1;
 	//Check if sender is in the process list
 
 	if(!valid_gid(gid))
-		return -EINVAL;
-	if(!valid_member(gid,index))	
-		return -EINVAL;
-
-	if (ReceiveSafe(t,gid)==0)
+		return EINVAL;
+	if(!valid_member(gid,t))	
+		return EINVAL;
+	
+	//Does the rx have a message pending?
+	if(group_list[gid].b_sender.pid > 0 && ProcessList[t].pending > 0){
+		/* yes it does, deliver immediately (i.e. dont block) */
+		com_size = MIN(size, group_list[gid].b_sender.datasize);
+		printf("MRECV: immediate delivery, attempting to copy %d bytes to ep %d\n", com_size, group_list[gid].b_sender.pid);
+	        sys_datacopy(group_list[gid].b_sender.pid, group_list[gid].b_sender.dataptr, pid, (vir_bytes)dest, com_size);
+		ProcessList[t].pending = 0;
+		group_list[gid].npending--;
+		/* all pending messages handled? */
+		if(group_list[gid].npending == 0){
+			/* unblock sender */
+			ExitSend(FindIndex(group_list[gid].b_sender.pid),gid);
+			group_list[gid].b_sender.pid = 0;
+			wake_up(group_list[gid].b_sender.pid, OK);
+		}
+		/* receive has been handled, return. */
+		return (OK);
+	}
+	/* Otherwise we are going to wait, begin deadlock safety checks */
+	if (ReceiveSafe(t,gid)!=0)
 	{
-		EnterReceive(t,gid);
-		//Do the message delivery between EnterSend() and ExitSend()
-
+		return (ELOCKED);
+	}
+	EnterReceive(t,gid);
+		//Do the message delivery between EnterReceive() and ExitReceive()
+	/* store info and block receiver */
+	ProcessList[t].pid = pid;
+	ProcessList[t].dataptr = (vir_bytes)dest;
+	ProcessList[t].datasize = size;
+	/* Caller is getting blocked, receiver will ExitReceive() in the msend() handler */
+	return (SUSPEND);
 		
 	//Will need to be changed
-	size_t size = get_next_size(index);
-	const void *src = get_next(index);
+//	size_t size = get_next_size(index);
+//	const void *src = get_next(index);
 
-	//if msg pending for caller
-	//deliver msg
-		//if no more members pending
-		//unblock sender, do not block caller
-	//else
-	//set state as blocked & block caller
-
-	//i
 	//memcpy(dest,src,size);
-		ExitReceive(t,gid);
-	}
-	return 0;
+
 }
+//TODO NEEDS WORK FROM HERE ONWARDS, ALSO SHOULD EVENTUALLY HANDLE INTERRUPTED SYSCALLS
 //Returns a index to process
 int opengroup(int gid, int *index)
 {
 	if(gid > MAX_GROUPS || index == NULL || *index < 0 || *index > NR_PROCS){
-		return -EINVAL;
+		return EINVAL;
 	}
 	if(valid_gid(gid))
 		add_member(gid,index);
@@ -137,7 +195,7 @@ int closegroup(int gid,int index)
 			*/
 		return OK;
 	} else {
-		return -EINVAL;
+		return EINVAL;
 	}
 }
 void add_group(int gid)

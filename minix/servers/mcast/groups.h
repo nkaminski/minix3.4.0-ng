@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 int msend(endpoint_t pid, char *src, size_t size, int gid);
-int mrecv(endpoint_t pid, void *dest, int index, int gid);
+int mrecv(endpoint_t pid, void *dest, size_t size, int gid);
 int valid_index(int index);
 int msg_add(void *src);
 int opengroup(int gid, int *index);

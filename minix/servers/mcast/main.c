@@ -3,7 +3,6 @@
  */
 
 #define _MAIN
-#define MIN(a, b) (((a)<(b)) ? (a) : (b))
 #include "mcast.h"
 #include "reply.h"
 #include "groups.h"
