@@ -335,7 +335,7 @@ int ProcessDelete(int pid)							//Delete a process from process list
 			for (j=0;j<group_list[i].nmembers;j++)
 				if (group_list[i].member_list[j]->pid==pid) break;
 			for (k=j;k<group_list[i].nmembers-1;k++)
-				group_list[i].member_list[k]=group_list[i].mc_member_list[k+1];
+				group_list[i].member_list[k]=group_list[i].member_list[k+1];
 			group_list[i].nmembers--;
 		}
 	}
