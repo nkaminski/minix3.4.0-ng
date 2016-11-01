@@ -15,12 +15,13 @@ void printGroup()									//Print all valid groups
 {
 	printf("Group list:\n");
 	int i,j;
-	for (i=0;i<MAX_GROUPS;i++)
+	for (i=0;i<NR_PROCS;i++)
 		if (group_list[i].nmembers!=0)
 		{
 			printf("Group %d: ",i);
-			for (j=0;j<group_list[i].nmembers;j++)
-				printf("%d ",(int)group_list[i].member_list[j]->pid);
+			for (j=0;j<NR_PROCS;j++)
+				if (group_list[i].member_list[j]!=NULL)
+					printf("%d ",(int)group_list[i].member_list[j]->pid);
 			puts("");
 		}
 }
@@ -91,10 +92,13 @@ int EnterSend(int pid, int GIndex)					//Enter sending blocking
 {
 	int i,t,k;
 	t=FindIndex(pid);
-	for (i=0;i<group_list[GIndex].nmembers;i++)
+	for (i=0;i<NR_PROCS;i++)
 	{
-		k=FindIndex((int)group_list[GIndex].member_list[i]->pid);
-		Send[t][k]=1;
+		if (group_list[GIndex].member_list[i]!=NULL)
+		{
+			k=FindIndex((int)group_list[GIndex].member_list[i]->pid);
+			Send[t][k]=1;
+		}
 	}
 	return 0;
 }
@@ -103,10 +107,13 @@ int EnterReceive(int pid, int GIndex)				//Enter receiving blocking
 {
 	int i,t,k;
 	t=FindIndex(pid);
-	for (i=0;i<group_list[GIndex].nmembers;i++)
+	for (i=0;i<NR_PROCS;i++)
 	{
-		k=FindIndex((int)group_list[GIndex].member_list[i]->pid);
-		Receive[t][k]=1;
+		if (group_list[GIndex].member_list[i]!=NULL)
+		{
+			k=FindIndex((int)group_list[GIndex].member_list[i]->pid);
+			Receive[t][k]=1;
+		}
 	}
 	return 0;
 }
@@ -152,12 +159,15 @@ int CircleCheckSend(int PIndex, int GIndex)			//Circle checking for sending. Ret
 	head=0;
 	tail=0;
 	queue[head]=PIndex;
-	for (i=0;i<group_list[GIndex].nmembers;i++)
+	for (i=0;i<NR_PROCS;i++)
 	{
-		t=FindIndex((int)group_list[GIndex].member_list[i]->pid);
-		if (t==PIndex) return -1;
-		tail++;
-		queue[tail]=t;
+		if (group_list[i].nmembers!=0)
+		{
+			t=FindIndex((int)group_list[GIndex].member_list[i]->pid);
+			if (t==PIndex) return -1;
+			tail++;
+			queue[tail]=t;
+		}
 	}
 	head++;
 	while(head<=tail)
@@ -184,12 +194,15 @@ int CircleCheckReceive(int PIndex, int GIndex)		//Circle checking for receiving.
 	head=0;
 	tail=0;
 	queue[head]=PIndex;
-	for (i=0;i<group_list[GIndex].nmembers;i++)
+	for (i=0;i<NR_PROCS;i++)
 	{
-		t=FindIndex((int)group_list[GIndex].member_list[i]->pid);
-		if (t==PIndex) return -1;
-		tail++;
-		queue[tail]=t;
+		if (group_list[i].nmembers!=0)
+		{
+			t=FindIndex((int)group_list[GIndex].member_list[i]->pid);
+			if (t==PIndex) return -1;
+			tail++;
+			queue[tail]=t;
+		}
 	}
 	head++;
 	while(head<=tail)
