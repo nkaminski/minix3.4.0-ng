@@ -57,27 +57,32 @@ int do_mreceive(void){
 }
 */
 int do_msend(void){
+   printf("msend called\n");
 	return msend(who_e, m_in.m_m1.m1p1, m_in.m_m1.m1i2, m_in.m_m1.m1i1);	
 }
 
 int do_mreceive(void){
+   printf("mreceive called\n");
 	return mrecv(who_e, m_in.m_m1.m1p1, m_in.m_m1.m1i2, m_in.m_m1.m1i1);	
 }
 
 int do_opengroup(void){
 	int idx, rv;
 	printf("opengroup called\n");
+   if(!mcast_isvalidendpt(who_e,&idx)){
+           return (EGENERIC);
+   }
 	rv = opengroup(who_e, m_in.m_m1.m1i1, &idx);
 	printf("Member subscribed, index %d\n",idx);
 	return rv;
 }
 int do_closegroup(void){
 	printf("closegroup called\n");
-	return(OK);
+	return closegroup(who_e, m_in.m_m1.m1i1);
 }
 int do_recovergroup(void){
 	printf("recovergroup called\n");
-	return(OK);
+	return recovergroup(m_in.m_m1.m1i1);
 }
 	
 /*===========================================================================*
