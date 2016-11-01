@@ -213,19 +213,23 @@ int closegroup(endpoint_t pid, int gid)
 }
 mc_member_t* find_member_index(endpoint_t pid, int gid, int *index)
 {
-	mc_member_t *p;
 	int i;
 	for(i = 0; i < NR_PROCS; i++)
 	{
+		if(group_list[gid].member_list[i] == NULL)
+		{
+			*index = i;
+			break;
+		}
 		if(group_list[gid].member_list[i]->pid == pid)
 		{
 			*index = i;
-			return p;
+			return group_list[gid].member_list[i];
 		}
 	}
+	*index = -1;
 	return NULL;
 }
-
 
 /*
 void add_group(int gid)
@@ -251,9 +255,10 @@ void add_member(endpoint_t pid, int gid)
 		group_list[gid].nmembers++;
 		int i;
 		mc_member_t *mem = find_member_index(pid,gid,&i);
+		//Member not part of list *mem is NULL
 		//TODO only malloc if it isnt in the process list
 		int mindex = FindIndex(pid); 
-		if(FindIndex(pid) == -1)
+		if(mindex == -1 && i != -1) 
 		{
 			group_list[gid].member_list[i] = malloc(sizeof(mc_member_t));
 			//INSTANTIATE VARS
@@ -264,7 +269,7 @@ void add_member(endpoint_t pid, int gid)
 			//TODO check for -2 error code and propagate up
 			ProcessRegister(group_list[gid].member_list[i]);
 		}
-		else
+		else if(i != -1)
 		{
 			group_list[gid].member_list[i] = ProcessList[mindex];
 			group_list[gid].member_list[i]->numgroups++; 
