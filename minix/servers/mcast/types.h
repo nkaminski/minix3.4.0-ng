@@ -6,7 +6,8 @@
 //int ProcessList[NR_PROCS];
 
 typedef struct {
-	endpoint_t pid;
+	unsigned char valid;
+   endpoint_t pid;
 	unsigned char blocked;
 	unsigned char pending;
 	vir_bytes dataptr;

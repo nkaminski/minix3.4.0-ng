@@ -7,6 +7,7 @@
 #include "reply.h"
 #include "groups.h"
 #include "deadlock.h"
+#include "utility.h"
 
 extern int (* const call_vec[])(void);
 

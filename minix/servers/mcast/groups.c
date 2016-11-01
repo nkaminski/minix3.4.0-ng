@@ -3,6 +3,7 @@
 #include "deadlock.h"
 #include "reply.h"
 #include "groups.h"
+#include "utility.h"
 
 group_list_t group_list;
 /* Decide Messages Structure
@@ -81,7 +82,7 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
                         continue;
                 }
                 /* interrupted system call? */
-                if(!isokendpt(group_list[gid].member_list[i]->pid, &proc_nr)){
+                if(mcast_isokendpt(group_list[gid].member_list[i]->pid, &procnr) != OK){
                         /* Do NOT deliver! Deallocate everything pertaining to that proc. copying is unsafe since the proc is gone! */
                         if(group_list[gid].member_list[i]->pending > 0){
                                 group_list[gid].npending--;
@@ -148,7 +149,7 @@ int mrecv(endpoint_t pid, void *dest, size_t size, int gid)
         if(group_list[gid].b_sender.pid > 0 && ProcessList[t]->pending > 0){
                 assert(group_list[gid].npending > 0);
                 /* has the sender been interrupted? */
-                if(isokendpt(group_list[gid].b_sender.pid,procnr)){
+                if(mcast_isokendpt(group_list[gid].b_sender.pid,procnr) == OK){
 
                         /* yes it does, deliver immediately (i.e. dont block) */
                         com_size = MIN(size, group_list[gid].b_sender.datasize);

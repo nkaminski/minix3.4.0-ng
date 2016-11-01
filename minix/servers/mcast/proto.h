@@ -12,6 +12,3 @@ int do_mreceive(void);
 int do_opengroup(void);
 int do_closegroup(void);
 int do_recovergroup(void);
-
-/* utility.c */
-int no_sys(int who_e, int call_nr);
