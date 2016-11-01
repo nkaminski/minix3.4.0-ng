@@ -8,7 +8,7 @@ void printProcessList()								//print all registered processes
 	printf("Total processes = %d\n",total);
 	printf("Process list:\n");
 	for (i=0;i<total;i++)
-		printf("Pid %2d: %d\n",i,(int)ProcessList[i].pid);
+		printf("Pid %2d: %d\n",i,(int)ProcessList[i]->pid);
 }
 
 void printGroup()									//Print all valid groups
@@ -30,11 +30,11 @@ void printSendMatrix()								//Print the sending matrix
 	int i,j;
 	puts("Send matrix:");
 	printf("     |");
-	for (i=0;i<total;i++) printf("%5d|",(int)ProcessList[i].pid);
+	for (i=0;i<total;i++) printf("%5d|",(int)ProcessList[i]->pid);
 	puts("");
 	for (i=0;i<total;i++)
 	{
-		printf("%5d|",(int)ProcessList[i].pid);
+		printf("%5d|",(int)ProcessList[i]->pid);
 		for (j=0;j<total;j++)
 			printf("%5d|",(int)Send[i][j]);
 		puts("");
@@ -48,13 +48,13 @@ void printReceiveMatrix()							//Print the receiving matrix
 	for (i=0;i<=total;i++) printf("------");
 	puts("");
 	printf("     |");
-	for (i=0;i<total;i++) printf("%5d|",(int)ProcessList[i].pid);
+	for (i=0;i<total;i++) printf("%5d|",(int)ProcessList[i]->pid);
 	puts("");
 	for (i=0;i<=total;i++) printf("------");
 	puts("");
 	for (i=0;i<total;i++)
 	{
-		printf("%5d|",(int)ProcessList[i].pid);
+		printf("%5d|",(int)ProcessList[i]->pid);
 		for (j=0;j<total;j++)
 			printf("%5d|",(int)Receive[i][j]);
 		puts("");
@@ -213,7 +213,7 @@ int FindIndex(int pid)								//Find the index in process list of a given Pid, r
 {
 	int i;
 	for (i=0;i<total;i++)
-		if ((int)ProcessList[i].pid==pid) return i;
+		if ((int)ProcessList[i]->pid==pid) return i;
 	return -1;
 }
 
@@ -221,15 +221,15 @@ int ProcessRegister(mc_member_t p)					//Register a new process into process lis
 {
 	if (FindIndex((int)p.pid)!=-1) return -1;					//Error : process already in list
 	if (total==NR_PROCS) return -2;							//Error : max number of processes
-	ProcessList[total]=p;
+	ProcessList[total]=&p;
 	total++;
 	int i;
 	for (i=0;i<total;i++)
 	{
-		Send[i][total]=0;
-		Send[total][i]=0;
-		Receive[i][total]=0;
-		Receive[total][i]=0;
+		Send[i][total-1]=0;
+		Send[total-1][i]=0;
+		Receive[i][total-1]=0;
+		Receive[total-1][i]=0;
 	}
 	return 0;
 }
@@ -237,8 +237,10 @@ int ProcessRegister(mc_member_t p)					//Register a new process into process lis
 int ProcessDelete(int pid)							//Delete a process from process list
 {
 	int t;
+	mc_member_t *p;
 	t=FindIndex(pid);
-	if (t==-1) return -1;										//Error : Pid not found
+	if (t==-1) return -1;
+	p=ProcessList[t];										//Error : Pid not found
 	if (ProcessActive(pid)==-1) return -1;						//Error : Process still active
 	int i,j,k;
 	for (i=t;i<total-1;i++)										//Delete from sending and receiving matrix
@@ -260,20 +262,10 @@ int ProcessDelete(int pid)							//Delete a process from process list
 		Receive[i][total-1]=0;									//
 		Receive[total-1][i]=0;									//Delete from sending and receiving matrix
 	}
-	for (i=0;i<MAX_GROUPS;i++)									//Delete from group list
-	{
-		if (group_list[i].nmembers>0)
-		{
-			for (j=0;j<group_list[i].nmembers;j++)
-				if (group_list[i].member_list[j]->pid==pid) break;
-			for (k=j;k<group_list[i].nmembers-1;k++)
-				group_list[i].member_list[k]=group_list[i].member_list[k+1];
-			group_list[i].nmembers--;
-		}
-	}
 	for (i=t;i<total-1;i++)										//Delete from process list
 		ProcessList[i]=ProcessList[i+1];
 	total--;
+	free(p);
 	return 0;
 }
 
