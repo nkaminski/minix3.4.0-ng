@@ -19,4 +19,4 @@ size_t get_next_size(int index);
 void *get_next(int index);
 int msg_add(void *src);
 void init_groups();
-
+mc_member_t* find_member_index( endpoint_t pid, int gid);
