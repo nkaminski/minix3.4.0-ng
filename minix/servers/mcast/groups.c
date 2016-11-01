@@ -23,7 +23,10 @@ void init_groups()
         for(i = 0; i < MAX_GROUPS; i++){
                 group_list[i].nmembers = 0;
                 group_list[i].b_sender.pid = -1;
-            for(j = 0;
+            for(j = 0; j < NR_PROCS; j++){
+                    group_list[i].member_list[j] = NULL;
+            }
+            
         }
 }
 
@@ -303,18 +306,18 @@ int recovergroup(int gid){
                 if(group_list[gid].member_list[i] == NULL)
                         continue;
                 /* clear all pending requests */
-                if(group_list[gid].member_list[i].pending > 0){
-                        group_list[gid].member_list[i].pending = 0;
+                if(group_list[gid].member_list[i]->pending > 0){
+                        group_list[gid].member_list[i]->pending = 0;
                         group_list[gid].npending--;
                 }
                 /* wake all blocked receivers with ELOCKED */
                 if(group_list[gid].member_list[i]->blocked == 1){
                         group_list[gid].member_list[i]->blocked = 0;
-                        reply(group_list[gid].member_list[i]->pid, (ELOCKED));
+                        wake_up(group_list[gid].member_list[i]->pid, (ELOCKED));
                 }
                 /* is there a blocked sender? If so wake and return ELOCKED. */
                 if(group_list[gid].b_sender.pid != -1){
-                        reply(group_list[gid].b_sender.pid, (ELOCKED));
+                        wake_up(group_list[gid].b_sender.pid, (ELOCKED));
                         group_list[gid].b_sender.pid = -1;
                 }
         }
@@ -327,7 +330,7 @@ void rm_member(int gid, int index)
 				int mindex = FindIndex(pid); 
 				assert(mindex != -1);
 				assert(group_list[gid].member_list[index]->numgroups != 0);
-				if(group_list[gid].member_list[index]->numgroups = 1)
+				if(group_list[gid].member_list[index]->numgroups == 1)
 				{
 					group_list[gid].member_list[index]->numgroups = 0;
                 	ProcessDelete(group_list[gid].member_list[index]->pid);

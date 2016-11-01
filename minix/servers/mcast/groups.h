@@ -7,7 +7,7 @@ int valid_index(int index);
 int msg_add(void *src);
 int opengroup(endpoint_t pid, int gid, int *index);
 int closegroup(endpoint_t pid, int gid);
-void recovergroup(int gid);
+int recovergroup(int gid);
 void add_group(int gid);
 void rm_group(int gid);
 void add_member(endpoint_t pid, int gid, int *index);
