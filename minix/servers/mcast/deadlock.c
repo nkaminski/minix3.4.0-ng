@@ -15,7 +15,7 @@ void printGroup()									//Print all valid groups
 {
 	printf("Group list:\n");
 	int i,j;
-	for (i=0;i<NR_PROCS;i++)
+	for (i=0;i<MAX_GROUPS;i++)
 		if (group_list[i].nmembers!=0)
 		{
 			printf("Group %d: ",i);
