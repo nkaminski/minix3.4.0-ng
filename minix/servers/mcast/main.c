@@ -30,6 +30,7 @@ int dstlen;
 
 int do_test(void){
 	printf("test of mcast server process\n");
+	printAll();
 	return(OK);
 }
 /*
