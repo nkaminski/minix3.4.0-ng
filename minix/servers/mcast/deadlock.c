@@ -30,14 +30,23 @@ void printSendMatrix()								//Print the sending matrix
 {
 	int i,j;
 	puts("Send matrix:");
-	printf("     |");
-	for (i=0;i<total;i++) printf("%5d|",(int)ProcessList[i]->pid);
-	puts("");
-	for (i=0;i<total;i++)
+	if (total>0)
 	{
-		printf("%5d|",(int)ProcessList[i]->pid);
-		for (j=0;j<total;j++)
-			printf("%5d|",(int)Send[i][j]);
+		for (i=0;i<=total;i++) printf("------");
+		puts("");
+		printf("     |");
+		for (i=0;i<total;i++) printf("%5d|",(int)ProcessList[i]->pid);
+		puts("");
+		for (i=0;i<=total;i++) printf("------");
+		puts("");
+		for (i=0;i<total;i++)
+		{
+			printf("%5d|",(int)ProcessList[i]->pid);
+			for (j=0;j<total;j++)
+				printf("%5d|",(int)Send[i][j]);
+			puts("");
+		}
+		for (i=0;i<=total;i++) printf("------");
 		puts("");
 	}
 }
@@ -46,22 +55,25 @@ void printReceiveMatrix()							//Print the receiving matrix
 {
 	int i,j;
 	puts("Receive matrix:");
-	for (i=0;i<=total;i++) printf("------");
-	puts("");
-	printf("     |");
-	for (i=0;i<total;i++) printf("%5d|",(int)ProcessList[i]->pid);
-	puts("");
-	for (i=0;i<=total;i++) printf("------");
-	puts("");
-	for (i=0;i<total;i++)
+	if (total>0)
 	{
-		printf("%5d|",(int)ProcessList[i]->pid);
-		for (j=0;j<total;j++)
-			printf("%5d|",(int)Receive[i][j]);
+		for (i=0;i<=total;i++) printf("------");
+		puts("");
+		printf("     |");
+		for (i=0;i<total;i++) printf("%5d|",(int)ProcessList[i]->pid);
+		puts("");
+		for (i=0;i<=total;i++) printf("------");
+		puts("");
+		for (i=0;i<total;i++)
+		{
+			printf("%5d|",(int)ProcessList[i]->pid);
+			for (j=0;j<total;j++)
+				printf("%5d|",(int)Receive[i][j]);
+			puts("");
+		}
+		for (i=0;i<=total;i++) printf("------");
 		puts("");
 	}
-	for (i=0;i<=total;i++) printf("------");
-	puts("");
 }
 
 void printAll()										//For debug
