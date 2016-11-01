@@ -260,7 +260,7 @@ void add_member(endpoint_t pid, int gid)
 		mc_member_t *mem = find_member_index(pid,gid,&i);
 		//Member not part of list *mem is NULL
 		//TODO only malloc if it isnt in the process list
-		int mindex = FindIndex(pid); 
+		int mindex = FindIndex((int)pid); 
 		if(mindex == -1 && i != -1) 
 		{
 			group_list[gid].member_list[i] = malloc(sizeof(mc_member_t));
