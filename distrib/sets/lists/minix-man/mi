@@ -315,6 +315,7 @@
 ./usr/man/man1/readlink.1                               minix-man
 ./usr/man/man1/readonly.1                               minix-man       obsolete
 ./usr/man/man1/receive_test_0.1                         minix-man
+./usr/man/man1/receive_test_1.1                         minix-man
 ./usr/man/man1/recwave.1                                minix-man
 ./usr/man/man1/rehash.1                                 minix-man
 ./usr/man/man1/remsync.1                                minix-man
@@ -331,6 +332,7 @@
 ./usr/man/man1/sdiff.1                                  minix-man
 ./usr/man/man1/sed.1                                    minix-man
 ./usr/man/man1/send_test_0.1                            minix-man
+./usr/man/man1/send_test_1.1                            minix-man
 ./usr/man/man1/seq.1                                    minix-man
 ./usr/man/man1/set.1                                    minix-man       obsolete
 ./usr/man/man1/setvar.1                                 minix-man       obsolete

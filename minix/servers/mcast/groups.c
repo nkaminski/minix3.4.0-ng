@@ -19,10 +19,11 @@ group_list_t group_list;
  */
 void init_groups()
 {
-        int i;
+        int i,j;
         for(i = 0; i < MAX_GROUPS; i++){
                 group_list[i].nmembers = 0;
                 group_list[i].b_sender.pid = -1;
+            for(j = 0;
         }
 }
 
