@@ -18,7 +18,7 @@ void printGroup()									//Print all valid groups
 	for (i=0;i<MAX_GROUPS;i++)
 		if (group_list[i].nmembers!=0)
 		{
-			printf("Group %d: ",group_list[i].groupnr);
+			printf("Group %d: ",i);
 			for (j=0;j<group_list[i].nmembers;j++)
 				printf("%d ",(int)group_list[i].member_list[j]->pid);
 			puts("");
@@ -91,7 +91,7 @@ void do_deadlock_test2()
 	OpenGroup(105,2);*/
 	printGroup();
 
-	CloseGroup(102,1);
+	//CloseGroup(102,1);
 	printGroup();
 
 	//OpenGroup(p2,1);
@@ -335,7 +335,7 @@ int ProcessDelete(int pid)							//Delete a process from process list
 			for (j=0;j<group_list[i].nmembers;j++)
 				if (group_list[i].member_list[j]->pid==pid) break;
 			for (k=j;k<group_list[i].nmembers-1;k++)
-				group_list[i].member_list[k]=group_list[i].mc_member_list_t[k+1];
+				group_list[i].member_list[k]=group_list[i].mc_member_list[k+1];
 			group_list[i].nmembers--;
 		}
 	}
