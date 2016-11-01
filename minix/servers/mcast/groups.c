@@ -222,7 +222,7 @@ mc_member_t* find_member_index(endpoint_t pid, int gid, int *index)
 		if(group_list[gid].member_list[i] == NULL)
 		{
 			*index = i;
-			break;
+			return NULL;
 		}
 		if(group_list[gid].member_list[i]->pid == pid)
 		{
