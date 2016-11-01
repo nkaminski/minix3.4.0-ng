@@ -85,12 +85,13 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
                 /* interrupted system call? */
                 if(mcast_isokendpt(group_list[gid].member_list[i]->pid, &procnr) != OK){
                         /* Do NOT deliver! Deallocate everything pertaining to that proc. copying is unsafe since the proc is gone! */
+                        printf("MCAST: msend detected interrupted receiver. Deallocating.\n");
                         if(group_list[gid].member_list[i]->pending > 0){
                                 group_list[gid].npending--;
                         }
                         ExitReceive(FindIndex(group_list[gid].member_list[i]->pid),gid);
-                        /* TODO remove the proc from its group and unregister it*/
-
+                        ProcessDelete((int)(group_list[gid].member_list[i]->pid));
+                        group_list[gid].member_list[i]=NULL;
                         continue;
                 }
 
@@ -211,7 +212,6 @@ int opengroup(endpoint_t pid, int gid, int *index)
 		*/
         return OK;
 }
-//TODO need to be able to closegroup given an endpoint_t/PID
 int closegroup(endpoint_t pid, int gid)
 {
 
