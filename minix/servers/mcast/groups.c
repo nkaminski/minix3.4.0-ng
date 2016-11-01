@@ -216,6 +216,7 @@ int closegroup(endpoint_t pid, int gid)
 
         if(valid_gid(gid) && valid_member(gid,index))
         {
+			rm_member(gid,index);
 				find_member_index(pid,gid) = NULL;
                 //rm_member(gid,index);
                 /*
@@ -276,6 +277,7 @@ void add_member(endpoint_t pid, int gid, int *index)
                                 group_list[gid].member_list[i]->pending = 0;
                                 group_list[gid].member_list[i]->blocked = 0;
                                 group_list[gid].member_list[i]->pid = pid;
+                                group_list[gid].member_list[i]->numgroups = 1;
                                 //TODO check for -2 error code and propagate up
                                 ProcessRegister(group_list[gid].member_list[i]);
                                 break;
@@ -283,6 +285,7 @@ void add_member(endpoint_t pid, int gid, int *index)
 							else
 							{
 								group_list[gid].member_list[i] = ProcessList[mindex];
+                                group_list[gid].member_list[i]->numgroups++; 
 								break;
 							}
                         }
@@ -320,10 +323,15 @@ void rm_member(int gid, int index)
 {
         if(valid_member(gid,index)) //Ensure its a member
         {
+				int mindex = FindIndex(pid); 
+				assert(mindex != -1);
+				assert(group_list[gid].member_list[index]->numgroups != 0);
+				if(group_list[gid].member_list[index]->numgroups = 1)
+				{
+					group_list[gid].member_list[index]->numgroups = 0;
+                	ProcessDelete(group_list[gid].member_list[index]->pid);
+				}
                 group_list[gid].nmembers--;
-                ProcessDelete(group_list[gid].member_list[index]->pid);
-				//TODO only remove if it isnt part of another group	
-                //free(group_list[gid].member_list[index]);
                 group_list[gid].member_list[index] = NULL;
         }
 }
