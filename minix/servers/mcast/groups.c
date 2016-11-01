@@ -185,30 +185,15 @@ int mrecv(endpoint_t pid, void *dest, size_t size, int gid)
         ProcessList[t]->datasize = size;
         /* Caller is getting blocked, receiver will ExitReceive() in the msend() handler */
         return (SUSPEND);
-
-        //Will need to be changed
-        // size_t size = get_next_size(index);
-        // const void *src = get_next(index);
-
-        //memcpy(dest,src,size);
-
 }
 
-int opengroup(endpoint_t pid, int gid, int *index)
+int opengroup(endpoint_t pid, int gid)
 {
-        if(gid > MAX_GROUPS || index == NULL || *index < 0 || *index > NR_PROCS){
-                return EINVAL;
-        }
-        if(valid_gid(gid))
-                add_member(pid, gid, index);
-		/*
-        else
-        {
-                add_group(gid);
-                add_member(pid, gid, index);
-        }
-		*/
-        return OK;
+	if(!valid_gid(gid))
+		return EINVAL;
+	else
+		add_member(pid, gid);
+	return OK;
 }
 //TODO need to be able to closegroup given an endpoint_t/PID
 int closegroup(endpoint_t pid, int gid)
@@ -217,24 +202,22 @@ int closegroup(endpoint_t pid, int gid)
         if(valid_gid(gid) && valid_member(gid,index))
         {
 			rm_member(gid,index);
-				find_member_index(pid,gid) = NULL;
-                //rm_member(gid,index);
-                /*
-                   if(group_list[gid].nmembers == 0)
-                   rm_group(gid);
-                 */
                 return OK;
         } else {
                 return EINVAL;
         }
 }
-mc_member_t* find_member_index( endpoint_t pid, int gid)
+mc_member_t* find_member_index(endpoint_t pid, int gid, int *index)
 {
 	mc_member_t *p;
-	for(p = group_list[gid].member_list; p != NULL; p++)
+	int i;
+	for(i = 0; i < NR_PROCS; i++)
 	{
-		if(p->pid == pid)
+		if(group_list[gid].member_list[i]->pid == pid)
+		{
+			*index = i;
 			return p;
+		}
 	}
 	return NULL;
 }
@@ -257,40 +240,34 @@ void rm_group(int gid)
         group_list[gid].valid = 0;
 }
 */
-void add_member(endpoint_t pid, int gid, int *index)
+void add_member(endpoint_t pid, int gid)
 {
-        if(!valid_member(gid,*index)) //Not already a member  
-        {
-                group_list[gid].nmembers++;
-                int i;
-                for(i = 0; i < NR_PROCS; i++)
-                {
-                        if(group_list[gid].member_list[i] == NULL)
-                        {
-							//TODO only malloc if it isnt in the process list
-							int mindex = FindIndex(pid); 
-							if(FindIndex(pid) == -1)
-							{
-                                group_list[gid].member_list[i] = malloc(sizeof(mc_member_t));
-                                *index = i; //Set index, index
-                                //INSTANTIATE VARS
-                                group_list[gid].member_list[i]->pending = 0;
-                                group_list[gid].member_list[i]->blocked = 0;
-                                group_list[gid].member_list[i]->pid = pid;
-                                group_list[gid].member_list[i]->numgroups = 1;
-                                //TODO check for -2 error code and propagate up
-                                ProcessRegister(group_list[gid].member_list[i]);
-                                break;
-							}
-							else
-							{
-								group_list[gid].member_list[i] = ProcessList[mindex];
-                                group_list[gid].member_list[i]->numgroups++; 
-								break;
-							}
-                        }
-                }
-        }
+	if(!valid_member(pid,gid)) //Not already a member  
+	{
+		group_list[gid].nmembers++;
+		int i;
+		mc_member_t *mem = find_member_index(pid,gid,&i);
+		//TODO only malloc if it isnt in the process list
+		int mindex = FindIndex(pid); 
+		if(FindIndex(pid) == -1)
+		{
+			group_list[gid].member_list[i] = malloc(sizeof(mc_member_t));
+			//INSTANTIATE VARS
+			group_list[gid].member_list[i]->pending = 0;
+			group_list[gid].member_list[i]->blocked = 0;
+			group_list[gid].member_list[i]->pid = pid;
+			group_list[gid].member_list[i]->numgroups = 1;
+			//TODO check for -2 error code and propagate up
+			ProcessRegister(group_list[gid].member_list[i]);
+			break;
+		}
+		else
+		{
+			group_list[gid].member_list[i] = ProcessList[mindex];
+			group_list[gid].member_list[i]->numgroups++; 
+			break;
+		}
+	}
 }
 int recovergroup(int gid){
         int i;
@@ -319,11 +296,13 @@ int recovergroup(int gid){
         }
         return (OK);
 }
-void rm_member(int gid, int index)
+void rm_member(endpoint_t pid, int gid);
 {
-        if(valid_member(gid,index)) //Ensure its a member
+        if(valid_member(pid,gid)) //Ensure its a member
         {
 				int mindex = FindIndex(pid); 
+				int index;
+				find_member_index(pid,gid,&index);
 				assert(mindex != -1);
 				assert(group_list[gid].member_list[index]->numgroups != 0);
 				if(group_list[gid].member_list[index]->numgroups = 1)
@@ -335,10 +314,6 @@ void rm_member(int gid, int index)
                 group_list[gid].member_list[index] = NULL;
         }
 }
-int valid_index(int index)
-{
-        return 0;
-}
 int valid_gid(int gid)
 {
         if(gid < MAX_GROUPS && gid >= 0)
@@ -346,18 +321,13 @@ int valid_gid(int gid)
         return 0;
 }
 //Checks if gid is valid, and if member of index exists, and within bounds
-int valid_member(int gid, int index)
+int valid_member(endpoint_t pid,int gid)
 {
         if(!valid_gid(gid))
-                return 0;
-        if(index >= 100)
-                return 0;
-        if(group_list[gid].member_list[index] != NULL)
-                return 1;
-        return 0;
-}
-void *get_next(int index)
-{
-        void *p;
-        return p;
+        	return 0;
+		int index;
+		member_t *mem = find_member_index(pid,gid,&index);
+		if(mem == NULL)
+			return 0;
+        return 1;
 }
