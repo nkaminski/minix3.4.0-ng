@@ -19,10 +19,14 @@ group_list_t group_list;
  */
 void init_groups()
 {
-        int i;
+        int i,j;
         for(i = 0; i < MAX_GROUPS; i++){
                 group_list[i].nmembers = 0;
                 group_list[i].b_sender.pid = -1;
+            for(j = 0; j < NR_PROCS; j++){
+                    group_list[i].member_list[j] = NULL;
+            }
+            
         }
 }
 
@@ -84,12 +88,13 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
                 /* interrupted system call? */
                 if(mcast_isokendpt(group_list[gid].member_list[i]->pid, &procnr) != OK){
                         /* Do NOT deliver! Deallocate everything pertaining to that proc. copying is unsafe since the proc is gone! */
+                        printf("MCAST: msend detected interrupted receiver. Deallocating.\n");
                         if(group_list[gid].member_list[i]->pending > 0){
                                 group_list[gid].npending--;
                         }
                         ExitReceive(FindIndex(group_list[gid].member_list[i]->pid),gid);
-                        /* TODO remove the proc from its group and unregister it*/
-
+                        ProcessDelete((int)(group_list[gid].member_list[i]->pid));
+                        group_list[gid].member_list[i]=NULL;
                         continue;
                 }
 
@@ -195,7 +200,6 @@ int opengroup(endpoint_t pid, int gid)
 		add_member(pid, gid);
 	return OK;
 }
-//TODO need to be able to closegroup given an endpoint_t/PID
 int closegroup(endpoint_t pid, int gid)
 {
 
@@ -279,18 +283,18 @@ int recovergroup(int gid){
                 if(group_list[gid].member_list[i] == NULL)
                         continue;
                 /* clear all pending requests */
-                if(group_list[gid].member_list[i].pending > 0){
-                        group_list[gid].member_list[i].pending = 0;
+                if(group_list[gid].member_list[i]->pending > 0){
+                        group_list[gid].member_list[i]->pending = 0;
                         group_list[gid].npending--;
                 }
                 /* wake all blocked receivers with ELOCKED */
                 if(group_list[gid].member_list[i]->blocked == 1){
                         group_list[gid].member_list[i]->blocked = 0;
-                        reply(group_list[gid].member_list[i]->pid, (ELOCKED));
+                        wake_up(group_list[gid].member_list[i]->pid, (ELOCKED));
                 }
                 /* is there a blocked sender? If so wake and return ELOCKED. */
                 if(group_list[gid].b_sender.pid != -1){
-                        reply(group_list[gid].b_sender.pid, (ELOCKED));
+                        wake_up(group_list[gid].b_sender.pid, (ELOCKED));
                         group_list[gid].b_sender.pid = -1;
                 }
         }
@@ -305,7 +309,7 @@ void rm_member(endpoint_t pid, int gid);
 				find_member_index(pid,gid,&index);
 				assert(mindex != -1);
 				assert(group_list[gid].member_list[index]->numgroups != 0);
-				if(group_list[gid].member_list[index]->numgroups = 1)
+				if(group_list[gid].member_list[index]->numgroups == 1)
 				{
 					group_list[gid].member_list[index]->numgroups = 0;
                 	ProcessDelete(group_list[gid].member_list[index]->pid);

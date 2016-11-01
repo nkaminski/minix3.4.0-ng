@@ -4,6 +4,7 @@
 
 #define _MAIN
 #include "mcast.h"
+#include "types.h"
 #include "reply.h"
 #include "groups.h"
 #include "deadlock.h"
@@ -69,7 +70,7 @@ int do_mreceive(void){
 int do_opengroup(void){
 	int idx, rv;
 	printf("opengroup called\n");
-   if(!mcast_isvalidendpt(who_e,&idx)){
+   if(!mcast_isokendpt(who_e,&idx)){
            return (EGENERIC);
    }
 	rv = opengroup(who_e, m_in.m_m1.m1i1, &idx);
