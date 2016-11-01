@@ -6,8 +6,13 @@ int main(int argc, char** args) {
 	int rv;
 	char msg[128];
 	memset(msg,0x00,128);
-	printf("testing mreceive syscall from group 0\n");
+   printf("calling opengroup\n");
+	rv = openGroup(group_nr);
+   printf("returned %i\n",rv);
+   printf("testing mreceive syscall from group 0\n");
 	rv = mreceive(group_nr, msg, 127);
 	printf("returned %i, message is %s\n",rv,msg);
-	return 0;
+	rv = closeGroup(group_nr);
+   printf("closegroup returned %i\n",rv);
+   return 0;
 }
