@@ -257,11 +257,39 @@ void add_member(endpoint_t pid, int gid, int *index)
                                 group_list[gid].member_list[i]->blocked = 0;
                                 group_list[gid].member_list[i]->pid = pid;
                                 //TODO check for -2 error code and propagate up
+            // TODO BUG!! here
                                 ProcessRegister(*(group_list[gid].member_list[i]));
                                 break;
                         }
                 }
         }
+}
+int recovergroup(int gid){
+        int i;
+        /* Handle invalid group properly */
+        if(gid < 0 || gid > MAX_GROUPS)
+                return (EINVAL);
+        /* fail all blocked senders and receivers with ELOCKED */
+        for(i=0; i<NR_PROCS; i++){
+                if(group_list[gid].member_list[i] == NULL)
+                        continue;
+                /* clear all pending requests */
+                if(group_list[gid].member_list[i].pending > 0){
+                        group_list[gid].member_list[i].pending = 0;
+                        group_list[gid].npending--;
+                }
+                /* wake all blocked receivers with ELOCKED */
+                if(group_list[gid].member_list[i]->blocked == 1){
+                        group_list[gid].member_list[i]->blocked = 0;
+                        reply(group_list[gid].member_list[i]->pid, (ELOCKED));
+                }
+                /* is there a blocked sender? If so wake and return ELOCKED. */
+                if(group_list[gid].b_sender.pid != -1){
+                        reply(group_list[gid].b_sender.pid, (ELOCKED));
+                        group_list[gid].b_sender.pid = -1;
+                }
+        }
+        return (OK);
 }
 void rm_member(int gid, int index)
 {
