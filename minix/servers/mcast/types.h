@@ -17,7 +17,6 @@ typedef struct {
 typedef mc_member_t *mc_member_list_t[NR_PROCS];
 
 typedef struct {
-	unsigned char valid;
 	//group number implied as index in list
 	mc_member_t b_sender;
 	int npending;

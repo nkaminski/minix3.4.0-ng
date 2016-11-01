@@ -6,7 +6,7 @@ mc_member_list_t ProcessList;				//A list of processes
 int CircleCheckSend(int PIndex, int GIndex);
 int CircleCheckReceive(int PIndex, int GIndex);
 int FindIndex(int pid);
-int ProcessRegister(mc_member_t p);
+int ProcessRegister(mc_member_t *p);
 int ProcessDelete(int pid);
 int SendSafe(int pid, int GIndex);
 int ReceiveSafe(int pid, int GIndex);
