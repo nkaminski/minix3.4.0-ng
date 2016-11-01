@@ -146,7 +146,7 @@ int mrecv(endpoint_t pid, void *dest, size_t size, int gid)
         int procnr;
         size_t com_size;
         if (t==-1)
-                return -1;
+                return EGENERIC;
         //Check if sender is in the process list
 
         if(!valid_gid(gid))
