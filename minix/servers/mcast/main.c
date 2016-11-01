@@ -68,14 +68,8 @@ int do_mreceive(void){
 }
 
 int do_opengroup(void){
-	int idx, rv;
 	printf("opengroup called\n");
-   if(!mcast_isokendpt(who_e,&idx)){
-           return (EGENERIC);
-   }
-	rv = opengroup(who_e, m_in.m_m1.m1i1, &idx);
-	printf("Member subscribed, index %d\n",idx);
-	return rv;
+	return opengroup(who_e, m_in.m_m1.m1i1);
 }
 int do_closegroup(void){
 	printf("closegroup called\n");

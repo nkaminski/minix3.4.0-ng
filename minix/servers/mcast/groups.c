@@ -45,7 +45,7 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
 
         /* Register the sender */
         group_list[gid].b_sender.pid = pid;
-        ProcessRegister(group_list[gid].b_sender);
+        ProcessRegister(&(group_list[gid].b_sender));
 
         //ensure valid type,src,index gid
         int t=FindIndex((int)pid);
@@ -203,9 +203,9 @@ int opengroup(endpoint_t pid, int gid)
 int closegroup(endpoint_t pid, int gid)
 {
 
-        if(valid_gid(gid) && valid_member(gid,index))
+        if(valid_gid(gid) && valid_member(pid,gid))
         {
-			rm_member(gid,index);
+			rm_member(pid,gid);
                 return OK;
         } else {
                 return EINVAL;
@@ -226,7 +226,7 @@ mc_member_t* find_member_index(endpoint_t pid, int gid, int *index)
 	return NULL;
 }
 
-}
+
 /*
 void add_group(int gid)
 {
@@ -263,13 +263,11 @@ void add_member(endpoint_t pid, int gid)
 			group_list[gid].member_list[i]->numgroups = 1;
 			//TODO check for -2 error code and propagate up
 			ProcessRegister(group_list[gid].member_list[i]);
-			break;
 		}
 		else
 		{
 			group_list[gid].member_list[i] = ProcessList[mindex];
 			group_list[gid].member_list[i]->numgroups++; 
-			break;
 		}
 	}
 }
@@ -300,7 +298,7 @@ int recovergroup(int gid){
         }
         return (OK);
 }
-void rm_member(endpoint_t pid, int gid);
+void rm_member(endpoint_t pid, int gid)
 {
         if(valid_member(pid,gid)) //Ensure its a member
         {
@@ -330,7 +328,7 @@ int valid_member(endpoint_t pid,int gid)
         if(!valid_gid(gid))
         	return 0;
 		int index;
-		member_t *mem = find_member_index(pid,gid,&index);
+		mc_member_t *mem = find_member_index(pid,gid,&index);
 		if(mem == NULL)
 			return 0;
         return 1;
