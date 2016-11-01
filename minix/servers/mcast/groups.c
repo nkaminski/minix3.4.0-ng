@@ -71,7 +71,7 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
         EnterSend(t,gid);
         //For each process in grp
         for(i=0;i<NR_PROCS;i++){
-                if(group_list[gid].member_list[i] == NULL || group_list[gid].member_list[i]->valid != 1)
+                if(group_list[gid].member_list[i] == NULL)
                         continue;
                 //if blocked waiting
                 if(group_list[gid].member_list[i]->blocked < 1){
@@ -134,7 +134,8 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
  */
 int mrecv(endpoint_t pid, void *dest, size_t size, int gid)
 {
-        int t=FindIndex((int)pid), procnr;
+        int t=FindIndex((int)pid);
+        int procnr;
         size_t com_size;
         if (t==-1)
                 return -1;
@@ -149,7 +150,7 @@ int mrecv(endpoint_t pid, void *dest, size_t size, int gid)
         if(group_list[gid].b_sender.pid > 0 && ProcessList[t]->pending > 0){
                 assert(group_list[gid].npending > 0);
                 /* has the sender been interrupted? */
-                if(mcast_isokendpt(group_list[gid].b_sender.pid,procnr) == OK){
+                if(mcast_isokendpt(group_list[gid].b_sender.pid,&procnr) == OK){
 
                         /* yes it does, deliver immediately (i.e. dont block) */
                         com_size = MIN(size, group_list[gid].b_sender.datasize);
