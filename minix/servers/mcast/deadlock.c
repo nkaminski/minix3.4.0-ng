@@ -220,7 +220,7 @@ int FindIndex(int pid)								//Find the index in process list of a given Pid, r
 int ProcessRegister(mc_member_t p)					//Register a new process into process list
 {
 	if (FindIndex((int)p.pid)!=-1) return -1;					//Error : process already in list
-	if (total==NR_PROCS) return -1;							//Error : max number of processes
+	if (total==NR_PROCS) return -2;							//Error : max number of processes
 	ProcessList[total]=p;
 	total++;
 	int i;

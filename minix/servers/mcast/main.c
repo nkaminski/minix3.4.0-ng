@@ -55,16 +55,19 @@ int do_mreceive(void){
 }
 */
 int do_msend(void){
-	return(OK);	
+	return msend(who_e, m_in.m_m1.m1p1, m_in.m_m1.m1i2, m_in.m_m1.m1i1);	
 }
 
 int do_mreceive(void){
-	return(OK);
+	return mrecv(who_e, m_in.m_m1.m1p1, m_in.m_m1.m1i2, m_in.m_m1.m1i1);	
 }
 
 int do_opengroup(void){
+	int idx, rv;
 	printf("opengroup called\n");
-	return(OK);
+	rv = opengroup(who_e, m_in.m_m1.m1i1, &idx);
+	printf("Member subscribed, index %d\n",idx);
+	return rv;
 }
 int do_closegroup(void){
 	printf("closegroup called\n");

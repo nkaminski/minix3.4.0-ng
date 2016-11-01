@@ -1,15 +1,15 @@
 #include <string.h>
 #include <stdlib.h>
 
-int msend(endpoint_t pid, char *src, size_t size, int gid);
+int msend(endpoint_t pid, const char *src, size_t size, int gid);
 int mrecv(endpoint_t pid, void *dest, size_t size, int gid);
 int valid_index(int index);
 int msg_add(void *src);
-int opengroup(int gid, int *index);
+int opengroup(endpoint_t pid, int gid, int *index);
 int closegroup(int gid,int index);
 void add_group(int gid);
 void rm_group(int gid);
-void add_member(int gid, int *index);
+void add_member(endpoint_t pid, int gid, int *index);
 void rm_member(int gid, int index);
 int valid_index(int index);
 int valid_gid(int gid);

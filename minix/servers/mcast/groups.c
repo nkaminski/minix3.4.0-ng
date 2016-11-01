@@ -19,9 +19,10 @@ group_list_t group_list;
 void init_groups()
 {
 	int i;
-	for(i = 0; i < MAX_GROUPS; i++)
+	for(i = 0; i < MAX_GROUPS; i++){
 		group_list[i].nmembers = 0;
-	deadlock_init();
+		group_list[i].b_sender.pid = -1;
+	}
 }
 
 //MESSAGE APPENDING MUST BE ATOMIC
@@ -32,20 +33,24 @@ void init_groups()
  *
  * return: (OK) on success, (SUSPEND) to block sender, - on failure
  */
-int msend(endpoint_t pid, char *src, size_t size, int gid)
+int msend(endpoint_t pid, const char *src, size_t size, int gid)
 {
 	int i;
-	unsigned char block_sender = 0;
 	size_t com_size;
+	
+	/* Register the sender */
+	group_list[gid].b_sender.pid = pid;
+	ProcessRegister(group_list[gid].b_sender);
+
 	//ensure valid type,src,index gid
 	int t=FindIndex((int)pid);
 	
 	if (t==-1)
-		return -1;
+		return (EGENERIC);
 	//Check if sender is in the process list
 
 	if(!valid_gid(gid))
-		return EINVAL;
+		return (EINVAL);
 	//>0 members in grpu
 	//Check if src is valid?
 	
@@ -64,13 +69,7 @@ int msend(endpoint_t pid, char *src, size_t size, int gid)
 	}
 	EnterSend(t,gid);
 	//For each process in grp
-	for(i=0;i<MAX_GROUPS;i++){
-		/* skip sender and warn since this should have been caught sooner*/
-		if(i == t){
-			printf("Sender was in group, but deadlock detection did not find!\n");	
-			ExitSend(t,gid);
-			return EGENERIC;
-		}
+	for(i=0;i<NR_PROCS;i++){
 		if(group_list[gid].member_list[i] == NULL)
 			continue;
 		//if blocked waiting
@@ -96,13 +95,17 @@ int msend(endpoint_t pid, char *src, size_t size, int gid)
 	//if any process is/was marked as pending
 	if(group_list[gid].npending > 0){
 		//block sender
-		group_list[gid].b_sender.pid = pid;
+		group_list[gid].b_sender.blocked = 1;
 		group_list[gid].b_sender.dataptr = (vir_bytes)src;
 		group_list[gid].b_sender.datasize = size;
 		return (SUSPEND);
 	}
 	//else return
 	ExitSend(t,gid);
+	if(ProcessDelete(ProcessList[t].pid) != 0){
+		printf("Unable to deregister sender from process list after send completed!\n");
+		return (EGENERIC);
+	}	
 	return (OK);
 
 	//Do the message delivery between EnterSend() and ExitSend()
@@ -141,7 +144,8 @@ int mrecv(endpoint_t pid, void *dest, size_t size, int gid)
 		if(group_list[gid].npending == 0){
 			/* unblock sender */
 			ExitSend(FindIndex(group_list[gid].b_sender.pid),gid);
-			group_list[gid].b_sender.pid = 0;
+			group_list[gid].b_sender.pid = -1;
+			group_list[gid].b_sender.blocked = 0;
 			wake_up(group_list[gid].b_sender.pid, OK);
 		}
 		/* receive has been handled, return. */
@@ -155,7 +159,6 @@ int mrecv(endpoint_t pid, void *dest, size_t size, int gid)
 	EnterReceive(t,gid);
 		//Do the message delivery between EnterReceive() and ExitReceive()
 	/* store info and block receiver */
-	ProcessList[t].pid = pid;
 	ProcessList[t].dataptr = (vir_bytes)dest;
 	ProcessList[t].datasize = size;
 	/* Caller is getting blocked, receiver will ExitReceive() in the msend() handler */
@@ -168,22 +171,23 @@ int mrecv(endpoint_t pid, void *dest, size_t size, int gid)
 	//memcpy(dest,src,size);
 
 }
-//TODO NEEDS WORK FROM HERE ONWARDS, ALSO SHOULD EVENTUALLY HANDLE INTERRUPTED SYSCALLS
-//Returns a index to process
-int opengroup(int gid, int *index)
+//TODO ALSO SHOULD EVENTUALLY HANDLE INTERRUPTED SYSCALLS
+
+int opengroup(endpoint_t pid, int gid, int *index)
 {
 	if(gid > MAX_GROUPS || index == NULL || *index < 0 || *index > NR_PROCS){
 		return EINVAL;
 	}
 	if(valid_gid(gid))
-		add_member(gid,index);
+		add_member(pid, gid, index);
 	else
 	{
 		add_group(gid);
-		add_member(gid,index);
+		add_member(pid, gid, index);
 	}
 	return OK;
 }
+//TODO need to be able to closegroup given an endpoint_t/PID
 int closegroup(int gid,int index)
 {
 	if(valid_gid(gid) && valid_member(gid,index))
@@ -211,7 +215,7 @@ void rm_group(int gid)
 {
 	group_list[gid].valid = 0;
 }
-void add_member(int gid, int *index)
+void add_member(endpoint_t pid, int gid, int *index)
 {
 	if(!valid_member(gid,*index)) //Not already a member	
 	{
@@ -223,7 +227,12 @@ void add_member(int gid, int *index)
 			{
 				group_list[gid].member_list[i] = malloc(sizeof(mc_member_t));
 				*index = i; //Set index, index
-				//INSTANTIATE VARS HERE?
+				//INSTANTIATE VARS
+				group_list[gid].member_list[i]->pending = 0;
+				group_list[gid].member_list[i]->blocked = 0;
+				group_list[gid].member_list[i]->pid = pid;
+				//TODO check for -2 error code and propagate up
+				ProcessRegister(*(group_list[gid].member_list[i]));
 				break;
 			}
 		}
@@ -234,6 +243,7 @@ void rm_member(int gid, int index)
 	if(valid_member(gid,index)) //Ensure its a member
 	{
 		group_list[gid].nmembers--;
+		ProcessDelete(group_list[gid].member_list[index]->pid);
 		free(group_list[gid].member_list[index]);
 		group_list[gid].member_list[index] = NULL;
 	}
@@ -259,17 +269,8 @@ int valid_member(int gid, int index)
 		return 1;
 	return 0;
 }
-size_t get_next_size(int index)
-{
-	return 0;
-}
 void *get_next(int index)
 {
 	void *p;
 	return p;
 }
-int msg_add(void *src)
-{
-	return 0;
-}
-
