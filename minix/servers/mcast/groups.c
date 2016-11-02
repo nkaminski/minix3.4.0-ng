@@ -188,10 +188,12 @@ int mrecv(endpoint_t pid, void *dest, size_t size, int gid)
                 }       
         }
         /* Otherwise we are going to wait, begin deadlock safety checks */
+		/*
         if (ReceiveSafe(pid,gid)!=0)
         {
                 return (ELOCKED);
         }
+		*/
         EnterReceive((int)pid,gid);
         //Do the message delivery between EnterReceive() and ExitReceive()
         /* store info and block receiver */
