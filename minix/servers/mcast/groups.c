@@ -78,9 +78,10 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
          */
         if (SendSafe(t,gid)!=0)
         {
-                return (ELOCKED);
+                  printf("Would have returned ELOCKED\n");
+        //        return (ELOCKED);
         }
-        EnterSend(t,gid);
+        EnterSend((int)pid,gid);
         //For each process in grp
         for(i=0;i<NR_PROCS;i++){
                 if(group_list[gid].member_list[i] == NULL)
@@ -127,7 +128,7 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
         }
         //else return and invalidate the blocked sender pid
         group_list[gid].b_sender.pid = -1;
-        ExitSend(t,gid);
+        ExitSend((int)pid,gid);
         if(ProcessDelete(ProcessList[t]->pid) != 0){
                 printf("Unable to deregister sender from process list after send completed!\n");
                 return (EGENERIC);
