@@ -151,7 +151,7 @@ int mrecv(endpoint_t pid, void *dest, size_t size, int gid)
 
         if(!valid_gid(gid))
                 return EINVAL;
-        if(!valid_member(gid,t))   
+        if(!valid_member(pid,gid))   
                 return EINVAL;
 
         //Does the rx have a message pending?
