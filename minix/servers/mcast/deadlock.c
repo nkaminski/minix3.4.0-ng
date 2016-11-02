@@ -97,7 +97,8 @@ int EnterSend(int pid, int GIndex)					//Enter sending blocking
 		if (group_list[GIndex].member_list[i]!=NULL)
 		{
 			k=FindIndex((int)group_list[GIndex].member_list[i]->pid);
-			Send[t][k]=1;
+			if (k!=-1)
+				Send[t][k]=1;
 		}
 	}
 	return 0;
@@ -245,9 +246,17 @@ int ProcessDelete(int pid)							//Delete a process from process list
 	int t;
 	mc_member_t *p;
 	t=FindIndex(pid);
-	if (t==-1) return -1;
+	if (t==-1)
+	{
+		puts("Cannot delete : Pid not found.");
+		return -1;
+	}
 	p=ProcessList[t];										//Error : Pid not found
-	if (ProcessActive(pid)==-1) return -1;						//Error : Process still active
+	if (ProcessActive(pid)==-1)
+	{
+		puts("Cannot delete : Process active.");
+		return -1;						//Error : Process still active
+	}
 	int i,j,k;
 	for (i=t;i<total-1;i++)										//Delete from sending and receiving matrix
 		for (j=0;j<total;j++)									//
