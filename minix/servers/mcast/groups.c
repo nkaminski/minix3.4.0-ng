@@ -93,8 +93,7 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
                                 group_list[gid].npending--;
                         }
                         ExitReceive(FindIndex(group_list[gid].member_list[i]->pid),gid);
-                        ProcessDelete((int)(group_list[gid].member_list[i]->pid));
-                        group_list[gid].member_list[i]=NULL;
+						rm_member(group_list[gid].member_list[i]->pid,gid);
                         continue;
                 }
                 //if blocked waiting
@@ -226,11 +225,6 @@ mc_member_t* find_member_index(endpoint_t pid, int gid, int *index)
 	int i;
 	for(i = 0; i < NR_PROCS; i++)
 	{
-		if(group_list[gid].member_list[i] == NULL)
-		{
-			*index = i;
-			return NULL;
-		}
 		if(group_list[gid].member_list[i]->pid == pid)
 		{
 			*index = i;
@@ -239,6 +233,18 @@ mc_member_t* find_member_index(endpoint_t pid, int gid, int *index)
 	}
 	*index = -1;
 	return NULL;
+}
+int find_next_index(int gid)
+{
+	int i;
+	for(i = 0; i < NR_PROCS; i++)
+	{
+		if(group_list[gid].member_list[i] == NULL)
+		{
+			return i;
+		}
+	}
+	return -1;
 }
 
 /*
@@ -263,8 +269,8 @@ void add_member(endpoint_t pid, int gid)
 	if(!valid_member(pid,gid)) //Not already a member  
 	{
 		group_list[gid].nmembers++;
-		int i;
-		mc_member_t *mem = find_member_index(pid,gid,&i);
+		int i = find_next_index(pid,gid);
+		//mc_member_t *mem = find_member_index(pid,gid,&i);
 		//Member not part of list *mem is NULL
 		//TODO only malloc if it isnt in the process list
 		int mindex = FindIndex((int)pid); 
@@ -320,6 +326,7 @@ void rm_member(endpoint_t pid, int gid)
 				int mindex = FindIndex(pid); 
 				int index;
 				find_member_index(pid,gid,&index);
+				asser(index != -1);
 				assert(mindex != -1);
 				assert(group_list[gid].member_list[index]->numgroups != 0);
 				if(group_list[gid].member_list[index]->numgroups == 1)
