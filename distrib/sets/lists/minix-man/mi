@@ -282,6 +282,7 @@
 ./usr/man/man1/openssl_version.1                        minix-man       crypto
 ./usr/man/man1/openssl_x509.1                           minix-man       crypto
 ./usr/man/man1/openssl_x509v3_config.1                  minix-man       crypto
+./usr/man/man1/openwait_test_0.1                        minix-man
 ./usr/man/man1/page.1                                   minix-man
 ./usr/man/man1/pagesize.1                               minix-man
 ./usr/man/man1/passwd.1                                 minix-man
@@ -316,6 +317,7 @@
 ./usr/man/man1/readonly.1                               minix-man       obsolete
 ./usr/man/man1/receive_test_0.1                         minix-man
 ./usr/man/man1/receive_test_1.1                         minix-man
+./usr/man/man1/recover_test_0.1                         minix-man
 ./usr/man/man1/recwave.1                                minix-man
 ./usr/man/man1/rehash.1                                 minix-man
 ./usr/man/man1/remsync.1                                minix-man

@@ -22,7 +22,7 @@ void init_groups()
         int i,j;
         for(i = 0; i < MAX_GROUPS; i++){
                 group_list[i].nmembers = 0;
-                group_list[i].b_sender.pid = -1;
+                group_list[i].s_valid = 0;
             for(j = 0; j < NR_PROCS; j++){
                     group_list[i].member_list[j] = NULL;
             }
@@ -44,18 +44,19 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
         size_t com_size;
 
         /* Check for a preexisting blocked sender */
-        if(group_list[gid].b_sender.pid > 0){
+        if(group_list[gid].s_valid > 0){
                 if(mcast_isokendpt(group_list[gid].b_sender.pid,&procnr)){
                   /* valid blocked sender */
                   printf("One sender at a time can send to a group!\n");
                   return (EAGAIN);
                 } else {
                   /* invalid blocked sender endpoint */
-                  group_list[gid].b_sender.pid = -1;
+                  group_list[gid].s_valid = 0;
                 }
         }
 
         /* Register the sender */
+        group_list[gid].s_valid = 1;
         group_list[gid].b_sender.pid = pid;
         ProcessRegister(&(group_list[gid].b_sender));
 
@@ -72,16 +73,14 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
         //Check if src is valid?
 
         //ATOMIC {
-        //Add message to msg list
-        /* if(msg_add(src) != 0)
-           return -EINVAL;
-         */
+        /*
         printf("Performing deadlock detection\n");
         if (SendSafe(pid,gid)!=0)
         {
                   printf("Would have returned ELOCKED\n");
         //        return (ELOCKED);
         }
+        */
         EnterSend((int)pid,gid);
         printf("Entering message send loop\n");
         //For each process in grp
@@ -123,13 +122,14 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
         //if any process is/was marked as pending
         if(group_list[gid].npending > 0){
                 //block sender
+                assert(group_list[gid].s_valid > 0);
                 group_list[gid].b_sender.blocked = 1;
                 group_list[gid].b_sender.dataptr = (vir_bytes)src;
                 group_list[gid].b_sender.datasize = size;
                 return (SUSPEND);
         }
         //else return and invalidate the blocked sender pid
-        group_list[gid].b_sender.pid = -1;
+        group_list[gid].s_valid = 0;
         ExitSend((int)pid,gid);
         if(ProcessDelete(pid) != 0){
                 printf("Unable to deregister sender from process list after send completed!\n");
@@ -163,7 +163,7 @@ int mrecv(endpoint_t pid, void *dest, size_t size, int gid)
                 return EINVAL;
 
         //Does the rx have a message pending?
-        if(group_list[gid].b_sender.pid > 0 && ProcessList[t]->pending > 0){
+        if(group_list[gid].s_valid > 0 && ProcessList[t]->pending > 0){
                 assert(group_list[gid].npending > 0);
                 /* has the sender been interrupted? */
                 if(mcast_isokendpt(group_list[gid].b_sender.pid,&procnr) == OK){
@@ -178,7 +178,7 @@ int mrecv(endpoint_t pid, void *dest, size_t size, int gid)
                         if(group_list[gid].npending == 0){
                                 /* unblock sender */
                                 ExitSend(FindIndex(group_list[gid].b_sender.pid),gid);
-                                group_list[gid].b_sender.pid = -1;
+                                group_list[gid].s_valid = 0;
                                 group_list[gid].b_sender.blocked = 0;
                                 wake_up(group_list[gid].b_sender.pid, OK);
                         }
@@ -305,7 +305,7 @@ void add_member(endpoint_t pid, int gid)
 	}
 }
 int recovergroup(int gid){
-        int i;
+        int i,procnr;
         /* Handle invalid group properly */
         if(gid < 0 || gid > MAX_GROUPS)
                 return (EINVAL);
@@ -324,7 +324,8 @@ int recovergroup(int gid){
                         wake_up(group_list[gid].member_list[i]->pid, (ELOCKED));
                 }
                 /* is there a blocked sender? If so wake and return ELOCKED. */
-                if(group_list[gid].b_sender.pid != -1){
+                if(group_list[gid].s_valid != 0){
+                        assert(mcast_isokendpt(group_list[gid].member_list[i]->pid,&procnr));
                         wake_up(group_list[gid].b_sender.pid, (ELOCKED));
                         group_list[gid].b_sender.pid = -1;
                 }

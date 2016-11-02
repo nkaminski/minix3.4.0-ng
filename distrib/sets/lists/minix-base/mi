@@ -427,6 +427,7 @@
 ./usr/bin/nonamed                                       minix-base
 ./usr/bin/nroff                                         minix-base
 ./usr/bin/od                                            minix-base
+./usr/bin/openwait_test_0                               minix-base
 ./usr/bin/openssl                                       minix-base      crypto
 ./usr/bin/page                                          minix-base
 ./usr/bin/pagesize                                      minix-base
@@ -461,6 +462,7 @@
 ./usr/bin/receive_test_1                                minix-base
 ./usr/bin/remsync                                       minix-base
 ./usr/bin/renice                                        minix-base
+./usr/bin/recover_test_0                                minix-base
 ./usr/bin/repartition                                   minix-base
 ./usr/bin/restore                                       minix-base
 ./usr/bin/rev                                           minix-base
