@@ -194,7 +194,7 @@ int CircleCheckSend(int PIndex, int GIndex)			//Circle checking for sending. Ret
 			if (t==PIndex) return -1;
 			if (t==-1)
 			{
-				puts("Circle check aborted : member not in process list")
+				puts("Circle check aborted : member not in process list");
 				return -1;
 			}
 			tail++;
