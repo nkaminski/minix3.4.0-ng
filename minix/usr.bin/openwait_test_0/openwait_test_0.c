@@ -6,8 +6,9 @@ int main(int argc, char** args) {
 	int rv;
    printf("calling opengroup(0)\n");
 	rv = openGroup(group_nr);
+   printf("returned %i\n",rv);
    printf("waiting 5 seconds\n");
-   usleep(5E6);
+   sleep(5);
    printf("calling closegroup(0)\n");
 	rv = closeGroup(group_nr);
    printf("returned %i\n",rv);

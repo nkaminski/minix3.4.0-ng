@@ -294,6 +294,7 @@
 ./usr/bin/cut                                           minix-base
 ./usr/bin/datasizes                                     minix-base      obsolete
 ./usr/bin/dd                                            minix-base      obsolete
+./usr/bin/deadlock_test_0                               minix-base
 ./usr/bin/decomp16                                      minix-base      obsolete
 ./usr/bin/del_route                                     minix-base
 ./usr/bin/deroff                                        minix-base

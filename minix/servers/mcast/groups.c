@@ -90,6 +90,7 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
         */
         EnterSend((int)pid,gid);
         printf("Entering message send loop\n");
+        group_list[gid].deliveries = 0;
         //For each process in grp
         for(i=0;i<NR_PROCS;i++){
                 if(group_list[gid].member_list[i] == NULL)
@@ -118,7 +119,9 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
                 //deliver msg and unblock
                 com_size = MIN(group_list[gid].member_list[i]->datasize,size);
                 printf("Attempting to copy %d bytes to ep %d\n", com_size, group_list[gid].member_list[i]->pid);
-                sys_datacopy(pid, (vir_bytes)src, group_list[gid].member_list[i]->pid, group_list[gid].member_list[i]->dataptr, com_size);
+                if(sys_datacopy(pid, (vir_bytes)src, group_list[gid].member_list[i]->pid, group_list[gid].member_list[i]->dataptr, com_size) == (OK)){
+                  group_list[gid].deliveries++;
+                }
                 /* Clear blocked flag */
                 group_list[gid].member_list[i]->blocked = 0;
                 /* reciever is going to exit so tell deadlock detector */
@@ -143,7 +146,7 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
                 return (EGENERIC);
         }
         group_list[gid].b_sender = NULL;
-        return (OK);
+        return group_list[gid].deliveries;
 
         //Do the message delivery between EnterSend() and ExitSend()
 
@@ -179,15 +182,17 @@ int mrecv(endpoint_t pid, void *dest, size_t size, int gid)
                         /* yes it does, deliver immediately (i.e. dont block) */
                         com_size = MIN(size, group_list[gid].b_sender->datasize);
                         printf("MRECV: immediate delivery, attempting to copy %d bytes to ep %d\n", com_size, group_list[gid].b_sender->pid);
-                        sys_datacopy(group_list[gid].b_sender->pid, group_list[gid].b_sender->dataptr, pid, (vir_bytes)dest, com_size);
+                        if(sys_datacopy(group_list[gid].b_sender->pid, group_list[gid].b_sender->dataptr, pid, (vir_bytes)dest, com_size) == (OK)){
+                                group_list[gid].deliveries++;
+                        }
                         ProcessList[t]->pending = 0;
                         group_list[gid].npending--;
                         /* all pending messages handled? */
                         if(group_list[gid].npending == 0){
                                 /* unblock sender */
-                                ExitSend(FindIndex(group_list[gid].b_sender->pid),gid);
+                                ExitSend(group_list[gid].b_sender->pid,gid);
                                 group_list[gid].b_sender->blocked = 0;
-                                wake_up(group_list[gid].b_sender->pid, OK);
+                                wake_up(group_list[gid].b_sender->pid, group_list[gid].deliveries);
                                 if(ProcessDelete(group_list[gid].b_sender->pid) != 0){
                                         printf("ProcessDelete failed while unblocking sender in mrecv\n");
                                         return (EGENERIC);
@@ -362,7 +367,23 @@ void rm_member(endpoint_t pid, int gid)
 				assert(index != -1);
 				assert(mindex != -1);
 				assert(group_list[gid].member_list[index]->numgroups != 0);
-				if(group_list[gid].member_list[index]->numgroups == 1)
+				if(group_list[gid].member_list[index]->pending != 0){
+                    /* removing a member with a pending message */
+                    group_list[gid].npending--;
+            }
+            /* Opportunity to unblock sender if all receivers are gone */
+               if(group_list[gid].npending == 0 && group_list[gid].b_sender != NULL){
+                    /* unblock sender */
+                    ExitSend(group_list[gid].b_sender->pid,gid);
+                    group_list[gid].b_sender->blocked = 0;
+                    wake_up(group_list[gid].b_sender->pid, (EAGAIN));
+                    if(ProcessDelete(group_list[gid].b_sender->pid) != 0){
+                            printf("ProcessDelete failed while unblocking sender in closegroup\n");
+                    }
+                    group_list[gid].b_sender = NULL;
+                }
+
+            if(group_list[gid].member_list[index]->numgroups == 1)
 				{
 					group_list[gid].member_list[index]->numgroups = 0;
                printf("Enter processdelete in closegroup\n");
