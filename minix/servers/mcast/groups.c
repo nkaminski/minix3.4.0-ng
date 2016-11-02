@@ -76,7 +76,7 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
         /* if(msg_add(src) != 0)
            return -EINVAL;
          */
-        if (SendSafe(t,gid)!=0)
+        if (SendSafe(pid,gid)!=0)
         {
                   printf("Would have returned ELOCKED\n");
         //        return (ELOCKED);
@@ -94,7 +94,7 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
                                 group_list[gid].npending--;
                         }
                         ExitReceive(FindIndex(group_list[gid].member_list[i]->pid),gid);
-						rm_member(group_list[gid].member_list[i]->pid,gid);
+						      rm_member(group_list[gid].member_list[i]->pid,gid);
                         continue;
                 }
                 //if blocked waiting
@@ -188,7 +188,7 @@ int mrecv(endpoint_t pid, void *dest, size_t size, int gid)
                 }       
         }
         /* Otherwise we are going to wait, begin deadlock safety checks */
-        if (ReceiveSafe(t,gid)!=0)
+        if (ReceiveSafe(pid,gid)!=0)
         {
                 return (ELOCKED);
         }
