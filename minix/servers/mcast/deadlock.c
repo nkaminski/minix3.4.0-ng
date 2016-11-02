@@ -77,7 +77,11 @@ int ProcessActive(int pid)							//Check if a process is active. Returns -1 if a
 {													//0 if pid not found or inactive(safe to Delete or CloseGroup)
 	int t;
 	t=FindIndex(pid);
-	if (t==-1) return 0;
+	if (t==-1) 
+	{
+		puts("Pid not found in ProcessActive");
+		return 0;
+	}
 	int i;
 	for (i=0;i<total;i++)
 	{
@@ -92,6 +96,11 @@ int EnterSend(int pid, int GIndex)					//Enter sending blocking
 {
 	int i,t,k;
 	t=FindIndex(pid);
+	if (t==-1)
+	{
+		puts("Cannot enter send : pid not found");
+		return 0;
+	}
 	for (i=0;i<NR_PROCS;i++)
 	{
 		if (group_list[GIndex].member_list[i]!=NULL)
@@ -108,6 +117,11 @@ int EnterReceive(int pid, int GIndex)				//Enter receiving blocking
 {
 	int t;
 	t=FindIndex(pid);
+	if (t==-1)
+	{
+		puts("Cannot enter receive : pid not found");
+		return 0;
+	}
 	Receive[t]=1;
 	return 0;
 }
@@ -116,6 +130,11 @@ int ExitSend(int pid, int GIndex)					//Exit sending blocking
 {
 	int i,t;
 	t=FindIndex(pid);
+	if (t==-1)
+	{
+		puts("Cannot exit send : pid not found");
+		return 0;
+	}
 	for (i=0;i<total;i++) Send[t][i]=0;
 	return 0;
 }
@@ -124,6 +143,11 @@ int ExitReceive(int pid, int GIndex)				//Exit receiving blocking
 {
 	int t;
 	t=FindIndex(pid);
+	if (t==-1)
+	{
+		puts("Cannot exit receive : pid not found");
+		return 0;
+	}
 	Receive[t]=0;
 	return 0;
 }
@@ -133,7 +157,11 @@ int SendSafe(int pid, int GIndex)					//Check if it is safe to send. Returns 0 i
 	if (group_list[GIndex].nmembers==0)	return 0;
 	int t;
 	t=FindIndex(pid);
-	if (t==-1) return -1;
+	if (t==-1)
+	{
+		puts("Send not safe : pid not found");
+		return -1;
+	}
 	return CircleCheckSend(t,GIndex);
 }
 
@@ -141,6 +169,11 @@ int ReceiveSafe(int pid, int GIndex)				//Check if it is safe to receive. Return
 {
 	//if (valid_member((endpoint_t)pid,GIndex)==1) return -1;
 	//else return 0;
+	if (FindIndex(pid)==-1)
+	{
+		puts("Receive not safe : pid not found");
+		return -1;
+	}
 	return 0;
 }
 
