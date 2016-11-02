@@ -326,7 +326,7 @@ void rm_member(endpoint_t pid, int gid)
 				int mindex = FindIndex(pid); 
 				int index;
 				find_member_index(pid,gid,&index);
-				asser(index != -1);
+				assert(index != -1);
 				assert(mindex != -1);
 				assert(group_list[gid].member_list[index]->numgroups != 0);
 				if(group_list[gid].member_list[index]->numgroups == 1)
