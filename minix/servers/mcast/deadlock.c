@@ -199,6 +199,7 @@ int CircleCheckSend(int PIndex, int GIndex)			//Circle checking for sending. Ret
 	head++;
 	while(head<=tail)
 	{
+		printf("Head is %d\n",queue[tail]);
 		for (i=0;i<NR_PROCS;i++)
 		{
 			if (Send[queue[head]][i]!=0)
