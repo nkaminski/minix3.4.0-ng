@@ -76,12 +76,14 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
         /* if(msg_add(src) != 0)
            return -EINVAL;
          */
+        printf("Performing deadlock detection\n");
         if (SendSafe(pid,gid)!=0)
         {
                   printf("Would have returned ELOCKED\n");
         //        return (ELOCKED);
         }
         EnterSend((int)pid,gid);
+        printf("Entering message send loop\n");
         //For each process in grp
         for(i=0;i<NR_PROCS;i++){
                 if(group_list[gid].member_list[i] == NULL)
