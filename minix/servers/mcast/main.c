@@ -32,7 +32,7 @@ int dstlen;
 int do_test(void){
 	printf("test of mcast server process\n");
 	printAll();
-	return(OK);
+	return(EINVAL);
 }
 /*
 int do_msend(void){
@@ -122,7 +122,9 @@ int main(void)
 
 		/* Send reply. */
 		if (result != SUSPEND) {
-			m_in.m_type = result;  		/* build reply message */
+         m_in.m_type = (OK);  		/* build reply message */
+         printf("returning %d",result);
+         m_in.m_m1.m1i1 = result;
 			reply(who_e, &m_in);		/* send it away */
 		}
 	}

@@ -10,8 +10,9 @@ int wake_up(endpoint_t ep, int retcode){
 	message m_out;
 	memset(&m_out,0x00,sizeof(message));
 	assert(retcode != (SUSPEND));
-	m_out.m_type = retcode;;           /* build reply message */
+	m_out.m_m1.m1i1 = retcode; /* build reply message */
 	m_out.m_source = MCAST_PROC_NR;
+   m_out.m_type = (OK);
 	return reply(ep, &m_out);	
 }
 

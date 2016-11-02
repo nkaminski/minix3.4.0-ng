@@ -17,5 +17,6 @@ int mreceive(int group, const char *buffer, size_t nbytes)
   m.m_m1.m1i1 = group;
   m.m_m1.m1i2 = nbytes;
   m.m_m1.m1p1 = (vir_bytes)buffer;
-  return(_syscall(MCAST_PROC_NR, MCAST_MRECEIVE, &m));
+  _syscall(MCAST_PROC_NR, MCAST_MRECEIVE, &m);
+  return m.m_m1.m1i1;
 }
