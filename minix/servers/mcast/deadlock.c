@@ -234,9 +234,8 @@ int ProcessRegister(mc_member_t *p)					//Register a new process into process li
 	{
 		Send[i][total-1]=0;
 		Send[total-1][i]=0;
-		Receive[i][total-1]=0;
-		Receive[total-1][i]=0;
 	}
+	Receive[total-1]=0;
 	return 0;
 }
 
@@ -253,21 +252,20 @@ int ProcessDelete(int pid)							//Delete a process from process list
 		for (j=0;j<total;j++)									//
 		{														//
 			Send[i][j]=Send[i+1][j];							//
-			Receive[i][j]=Receive[i+1][j];						//
 		}														//
 	for (j=0;j<total;j++)										//
 		for (i=t;i<total-1;i++)									//
 		{														//
 			Send[j][i]=Send[j][i+1];							//
-			Receive[j][i]=Receive[j][i+1];						//
 		}														//
 	for (i=0;i<total;i++)										//
 	{															//
 		Send[i][total-1]=0;										//
-		Send[total-1][i]=0;										//
-		Receive[i][total-1]=0;									//
-		Receive[total-1][i]=0;									//Delete from sending and receiving matrix
+		Send[total-1][i]=0;										//Delete from sending and receiving matrix
 	}
+	for (i=t;t<total-1;i++)
+		Receive[i]=Receive[i+1];
+	Receive[total-1]=0;
 	for (i=t;i<total-1;i++)										//Delete from process list
 		ProcessList[i]=ProcessList[i+1];
 	total--;
@@ -279,10 +277,10 @@ void deadlock_init()								//Initialize all lists
 {
 	int i,j;
 	total=0;
-	for (i=0;i<NR_PROCS;i++)									//Sending and receiving matrix
+	for (i=0;i<NR_PROCS;i++)
+	{									//Sending and receiving matrix
 		for (j=0;j<NR_PROCS;j++)
-		{
 			Send[i][j]=0;
-			Receive[i][j]=0;
-		}
+		Receive[i]=0;
+	}
 }
