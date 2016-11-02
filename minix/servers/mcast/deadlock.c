@@ -1,5 +1,6 @@
 #include "mcast.h"
 #include "deadlock.h"
+#include "groups.h"
 
 int total=0;										//Total number of registered processes on list
 void printProcessList()								//print all registered processes
@@ -82,8 +83,7 @@ int ProcessActive(int pid)							//Check if a process is active. Returns -1 if a
 	{
 		if (Send[t][i]==1) return -1;
 		if (Send[i][t]==1) return -1;
-		if (Receive[t][i]==1) return -1;
-		if (Receive[i][t]==1) return -1;
+		if (Receive[t]==1) return -1;
 	}
 	return 0;
 }
