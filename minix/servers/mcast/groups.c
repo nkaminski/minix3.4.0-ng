@@ -64,7 +64,7 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
 
         if (t==-1)
                 return (EGENERIC);
-        //Check if sender is in the process list
+                //Check if sender is in the process list
 
         if(!valid_gid(gid))
                 return (EINVAL);
@@ -129,7 +129,7 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
         //else return and invalidate the blocked sender pid
         group_list[gid].b_sender.pid = -1;
         ExitSend((int)pid,gid);
-        if(ProcessDelete(ProcessList[t]->pid) != 0){
+        if(ProcessDelete(pid) != 0){
                 printf("Unable to deregister sender from process list after send completed!\n");
                 return (EGENERIC);
         }  
