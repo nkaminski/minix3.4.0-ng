@@ -5,7 +5,8 @@ FILES=	NetBSD.el acronyms acronyms-o acronyms.comp airport ascii \
 	birthtoken bsd-family-tree \
 	country domains operator \
 	eqnchar flowers indent.pro inter.phone language man.template \
-	mdoc.template na.phone na.postal style zipcodes
+	mdoc.template na.phone na.postal style zipcodes test0.sh test1.sh test2.sh test3.sh test4.sh
+
 FILESDIR=${BINDIR}/misc
 
 # TO AVOID INSTALLING THE POTENTIALLY OFFENSIVE FORTUNES, RUN 'make' with

@@ -3150,6 +3150,11 @@
 ./usr/share/terminfo                                    minix-base
 ./usr/share/terminfo/terminfo                           minix-base
 ./usr/share/terminfo/terminfo.cdb                       minix-base
+./usr/share/misc/test0.sh                               minix-base  
+./usr/share/misc/test1.sh                               minix-base
+./usr/share/misc/test2.sh                               minix-base
+./usr/share/misc/test3.sh                               minix-base
+./usr/share/misc/test4.sh                               minix-base
 ./usr/share/zoneinfo                                    minix-base
 ./usr/share/zoneinfo/Africa                             minix-base
 ./usr/share/zoneinfo/Africa/Abidjan                     minix-base
