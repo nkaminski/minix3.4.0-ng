@@ -57,22 +57,10 @@ void printReceiveMatrix()							//Print the receiving matrix
 	puts("Receive matrix:");
 	if (total>0)
 	{
-		for (i=0;i<=total;i++) printf("------");
-		puts("");
-		printf("     |");
-		for (i=0;i<total;i++) printf("%5d|",(int)ProcessList[i]->pid);
-		puts("");
-		for (i=0;i<=total;i++) printf("------");
-		puts("");
 		for (i=0;i<total;i++)
 		{
-			printf("%5d|",(int)ProcessList[i]->pid);
-			for (j=0;j<total;j++)
-				printf("%5d|",(int)Receive[i][j]);
-			puts("");
+			printf("Pid : %7d | %d\n",ProcessList[i]->pid,Receive[i]);
 		}
-		for (i=0;i<=total;i++) printf("------");
-		puts("");
 	}
 }
 
@@ -117,16 +105,9 @@ int EnterSend(int pid, int GIndex)					//Enter sending blocking
 
 int EnterReceive(int pid, int GIndex)				//Enter receiving blocking
 {
-	int i,t,k;
+	int t;
 	t=FindIndex(pid);
-	for (i=0;i<NR_PROCS;i++)
-	{
-		if (group_list[GIndex].member_list[i]!=NULL)
-		{
-			k=FindIndex((int)group_list[GIndex].member_list[i]->pid);
-			Receive[t][k]=1;
-		}
-	}
+	Receive[t]=1;
 	return 0;
 }
 
@@ -140,9 +121,9 @@ int ExitSend(int pid, int GIndex)					//Exit sending blocking
 
 int ExitReceive(int pid, int GIndex)				//Exit receiving blocking
 {
-	int i,t;
+	int t;
 	t=FindIndex(pid);
-	for (i=0;i<total;i++) Receive[t][i]=0;
+	Receive[t]=0;
 	return 0;
 }
 
@@ -157,11 +138,8 @@ int SendSafe(int pid, int GIndex)					//Check if it is safe to send. Returns 0 i
 
 int ReceiveSafe(int pid, int GIndex)				//Check if it is safe to receive. Returns 0 if safe, -1 if unsafe
 {
-	if (group_list[GIndex].nmembers==0) return 0;
-	int t;
-	t=FindIndex(pid);
-	if (t==-1) return -1;
-	return CircleCheckReceive(t,GIndex);
+	if (valid_member((endpoint_t)pid,GIndex)==1) return -1;
+	else return 0;
 }
 
 int CircleCheckSend(int PIndex, int GIndex)			//Circle checking for sending. Returns 0 if safe, -1 if unsafe
@@ -199,6 +177,7 @@ int CircleCheckSend(int PIndex, int GIndex)			//Circle checking for sending. Ret
 	return 0;
 }
 
+/*
 int CircleCheckReceive(int PIndex, int GIndex)		//Circle checking for receiving. Returns 0 if safe, -1 if unsafe
 {
 	int queue[NR_PROCS];
@@ -233,6 +212,8 @@ int CircleCheckReceive(int PIndex, int GIndex)		//Circle checking for receiving.
 	}
 	return 0;
 }
+*/
+
 
 int FindIndex(int pid)								//Find the index in process list of a given Pid, returns -1 if not found
 {
