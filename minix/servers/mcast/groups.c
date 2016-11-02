@@ -80,14 +80,14 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
         //Check if src is valid?
 
         //ATOMIC {
-        /*
+        
         printf("Performing deadlock detection\n");
         if (SendSafe(pid,gid)!=0)
         {
         //          printf("Would have returned ELOCKED\n");
                 return (ELOCKED);
         }
-        */
+        
         EnterSend((int)pid,gid);
         printf("Entering message send loop\n");
         group_list[gid].deliveries = 0;
