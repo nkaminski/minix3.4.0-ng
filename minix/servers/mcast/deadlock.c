@@ -1,5 +1,6 @@
 #include "mcast.h"
 #include "deadlock.h"
+#include "groups.h"
 
 int total=0;										//Total number of registered processes on list
 void printProcessList()								//print all registered processes
@@ -57,22 +58,10 @@ void printReceiveMatrix()							//Print the receiving matrix
 	puts("Receive matrix:");
 	if (total>0)
 	{
-		for (i=0;i<=total;i++) printf("------");
-		puts("");
-		printf("     |");
-		for (i=0;i<total;i++) printf("%5d|",(int)ProcessList[i]->pid);
-		puts("");
-		for (i=0;i<=total;i++) printf("------");
-		puts("");
 		for (i=0;i<total;i++)
 		{
-			printf("%5d|",(int)ProcessList[i]->pid);
-			for (j=0;j<total;j++)
-				printf("%5d|",(int)Receive[i][j]);
-			puts("");
+			printf("Pid : %7d | %d\n",ProcessList[i]->pid,Receive[i]);
 		}
-		for (i=0;i<=total;i++) printf("------");
-		puts("");
 	}
 }
 
@@ -94,8 +83,7 @@ int ProcessActive(int pid)							//Check if a process is active. Returns -1 if a
 	{
 		if (Send[t][i]==1) return -1;
 		if (Send[i][t]==1) return -1;
-		if (Receive[t][i]==1) return -1;
-		if (Receive[i][t]==1) return -1;
+		if (Receive[t]==1) return -1;
 	}
 	return 0;
 }
@@ -117,16 +105,9 @@ int EnterSend(int pid, int GIndex)					//Enter sending blocking
 
 int EnterReceive(int pid, int GIndex)				//Enter receiving blocking
 {
-	int i,t,k;
+	int t;
 	t=FindIndex(pid);
-	for (i=0;i<NR_PROCS;i++)
-	{
-		if (group_list[GIndex].member_list[i]!=NULL)
-		{
-			k=FindIndex((int)group_list[GIndex].member_list[i]->pid);
-			Receive[t][k]=1;
-		}
-	}
+	Receive[t]=1;
 	return 0;
 }
 
@@ -140,15 +121,15 @@ int ExitSend(int pid, int GIndex)					//Exit sending blocking
 
 int ExitReceive(int pid, int GIndex)				//Exit receiving blocking
 {
-	int i,t;
+	int t;
 	t=FindIndex(pid);
-	for (i=0;i<total;i++) Receive[t][i]=0;
+	Receive[t]=0;
 	return 0;
 }
 
 int SendSafe(int pid, int GIndex)					//Check if it is safe to send. Returns 0 if safe, -1 if unsafe
 {
-	if (group_list[GIndex].nmembers==0)	return -1;
+	if (group_list[GIndex].nmembers==0)	return 0;
 	int t;
 	t=FindIndex(pid);
 	if (t==-1) return -1;
@@ -157,11 +138,8 @@ int SendSafe(int pid, int GIndex)					//Check if it is safe to send. Returns 0 i
 
 int ReceiveSafe(int pid, int GIndex)				//Check if it is safe to receive. Returns 0 if safe, -1 if unsafe
 {
-	if (group_list[GIndex].nmembers==0) return -1;
-	int t;
-	t=FindIndex(pid);
-	if (t==-1) return -1;
-	return CircleCheckReceive(t,GIndex);
+	if (valid_member((endpoint_t)pid,GIndex)==1) return -1;
+	else return 0;
 }
 
 int CircleCheckSend(int PIndex, int GIndex)			//Circle checking for sending. Returns 0 if safe, -1 if unsafe
@@ -199,6 +177,7 @@ int CircleCheckSend(int PIndex, int GIndex)			//Circle checking for sending. Ret
 	return 0;
 }
 
+/*
 int CircleCheckReceive(int PIndex, int GIndex)		//Circle checking for receiving. Returns 0 if safe, -1 if unsafe
 {
 	int queue[NR_PROCS];
@@ -233,6 +212,8 @@ int CircleCheckReceive(int PIndex, int GIndex)		//Circle checking for receiving.
 	}
 	return 0;
 }
+*/
+
 
 int FindIndex(int pid)								//Find the index in process list of a given Pid, returns -1 if not found
 {
@@ -253,9 +234,8 @@ int ProcessRegister(mc_member_t *p)					//Register a new process into process li
 	{
 		Send[i][total-1]=0;
 		Send[total-1][i]=0;
-		Receive[i][total-1]=0;
-		Receive[total-1][i]=0;
 	}
+	Receive[total-1]=0;
 	return 0;
 }
 
@@ -272,25 +252,24 @@ int ProcessDelete(int pid)							//Delete a process from process list
 		for (j=0;j<total;j++)									//
 		{														//
 			Send[i][j]=Send[i+1][j];							//
-			Receive[i][j]=Receive[i+1][j];						//
 		}														//
 	for (j=0;j<total;j++)										//
 		for (i=t;i<total-1;i++)									//
 		{														//
 			Send[j][i]=Send[j][i+1];							//
-			Receive[j][i]=Receive[j][i+1];						//
 		}														//
 	for (i=0;i<total;i++)										//
 	{															//
 		Send[i][total-1]=0;										//
-		Send[total-1][i]=0;										//
-		Receive[i][total-1]=0;									//
-		Receive[total-1][i]=0;									//Delete from sending and receiving matrix
+		Send[total-1][i]=0;										//Delete from sending and receiving matrix
 	}
+	for (i=t;t<total-1;i++)
+		Receive[i]=Receive[i+1];
+	Receive[total-1]=0;
 	for (i=t;i<total-1;i++)										//Delete from process list
 		ProcessList[i]=ProcessList[i+1];
 	total--;
-	free(p);
+	//free(p);
 	return 0;
 }
 
@@ -298,10 +277,10 @@ void deadlock_init()								//Initialize all lists
 {
 	int i,j;
 	total=0;
-	for (i=0;i<NR_PROCS;i++)									//Sending and receiving matrix
+	for (i=0;i<NR_PROCS;i++)
+	{									//Sending and receiving matrix
 		for (j=0;j<NR_PROCS;j++)
-		{
 			Send[i][j]=0;
-			Receive[i][j]=0;
-		}
+		Receive[i]=0;
+	}
 }

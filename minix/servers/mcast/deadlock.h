@@ -1,10 +1,10 @@
 #include "types.h"
 bool Send[NR_PROCS][NR_PROCS];					//Sending status
-bool Receive[NR_PROCS][NR_PROCS];				//Receiving status
+bool Receive[NR_PROCS];				//Receiving status
 mc_member_list_t ProcessList;				//A list of processes
 
 int CircleCheckSend(int PIndex, int GIndex);
-int CircleCheckReceive(int PIndex, int GIndex);
+//int CircleCheckReceive(int PIndex, int GIndex);
 int FindIndex(int pid);
 int ProcessRegister(mc_member_t *p);
 int ProcessDelete(int pid);

@@ -15,5 +15,6 @@ int closeGroup(int group)
 
   memset(&m, 0, sizeof(m));
   m.m_m1.m1i1 = group;
-  return(_syscall(MCAST_PROC_NR, MCAST_CLOSEGROUP, &m));
+  _syscall(MCAST_PROC_NR, MCAST_CLOSEGROUP, &m);
+  return m.m_m1.m1i1;
 }
