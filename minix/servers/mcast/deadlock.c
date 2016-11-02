@@ -138,8 +138,9 @@ int SendSafe(int pid, int GIndex)					//Check if it is safe to send. Returns 0 i
 
 int ReceiveSafe(int pid, int GIndex)				//Check if it is safe to receive. Returns 0 if safe, -1 if unsafe
 {
-	if (valid_member((endpoint_t)pid,GIndex)==1) return -1;
-	else return 0;
+	//if (valid_member((endpoint_t)pid,GIndex)==1) return -1;
+	//else return 0;
+	return 0;
 }
 
 int CircleCheckSend(int PIndex, int GIndex)			//Circle checking for sending. Returns 0 if safe, -1 if unsafe
@@ -269,7 +270,7 @@ int ProcessDelete(int pid)							//Delete a process from process list
 	for (i=t;i<total-1;i++)										//Delete from process list
 		ProcessList[i]=ProcessList[i+1];
 	total--;
-	//free(p);
+	free(p);
 	return 0;
 }
 
