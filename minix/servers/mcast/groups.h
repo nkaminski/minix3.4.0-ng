@@ -17,3 +17,4 @@ int valid_member(endpoint_t pid,int gid);
 int msg_add(void *src);
 void init_groups();
 mc_member_t* find_member_index(endpoint_t pid, int gid, int *index);
+int find_next_index(int gid);
