@@ -148,7 +148,7 @@ int ExitReceive(int pid, int GIndex)				//Exit receiving blocking
 
 int SendSafe(int pid, int GIndex)					//Check if it is safe to send. Returns 0 if safe, -1 if unsafe
 {
-	if (group_list[GIndex].nmembers==0)	return -1;
+	if (group_list[GIndex].nmembers==0)	return 0;
 	int t;
 	t=FindIndex(pid);
 	if (t==-1) return -1;
@@ -157,7 +157,7 @@ int SendSafe(int pid, int GIndex)					//Check if it is safe to send. Returns 0 i
 
 int ReceiveSafe(int pid, int GIndex)				//Check if it is safe to receive. Returns 0 if safe, -1 if unsafe
 {
-	if (group_list[GIndex].nmembers==0) return -1;
+	if (group_list[GIndex].nmembers==0) return 0;
 	int t;
 	t=FindIndex(pid);
 	if (t==-1) return -1;
