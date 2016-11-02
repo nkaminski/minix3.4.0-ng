@@ -290,7 +290,7 @@ int ProcessDelete(int pid)							//Delete a process from process list
 	for (i=t;i<total-1;i++)										//Delete from process list
 		ProcessList[i]=ProcessList[i+1];
 	total--;
-	free(p);
+	//free(p);
 	return 0;
 }
 
