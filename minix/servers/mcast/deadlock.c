@@ -188,10 +188,15 @@ int CircleCheckSend(int PIndex, int GIndex)			//Circle checking for sending. Ret
 	queue[head]=PIndex;
 	for (i=0;i<NR_PROCS;i++)
 	{
-		if (group_list[i].nmembers!=0)
+		if (group_list[GIndex].member_list[i]!=NULL)
 		{
 			t=FindIndex((int)group_list[GIndex].member_list[i]->pid);
 			if (t==PIndex) return -1;
+			if (t==-1)
+			{
+				puts("Circle check aborted : member not in process list")
+				return -1;
+			}
 			tail++;
 			queue[tail]=t;
 		}
@@ -199,7 +204,7 @@ int CircleCheckSend(int PIndex, int GIndex)			//Circle checking for sending. Ret
 	head++;
 	while(head<=tail)
 	{
-		printf("Head is %d\n",queue[tail]);
+		printf("Head is %d\n",queue[head]);
 		for (i=0;i<NR_PROCS;i++)
 		{
 			if (Send[queue[head]][i]!=0)
