@@ -1,7 +1,7 @@
 #include "types.h"
-bool Send[NR_PROCS][NR_PROCS];					//Sending status
-bool Receive[NR_PROCS];				//Receiving status
-mc_member_list_t ProcessList;				//A list of processes
+extern bool Send[NR_PROCS][NR_PROCS];
+extern bool Receive[NR_PROCS];
+extern mc_member_list_t ProcessList;				//A list of processes
 
 int CircleCheckSend(int PIndex, int GIndex);
 //int CircleCheckReceive(int PIndex, int GIndex);

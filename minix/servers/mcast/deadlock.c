@@ -1,7 +1,9 @@
 #include "mcast.h"
 #include "deadlock.h"
 #include "groups.h"
-
+bool Send[NR_PROCS][NR_PROCS];               //Sending status
+bool Receive[NR_PROCS];          //Receiving status
+mc_member_list_t ProcessList;
 int total=0;										//Total number of registered processes on list
 void printProcessList()								//print all registered processes
 {
@@ -290,12 +292,13 @@ int ProcessDelete(int pid)							//Delete a process from process list
 		puts("Cannot delete : Process active.");
 		return -1;						//Error : Process still active
 	}
+   printf("ProcessDelete performing deletion at %d\n",t);
 	int i,j,k;
 	for (i=t;i<total-1;i++)										//Delete from sending and receiving matrix
 		for (j=0;j<total;j++)									//
 		{														//
 			Send[i][j]=Send[i+1][j];							//
-		}														//
+		}														//a
 	for (j=0;j<total;j++)										//
 		for (i=t;i<total-1;i++)									//
 		{														//
@@ -306,12 +309,14 @@ int ProcessDelete(int pid)							//Delete a process from process list
 		Send[i][total-1]=0;										//
 		Send[total-1][i]=0;										//Delete from sending and receiving matrix
 	}
-	for (i=t;t<total-1;i++)
-		Receive[i]=Receive[i+1];
+	for (i=t;i<total-1;i++){
+      Receive[i]=Receive[i+1];
+   }
 	Receive[total-1]=0;
 	for (i=t;i<total-1;i++)										//Delete from process list
 		ProcessList[i]=ProcessList[i+1];
 	total--;
+   printf("freeing %x\n",(unsigned int)p);
 	free(p);
 	return 0;
 }

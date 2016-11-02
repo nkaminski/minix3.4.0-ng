@@ -51,6 +51,7 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
                   return (EAGAIN);
                 } else {
                   /* invalid blocked sender endpoint */
+                  printf("Deleting invalid blocked sender\n");
                   ExitSend(group_list[gid].b_sender->pid,gid);
                   if(ProcessDelete(group_list[gid].b_sender->pid) != 0){
                           printf("ProcessDelete failed when deleting invalid blocked sender\n");
@@ -100,7 +101,7 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
                         if(group_list[gid].member_list[i]->pending > 0){
                                 group_list[gid].npending--;
                         }
-                        ExitReceive(FindIndex(group_list[gid].member_list[i]->pid),gid);
+                        ExitReceive(group_list[gid].member_list[i]->pid,gid);
 						      rm_member(group_list[gid].member_list[i]->pid,gid);
                         continue;
                 }
@@ -136,6 +137,7 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
         }
         //else return and invalidate the blocked sender pid
         ExitSend((int)pid,gid);
+        assert(group_list[gid].b_sender->pid == pid);
         if(ProcessDelete(pid) != 0){
                 printf("Unable to deregister sender from process list after send completed!\n");
                 return (EGENERIC);
@@ -356,16 +358,19 @@ void rm_member(endpoint_t pid, int gid)
 				int mindex = FindIndex(pid); 
 				int index;
 				find_member_index(pid,gid,&index);
+            printf("find_member_index\n");
 				assert(index != -1);
 				assert(mindex != -1);
 				assert(group_list[gid].member_list[index]->numgroups != 0);
 				if(group_list[gid].member_list[index]->numgroups == 1)
 				{
 					group_list[gid].member_list[index]->numgroups = 0;
-                	ProcessDelete(group_list[gid].member_list[index]->pid);
-				}
+               printf("Enter processdelete in closegroup\n");
+               ProcessDelete(group_list[gid].member_list[index]->pid);
+               printf("Exit processdelete in closegroup\n");
+            }
                 group_list[gid].nmembers--;
-                group_list[gid].member_list[index] = NULL;
+				    group_list[gid].member_list[index] = NULL;
         }
 }
 int valid_gid(int gid)
