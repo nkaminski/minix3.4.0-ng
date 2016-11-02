@@ -226,10 +226,13 @@ mc_member_t* find_member_index(endpoint_t pid, int gid, int *index)
 	int i;
 	for(i = 0; i < NR_PROCS; i++)
 	{
-		if(group_list[gid].member_list[i]->pid == pid)
+		if(group_list[gid].member_list[i] != NULL)
 		{
-			*index = i;
-			return group_list[gid].member_list[i];
+			if(group_list[gid].member_list[i]->pid == pid)
+			{
+				*index = i;
+				return group_list[gid].member_list[i];
+			}
 		}
 	}
 	*index = -1;
@@ -275,7 +278,6 @@ void add_member(endpoint_t pid, int gid)
 		//Member not part of list *mem is NULL
 		//TODO only malloc if it isnt in the process list
 		int mindex = FindIndex((int)pid); 
-		printf("mindex: %d, i: %d\n",mindex,i);
 		if(mindex == -1 && i != -1) 
 		{
 			group_list[gid].member_list[i] = malloc(sizeof(mc_member_t));
@@ -289,7 +291,6 @@ void add_member(endpoint_t pid, int gid)
 		}
 		else if(i != -1)
 		{
-			printf("control reached here\n");
 			group_list[gid].member_list[i] = ProcessList[mindex];
 			group_list[gid].member_list[i]->numgroups++; 
 		}
