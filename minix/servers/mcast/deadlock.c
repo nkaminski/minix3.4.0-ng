@@ -97,7 +97,8 @@ int EnterSend(int pid, int GIndex)					//Enter sending blocking
 		if (group_list[GIndex].member_list[i]!=NULL)
 		{
 			k=FindIndex((int)group_list[GIndex].member_list[i]->pid);
-			Send[t][k]=1;
+			if (k!=-1)
+				Send[t][k]=1;
 		}
 	}
 	return 0;
