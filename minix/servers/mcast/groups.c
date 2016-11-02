@@ -76,10 +76,10 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
         /* if(msg_add(src) != 0)
            return -EINVAL;
          */
-   //     if (SendSafe(t,gid)!=0)
-   //     {
-   //             return (ELOCKED);
-   //     }
+        if (SendSafe(t,gid)!=0)
+        {
+                return (ELOCKED);
+        }
         EnterSend(t,gid);
         //For each process in grp
         for(i=0;i<NR_PROCS;i++){
@@ -188,11 +188,11 @@ int mrecv(endpoint_t pid, void *dest, size_t size, int gid)
                 }       
         }
         /* Otherwise we are going to wait, begin deadlock safety checks */
-        //if (ReceiveSafe(t,gid)!=0)
-        //{
-        //        return (ELOCKED);
-        //}
-        EnterReceive(t,gid);
+        if (ReceiveSafe(t,gid)!=0)
+        {
+                return (ELOCKED);
+        }
+        EnterReceive((int)pid,gid);
         //Do the message delivery between EnterReceive() and ExitReceive()
         /* store info and block receiver */
         ProcessList[t]->blocked = 1;
