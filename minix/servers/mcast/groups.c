@@ -269,7 +269,7 @@ void add_member(endpoint_t pid, int gid)
 	if(!valid_member(pid,gid)) //Not already a member  
 	{
 		group_list[gid].nmembers++;
-		int i = find_next_index(pid,gid);
+		int i = find_next_index(gid);
 		//mc_member_t *mem = find_member_index(pid,gid,&i);
 		//Member not part of list *mem is NULL
 		//TODO only malloc if it isnt in the process list
