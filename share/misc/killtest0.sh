@@ -9,4 +9,4 @@ echo The other receiver calls receive from Group 0
 kill_test_0 &
 kill_test_1 &
 kill_test_2 &
-kill %3
+ps | grep -v grep | grep kill_test_2 | awk '{print $1}' | xargs kill
