@@ -16,7 +16,7 @@ Running from OVA:
 2.Open OVA image in VirtualBox
 
 
-Tests: cd /share/misc
+Tests: cd /usr/share/misc
 Note: “( )” designate a range of numbers that is appended to the name
 	sh ./test(0-4).sh
 	sh ./killtest(0-1).sh
