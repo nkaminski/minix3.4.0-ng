@@ -16,7 +16,7 @@ Running from OVA:
 2.Open OVA image in VirtualBox
 
 
-Tests: cd /share/misc
+Tests: cd /usr/share/misc
 Note: “( )” designate a range of numbers that is appended to the name
 	sh ./test(0-4).sh
 	sh ./killtest(0-1).sh
@@ -27,5 +27,5 @@ C Program Tests: (In PATH)
 	no_group_test_0
 	openwait_test_0
 	receive_test_(0-1)
-	recover_test_0
+	recover_test_0 - Ensure a few processes are blocked before calling.
 	send_test_(0-1)
