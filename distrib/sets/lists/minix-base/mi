@@ -365,6 +365,12 @@
 ./usr/bin/isoread                                       minix-base
 ./usr/bin/join                                          minix-base
 ./usr/bin/jot                                           minix-base
+./usr/bin/kill_test_0                                   minix-base
+./usr/bin/kill_test_1                                   minix-base
+./usr/bin/kill_test_2                                   minix-base
+./usr/bin/kill_test_3                                   minix-base
+./usr/bin/kill_test_4                                   minix-base
+./usr/bin/kill_test_5                                   minix-base
 ./usr/bin/kyua                                          minix-base      kyua
 ./usr/bin/lam                                           minix-base
 ./usr/bin/last                                          minix-base
@@ -424,12 +430,13 @@
 ./usr/bin/newgrp                                        minix-base
 ./usr/bin/nice                                          minix-base
 ./usr/bin/nl                                            minix-base
+./usr/bin/no_group_test_0                               minix-base
 ./usr/bin/nohup                                         minix-base
 ./usr/bin/nonamed                                       minix-base
 ./usr/bin/nroff                                         minix-base
 ./usr/bin/od                                            minix-base
-./usr/bin/openwait_test_0                               minix-base
 ./usr/bin/openssl                                       minix-base      crypto
+./usr/bin/openwait_test_0                               minix-base
 ./usr/bin/page                                          minix-base
 ./usr/bin/pagesize                                      minix-base
 ./usr/bin/part                                          minix-base
@@ -458,12 +465,12 @@
 ./usr/bin/rawspeed                                      minix-base
 ./usr/bin/rcp                                           minix-base      obsolete
 ./usr/bin/readlink                                      minix-base
-./usr/bin/recwave                                       minix-base
 ./usr/bin/receive_test_0                                minix-base
 ./usr/bin/receive_test_1                                minix-base
+./usr/bin/recover_test_0                                minix-base
+./usr/bin/recwave                                       minix-base
 ./usr/bin/remsync                                       minix-base
 ./usr/bin/renice                                        minix-base
-./usr/bin/recover_test_0                                minix-base
 ./usr/bin/repartition                                   minix-base
 ./usr/bin/restore                                       minix-base
 ./usr/bin/rev                                           minix-base
@@ -3045,6 +3052,8 @@
 ./usr/share/misc/flowers                                minix-base
 ./usr/share/misc/indent.pro                             minix-base
 ./usr/share/misc/inter.phone                            minix-base
+./usr/share/misc/killtest0.sh                           minix-base
+./usr/share/misc/killtest1.sh                           minix-base
 ./usr/share/misc/language                               minix-base
 ./usr/share/misc/magic.mgc                              minix-base
 ./usr/share/misc/man.template                           minix-base
@@ -3055,6 +3064,11 @@
 ./usr/share/misc/na.postal                              minix-base
 ./usr/share/misc/operator                               minix-base
 ./usr/share/misc/style                                  minix-base
+./usr/share/misc/test0.sh                               minix-base
+./usr/share/misc/test1.sh                               minix-base
+./usr/share/misc/test2.sh                               minix-base
+./usr/share/misc/test3.sh                               minix-base
+./usr/share/misc/test4.sh                               minix-base
 ./usr/share/misc/texinfo.cat                            minix-base
 ./usr/share/misc/texinfo.dtd                            minix-base
 ./usr/share/misc/texinfo.tex                            minix-base
@@ -3150,11 +3164,6 @@
 ./usr/share/terminfo                                    minix-base
 ./usr/share/terminfo/terminfo                           minix-base
 ./usr/share/terminfo/terminfo.cdb                       minix-base
-./usr/share/misc/test0.sh                               minix-base  
-./usr/share/misc/test1.sh                               minix-base
-./usr/share/misc/test2.sh                               minix-base
-./usr/share/misc/test3.sh                               minix-base
-./usr/share/misc/test4.sh                               minix-base
 ./usr/share/zoneinfo                                    minix-base
 ./usr/share/zoneinfo/Africa                             minix-base
 ./usr/share/zoneinfo/Africa/Abidjan                     minix-base

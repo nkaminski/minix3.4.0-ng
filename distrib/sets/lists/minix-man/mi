@@ -158,6 +158,12 @@
 ./usr/man/man1/join.1                                   minix-man
 ./usr/man/man1/jot.1                                    minix-man
 ./usr/man/man1/kill.1                                   minix-man
+./usr/man/man1/kill_test_0.1                            minix-man
+./usr/man/man1/kill_test_1.1                            minix-man
+./usr/man/man1/kill_test_2.1                            minix-man
+./usr/man/man1/kill_test_3.1                            minix-man
+./usr/man/man1/kill_test_4.1                            minix-man
+./usr/man/man1/kill_test_5.1                            minix-man
 ./usr/man/man1/ksh.1                                    minix-man
 ./usr/man/man1/kyua-about.1                             minix-man       kyua
 ./usr/man/man1/kyua-atf-tester.1                        minix-man       kyua
@@ -241,6 +247,7 @@
 ./usr/man/man1/nice.1                                   minix-man
 ./usr/man/man1/nl.1                                     minix-man
 ./usr/man/man1/nm.1                                     minix-man       binutils
+./usr/man/man1/no_group_test_0.1                        minix-man
 ./usr/man/man1/nohup.1                                  minix-man
 ./usr/man/man1/objcopy.1                                minix-man       binutils
 ./usr/man/man1/objdump.1                                minix-man       binutils
@@ -364,7 +371,7 @@
 ./usr/man/man1/svc.1                                    minix-man       obsolete
 ./usr/man/man1/svrctl.1                                 minix-man
 ./usr/man/man1/synctree.1                               minix-man
-./usr/man/man1/syscalltest.1				minix-man
+./usr/man/man1/syscalltest.1                            minix-man
 ./usr/man/man1/sysenv.1                                 minix-man
 ./usr/man/man1/sz.1                                     minix-man
 ./usr/man/man1/tail.1                                   minix-man
@@ -3432,7 +3439,7 @@
 ./usr/man/man8/pr_routes.8                              minix-man
 ./usr/man/man8/printroot.8                              minix-man
 ./usr/man/man8/pwd_mkdb.8                               minix-man
-./usr/man/man8/pwdauth.8                                minix-man	obsolete
+./usr/man/man8/pwdauth.8                                minix-man       obsolete
 ./usr/man/man8/rarpd.8                                  minix-man
 ./usr/man/man8/rawspeed.8                               minix-man
 ./usr/man/man8/rdate.8                                  minix-man
