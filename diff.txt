@@ -44,6 +44,3243 @@ index 0000000..4cc00bf
 +	receive_test_(0-1)
 +	recover_test_0 - Ensure a few processes are blocked before calling.
 +	send_test_(0-1)
+diff --git a/diff.txt b/diff.txt
+new file mode 100644
+index 0000000..4d47d8f
+--- /dev/null
++++ b/diff.txt
+@@ -0,0 +1,3231 @@
++diff --git a/.gitignore b/.gitignore
++index 4740358..598e28a 100644
++--- a/.gitignore
+++++ b/.gitignore
++@@ -1,3 +1,4 @@
+++*.img
++ cscope.*
++ *.swap
++ .*.sw[po]
++diff --git a/README b/README
++new file mode 100644
++index 0000000..4cc00bf
++--- /dev/null
+++++ b/README
++@@ -0,0 +1,31 @@
+++# minix3.4.0-ng
+++
+++MINIX 3.4.0 modified with multicast IPC for our CS551 class.
+++
+++Building from source:
+++1.Download source tarball from https://iit.kaminski.io/cs551_proj2/
+++2.Untar source tarball: tar xvf <source>.tar.gz
+++3.Move into directory: cd <source>
+++4.Build image: ./releasetools/x86_hdimage.sh
+++5.Run: qemu-system-i386 --enable-kvm -m 1024 -hda ./minix_x86.img -netde
+++user,id=user.0 -device virtio-net,netdev=user.0 -curses
+++
+++
+++Running from OVA:
+++1.Download OVA image from https://iit.kaminski.io/cs551_proj2/
+++2.Open OVA image in VirtualBox
+++
+++
+++Tests: cd /usr/share/misc
+++Note: “( )” designate a range of numbers that is appended to the name
+++	sh ./test(0-4).sh
+++	sh ./killtest(0-1).sh
+++	
+++	
+++C Program Tests: (In PATH)
+++	kill_test_(0-5)
+++	no_group_test_0
+++	openwait_test_0
+++	receive_test_(0-1)
+++	recover_test_0 - Ensure a few processes are blocked before calling.
+++	send_test_(0-1)
++diff --git a/distrib/sets/lists/minix-base/md.i386 b/distrib/sets/lists/minix-base/md.i386
++index 3280f85..6609d16 100644
++--- a/distrib/sets/lists/minix-base/md.i386
+++++ b/distrib/sets/lists/minix-base/md.i386
++@@ -41,6 +41,7 @@
++ ./service/fxp                                           minix-base
++ ./service/hgfs                                          minix-base
++ ./service/lance                                         minix-base
+++./service/mcast                                         minix-base
++ ./service/pci                                           minix-base
++ ./service/pckbd                                         minix-base
++ ./service/printer                                       minix-base
++diff --git a/distrib/sets/lists/minix-base/mi b/distrib/sets/lists/minix-base/mi
++index bb4cbec..bd5b783 100644
++--- a/distrib/sets/lists/minix-base/mi
+++++ b/distrib/sets/lists/minix-base/mi
++@@ -294,6 +294,7 @@
++ ./usr/bin/cut                                           minix-base
++ ./usr/bin/datasizes                                     minix-base      obsolete
++ ./usr/bin/dd                                            minix-base      obsolete
+++./usr/bin/deadlock_test_0                               minix-base
++ ./usr/bin/decomp16                                      minix-base      obsolete
++ ./usr/bin/del_route                                     minix-base
++ ./usr/bin/deroff                                        minix-base
++@@ -364,6 +365,12 @@
++ ./usr/bin/isoread                                       minix-base
++ ./usr/bin/join                                          minix-base
++ ./usr/bin/jot                                           minix-base
+++./usr/bin/kill_test_0                                   minix-base
+++./usr/bin/kill_test_1                                   minix-base
+++./usr/bin/kill_test_2                                   minix-base
+++./usr/bin/kill_test_3                                   minix-base
+++./usr/bin/kill_test_4                                   minix-base
+++./usr/bin/kill_test_5                                   minix-base
++ ./usr/bin/kyua                                          minix-base      kyua
++ ./usr/bin/lam                                           minix-base
++ ./usr/bin/last                                          minix-base
++@@ -423,11 +430,13 @@
++ ./usr/bin/newgrp                                        minix-base
++ ./usr/bin/nice                                          minix-base
++ ./usr/bin/nl                                            minix-base
+++./usr/bin/no_group_test_0                               minix-base
++ ./usr/bin/nohup                                         minix-base
++ ./usr/bin/nonamed                                       minix-base
++ ./usr/bin/nroff                                         minix-base
++ ./usr/bin/od                                            minix-base
++ ./usr/bin/openssl                                       minix-base      crypto
+++./usr/bin/openwait_test_0                               minix-base
++ ./usr/bin/page                                          minix-base
++ ./usr/bin/pagesize                                      minix-base
++ ./usr/bin/part                                          minix-base
++@@ -456,6 +465,9 @@
++ ./usr/bin/rawspeed                                      minix-base
++ ./usr/bin/rcp                                           minix-base      obsolete
++ ./usr/bin/readlink                                      minix-base
+++./usr/bin/receive_test_0                                minix-base
+++./usr/bin/receive_test_1                                minix-base
+++./usr/bin/recover_test_0                                minix-base
++ ./usr/bin/recwave                                       minix-base
++ ./usr/bin/remsync                                       minix-base
++ ./usr/bin/renice                                        minix-base
++@@ -472,6 +484,8 @@
++ ./usr/bin/screendump                                    minix-base
++ ./usr/bin/sdiff                                         minix-base
++ ./usr/bin/sed                                           minix-base
+++./usr/bin/send_test_0                                   minix-base
+++./usr/bin/send_test_1                                   minix-base
++ ./usr/bin/seq                                           minix-base
++ ./usr/bin/sha1                                          minix-base
++ ./usr/bin/shar                                          minix-base
++@@ -493,6 +507,7 @@
++ ./usr/bin/svrctl                                        minix-base
++ ./usr/bin/swifi                                         minix-base
++ ./usr/bin/synctree                                      minix-base
+++./usr/bin/syscalltest                                   minix-base
++ ./usr/bin/sz                                            minix-base
++ ./usr/bin/tail                                          minix-base
++ ./usr/bin/tar                                           minix-base
++@@ -3037,6 +3052,8 @@
++ ./usr/share/misc/flowers                                minix-base
++ ./usr/share/misc/indent.pro                             minix-base
++ ./usr/share/misc/inter.phone                            minix-base
+++./usr/share/misc/killtest0.sh                           minix-base
+++./usr/share/misc/killtest1.sh                           minix-base
++ ./usr/share/misc/language                               minix-base
++ ./usr/share/misc/magic.mgc                              minix-base
++ ./usr/share/misc/man.template                           minix-base
++@@ -3047,6 +3064,11 @@
++ ./usr/share/misc/na.postal                              minix-base
++ ./usr/share/misc/operator                               minix-base
++ ./usr/share/misc/style                                  minix-base
+++./usr/share/misc/test0.sh                               minix-base
+++./usr/share/misc/test1.sh                               minix-base
+++./usr/share/misc/test2.sh                               minix-base
+++./usr/share/misc/test3.sh                               minix-base
+++./usr/share/misc/test4.sh                               minix-base
++ ./usr/share/misc/texinfo.cat                            minix-base
++ ./usr/share/misc/texinfo.dtd                            minix-base
++ ./usr/share/misc/texinfo.tex                            minix-base
++diff --git a/distrib/sets/lists/minix-kernel/mi b/distrib/sets/lists/minix-kernel/mi
++index 94140ed..685ef60 100644
++--- a/distrib/sets/lists/minix-kernel/mi
+++++ b/distrib/sets/lists/minix-kernel/mi
++@@ -21,7 +21,8 @@
++ ./boot/minix/.temp/mod09_vm                             minix-kernel
++ ./boot/minix/.temp/mod10_pfs                            minix-kernel
++ ./boot/minix/.temp/mod11_mfs                            minix-kernel
++-./boot/minix/.temp/mod12_init                           minix-kernel
+++./boot/minix/.temp/mod12_mcast                          minix-kernel
+++./boot/minix/.temp/mod13_init                           minix-kernel
++ ./etc                                                   minix-kernel
++ ./etc/mtree                                             minix-kernel
++ ./etc/mtree/set.minix-kernel                            minix-kernel
++diff --git a/distrib/sets/lists/minix-man/mi b/distrib/sets/lists/minix-man/mi
++index a188227..77e06ab 100644
++--- a/distrib/sets/lists/minix-man/mi
+++++ b/distrib/sets/lists/minix-man/mi
++@@ -77,6 +77,7 @@
++ ./usr/man/man1/cut.1                                    minix-man
++ ./usr/man/man1/date.1                                   minix-man
++ ./usr/man/man1/dd.1                                     minix-man
+++./usr/man/man1/deadlock_test_0.1                        minix-man
++ ./usr/man/man1/decomp16.1                               minix-man       obsolete
++ ./usr/man/man1/deroff.1                                 minix-man
++ ./usr/man/man1/df.1                                     minix-man
++@@ -157,6 +158,12 @@
++ ./usr/man/man1/join.1                                   minix-man
++ ./usr/man/man1/jot.1                                    minix-man
++ ./usr/man/man1/kill.1                                   minix-man
+++./usr/man/man1/kill_test_0.1                            minix-man
+++./usr/man/man1/kill_test_1.1                            minix-man
+++./usr/man/man1/kill_test_2.1                            minix-man
+++./usr/man/man1/kill_test_3.1                            minix-man
+++./usr/man/man1/kill_test_4.1                            minix-man
+++./usr/man/man1/kill_test_5.1                            minix-man
++ ./usr/man/man1/ksh.1                                    minix-man
++ ./usr/man/man1/kyua-about.1                             minix-man       kyua
++ ./usr/man/man1/kyua-atf-tester.1                        minix-man       kyua
++@@ -240,6 +247,7 @@
++ ./usr/man/man1/nice.1                                   minix-man
++ ./usr/man/man1/nl.1                                     minix-man
++ ./usr/man/man1/nm.1                                     minix-man       binutils
+++./usr/man/man1/no_group_test_0.1                        minix-man
++ ./usr/man/man1/nohup.1                                  minix-man
++ ./usr/man/man1/objcopy.1                                minix-man       binutils
++ ./usr/man/man1/objdump.1                                minix-man       binutils
++@@ -282,6 +290,7 @@
++ ./usr/man/man1/openssl_version.1                        minix-man       crypto
++ ./usr/man/man1/openssl_x509.1                           minix-man       crypto
++ ./usr/man/man1/openssl_x509v3_config.1                  minix-man       crypto
+++./usr/man/man1/openwait_test_0.1                        minix-man
++ ./usr/man/man1/page.1                                   minix-man
++ ./usr/man/man1/pagesize.1                               minix-man
++ ./usr/man/man1/passwd.1                                 minix-man
++@@ -314,6 +323,9 @@
++ ./usr/man/man1/readelf.1                                minix-man       binutils
++ ./usr/man/man1/readlink.1                               minix-man
++ ./usr/man/man1/readonly.1                               minix-man       obsolete
+++./usr/man/man1/receive_test_0.1                         minix-man
+++./usr/man/man1/receive_test_1.1                         minix-man
+++./usr/man/man1/recover_test_0.1                         minix-man
++ ./usr/man/man1/recwave.1                                minix-man
++ ./usr/man/man1/rehash.1                                 minix-man
++ ./usr/man/man1/remsync.1                                minix-man
++@@ -329,6 +341,8 @@
++ ./usr/man/man1/rz.1                                     minix-man
++ ./usr/man/man1/sdiff.1                                  minix-man
++ ./usr/man/man1/sed.1                                    minix-man
+++./usr/man/man1/send_test_0.1                            minix-man
+++./usr/man/man1/send_test_1.1                            minix-man
++ ./usr/man/man1/seq.1                                    minix-man
++ ./usr/man/man1/set.1                                    minix-man       obsolete
++ ./usr/man/man1/setvar.1                                 minix-man       obsolete
++@@ -357,6 +371,7 @@
++ ./usr/man/man1/svc.1                                    minix-man       obsolete
++ ./usr/man/man1/svrctl.1                                 minix-man
++ ./usr/man/man1/synctree.1                               minix-man
+++./usr/man/man1/syscalltest.1                            minix-man
++ ./usr/man/man1/sysenv.1                                 minix-man
++ ./usr/man/man1/sz.1                                     minix-man
++ ./usr/man/man1/tail.1                                   minix-man
++@@ -3424,7 +3439,7 @@
++ ./usr/man/man8/pr_routes.8                              minix-man
++ ./usr/man/man8/printroot.8                              minix-man
++ ./usr/man/man8/pwd_mkdb.8                               minix-man
++-./usr/man/man8/pwdauth.8                                minix-man	obsolete
+++./usr/man/man8/pwdauth.8                                minix-man       obsolete
++ ./usr/man/man8/rarpd.8                                  minix-man
++ ./usr/man/man8/rawspeed.8                               minix-man
++ ./usr/man/man8/rdate.8                                  minix-man
++diff --git a/etc/rc b/etc/rc
++index f9fcd21..1a7b720 100755
++--- a/etc/rc
+++++ b/etc/rc
++@@ -167,6 +167,7 @@ autoboot|start)
++ 	edit memory
++ 	edit mib
++ 	edit pfs
+++	edit mcast
++ 	edit init
++ 	#
++ 	# Keep a copy around to recover the root FS from crashes
++diff --git a/etc/system.conf b/etc/system.conf
++index d89a6d3..3eaab0f 100644
++--- a/etc/system.conf
+++++ b/etc/system.conf
++@@ -50,6 +50,7 @@ service vm
++ 	quantum	       500;	# default server quantum
++ };
++ 
+++
++ service pm
++ {
++ 	uid     0;
++@@ -222,6 +223,21 @@ service mib
++ 	uid	0;
++ };
++ 
+++service mcast
+++{
+++	uid     0;
+++        ipc	ALL;
+++	system	ALL;		# ALL kernel calls allowed
+++	vm	BASIC;		# Basic VM calls allowed
+++	io	NONE;		# No I/O range allowed
+++	irq	NONE;		# No IRQ allowed
+++	sigmgr          rs;	# Signal manager is RS
+++	scheduler   KERNEL;	# Scheduler is KERNEL
+++	priority	 4;	# priority queue 2
+++	quantum	       500;	# default server quantum
+++};
+++
+++
++ service init
++ {
++ 	uid     0;
++diff --git a/include/unistd.h b/include/unistd.h
++index 874ef57..96f41ee 100644
++--- a/include/unistd.h
+++++ b/include/unistd.h
++@@ -431,5 +431,13 @@ extern	 int optreset;		/* getopt(3) external variable */
++ extern	 char *suboptarg;	/* getsubopt(3) external variable */
++ #endif
++ 
+++/* User added multicast IPC calls */
+++int msend(int, const char *, size_t);
+++int mreceive(int, const char *, size_t);
+++int openGroup(int);
+++int closeGroup(int);
+++int recoverGroup(int);
+++int mtest(void);
+++
++ __END_DECLS
++ #endif /* !_UNISTD_H_ */
++diff --git a/minix/include/minix/callnr.h b/minix/include/minix/callnr.h
++index 759350a..72fff98 100644
++--- a/minix/include/minix/callnr.h
+++++ b/minix/include/minix/callnr.h
++@@ -136,4 +136,22 @@
++ 
++ #define NR_VFS_CALLS		64	/* highest number from base plus one */
++ 
+++/*===========================================================================*
+++ *				Calls to mcast server			     *
+++ *===========================================================================*/
+++
+++#define MCAST_BASE		0x1900
+++
+++#define IS_MCAST_CALL(type)	(((type) & ~0xff) == MCAST_BASE)
+++
+++#define MCAST_TEST		(MCAST_BASE + 0)
+++#define MCAST_MSEND		(MCAST_BASE + 1)
+++#define MCAST_MRECEIVE		(MCAST_BASE + 2)
+++#define MCAST_OPENGROUP		(MCAST_BASE + 3)
+++#define MCAST_CLOSEGROUP	(MCAST_BASE + 4)
+++#define MCAST_RECOVERGROUP	(MCAST_BASE + 5)
+++
+++#define NR_MCAST_CALLS		6	/* highest number from base plus one */
+++
+++
++ #endif /* !_MINIX_CALLNR_H */
++diff --git a/minix/include/minix/com.h b/minix/include/minix/com.h
++index 35367e9..9d80ad9 100644
++--- a/minix/include/minix/com.h
+++++ b/minix/include/minix/com.h
++@@ -30,6 +30,7 @@
++  *   0x1600 - 0x16FF	VirtualBox (VBOX) requests (see vboxif.h)
++  *   0x1700 - 0x17FF	PTYFS requests
++  *   0x1800 - 0x18FF	Management Information Base (MIB) requests
+++ *   0x1900 - 0x19FF	Multicast IPC requests
++  *
++  * Zero and negative values are widely used for OK and error responses.
++  */
++@@ -65,7 +66,8 @@
++ #define VM_PROC_NR   ((endpoint_t) 8)   /* memory server */
++ #define PFS_PROC_NR  ((endpoint_t) 9)  /* pipe filesystem */
++ #define MFS_PROC_NR  ((endpoint_t) 10)  /* minix root filesystem */
++-#define LAST_SPECIAL_PROC_NR	11	/* An untyped version for
+++#define MCAST_PROC_NR  ((endpoint_t) 11)  /* multicast server */
+++#define LAST_SPECIAL_PROC_NR	12	/* An untyped version for
++                                            computation in macros.*/
++ #define INIT_PROC_NR ((endpoint_t) LAST_SPECIAL_PROC_NR)  /* init
++                                                         -- goes multiuser */
++diff --git a/minix/kernel/table.c b/minix/kernel/table.c
++index d52d2fa..d4c7588 100644
++--- a/minix/kernel/table.c
+++++ b/minix/kernel/table.c
++@@ -62,6 +62,7 @@ struct boot_image image[NR_BOOT_PROCS] = {
++ {VM_PROC_NR,    "vm"    },
++ {PFS_PROC_NR,   "pfs"   },
++ {MFS_PROC_NR,   "mfs"   },
+++{MCAST_PROC_NR, "mcast" },
++ {INIT_PROC_NR,  "init"  },
++ };
++ 
++diff --git a/minix/lib/libc/sys/Makefile.inc b/minix/lib/libc/sys/Makefile.inc
++index 096107b..36a2b56 100644
++--- a/minix/lib/libc/sys/Makefile.inc
+++++ b/minix/lib/libc/sys/Makefile.inc
++@@ -26,7 +26,7 @@ SRCS+= 	accept.c access.c adjtime.c bind.c brk.c sbrk.c m_closefrom.c getsid.c \
++ 	getrusage.c setrlimit.c setpgid.c __sysctl.c
++ 
++ # Minix specific syscalls / utils.
++-SRCS+= kernel_utils.c sprofile.c stack_utils.c _mcontext.c
+++SRCS+= kernel_utils.c sprofile.c stack_utils.c _mcontext.c closegroup.c mreceive.c msend.c mtest.c opengroup.c recovergroup.c 
++ 
++ # Emulation for missing lchown/lchmod/lchflags
++ OBJS+= lchflags.o lchmod.o lchown.o
++diff --git a/minix/lib/libc/sys/closegroup.c b/minix/lib/libc/sys/closegroup.c
++new file mode 100644
++index 0000000..2a93317
++--- /dev/null
+++++ b/minix/lib/libc/sys/closegroup.c
++@@ -0,0 +1,20 @@
+++#include <sys/cdefs.h>
+++#include <lib.h>
+++#include "namespace.h"
+++
+++#include <string.h>
+++#include <unistd.h>
+++
+++#ifdef __weak_alias
+++__weak_alias(closeGroup, _closeGroup)
+++#endif
+++
+++int closeGroup(int group)
+++{
+++  message m;
+++
+++  memset(&m, 0, sizeof(m));
+++  m.m_m1.m1i1 = group;
+++  _syscall(MCAST_PROC_NR, MCAST_CLOSEGROUP, &m);
+++  return m.m_m1.m1i1;
+++}
++diff --git a/minix/lib/libc/sys/mreceive.c b/minix/lib/libc/sys/mreceive.c
++new file mode 100644
++index 0000000..1c0d6f0
++--- /dev/null
+++++ b/minix/lib/libc/sys/mreceive.c
++@@ -0,0 +1,22 @@
+++#include <sys/cdefs.h>
+++#include <lib.h>
+++#include "namespace.h"
+++
+++#include <string.h>
+++#include <unistd.h>
+++
+++#ifdef __weak_alias
+++__weak_alias(mreceive, _mreceive)
+++#endif
+++
+++int mreceive(int group, const char *buffer, size_t nbytes)
+++{
+++  message m;
+++
+++  memset(&m, 0, sizeof(m));
+++  m.m_m1.m1i1 = group;
+++  m.m_m1.m1i2 = nbytes;
+++  m.m_m1.m1p1 = (vir_bytes)buffer;
+++  _syscall(MCAST_PROC_NR, MCAST_MRECEIVE, &m);
+++  return m.m_m1.m1i1;
+++}
++diff --git a/minix/lib/libc/sys/msend.c b/minix/lib/libc/sys/msend.c
++new file mode 100644
++index 0000000..e840bfb
++--- /dev/null
+++++ b/minix/lib/libc/sys/msend.c
++@@ -0,0 +1,22 @@
+++#include <sys/cdefs.h>
+++#include <lib.h>
+++#include "namespace.h"
+++
+++#include <string.h>
+++#include <unistd.h>
+++
+++#ifdef __weak_alias
+++__weak_alias(msend, _msend)
+++#endif
+++
+++int msend(int group, const char *buffer, size_t nbytes)
+++{
+++  message m;
+++
+++  memset(&m, 0, sizeof(m));
+++  m.m_m1.m1i1 = group;
+++  m.m_m1.m1i2 = nbytes;
+++  m.m_m1.m1p1 = (vir_bytes)buffer;
+++  _syscall(MCAST_PROC_NR, MCAST_MSEND, &m);
+++  return m.m_m1.m1i1;
+++}
++diff --git a/minix/lib/libc/sys/mtest.c b/minix/lib/libc/sys/mtest.c
++new file mode 100644
++index 0000000..e39dd26
++--- /dev/null
+++++ b/minix/lib/libc/sys/mtest.c
++@@ -0,0 +1,19 @@
+++#include <sys/cdefs.h>
+++#include "namespace.h"
+++#include <lib.h>
+++
+++#include <string.h>
+++#include <unistd.h>
+++
+++#ifdef __weak_alias
+++__weak_alias(mtest, _mtest)
+++#endif
+++
+++int mtest(void)
+++{
+++  message m;
+++
+++  memset(&m, 0, sizeof(m));
+++  _syscall(MCAST_PROC_NR, MCAST_TEST, &m);
+++  return m.m_m1.m1i1;
+++}
++diff --git a/minix/lib/libc/sys/opengroup.c b/minix/lib/libc/sys/opengroup.c
++new file mode 100644
++index 0000000..86d7dff
++--- /dev/null
+++++ b/minix/lib/libc/sys/opengroup.c
++@@ -0,0 +1,20 @@
+++#include <sys/cdefs.h>
+++#include <lib.h>
+++#include "namespace.h"
+++
+++#include <string.h>
+++#include <unistd.h>
+++
+++#ifdef __weak_alias
+++__weak_alias(openGroup, _openGroup)
+++#endif
+++
+++int openGroup(int group)
+++{
+++  message m;
+++
+++  memset(&m, 0, sizeof(m));
+++  m.m_m1.m1i1 = group;
+++  _syscall(MCAST_PROC_NR, MCAST_OPENGROUP, &m);
+++  return m.m_m1.m1i1;
+++}
++diff --git a/minix/lib/libc/sys/recovergroup.c b/minix/lib/libc/sys/recovergroup.c
++new file mode 100644
++index 0000000..cdff506
++--- /dev/null
+++++ b/minix/lib/libc/sys/recovergroup.c
++@@ -0,0 +1,20 @@
+++#include <sys/cdefs.h>
+++#include <lib.h>
+++#include "namespace.h"
+++
+++#include <string.h>
+++#include <unistd.h>
+++
+++#ifdef __weak_alias
+++__weak_alias(recoverGroup, _recoverGroup)
+++#endif
+++
+++int recoverGroup(int group)
+++{
+++  message m;
+++
+++  memset(&m, 0, sizeof(m));
+++  m.m_m1.m1i1 = group;
+++  _syscall(MCAST_PROC_NR, MCAST_RECOVERGROUP, &m);
+++  return m.m_m1.m1i1;
+++}
++diff --git a/minix/servers/Makefile b/minix/servers/Makefile
++index 6787aab..154aa65 100644
++--- a/minix/servers/Makefile
+++++ b/minix/servers/Makefile
++@@ -1,6 +1,6 @@
++ .include <bsd.own.mk>
++ 
++-SUBDIR+=	ds input mib pm rs sched vfs vm
+++SUBDIR+=	ds input mib pm rs sched vfs vm mcast
++ 
++ .if ${MKIMAGEONLY} == "no"
++ SUBDIR+=	ipc is devman
++diff --git a/minix/servers/mcast/Makefile b/minix/servers/mcast/Makefile
++new file mode 100644
++index 0000000..4ea74d4
++--- /dev/null
+++++ b/minix/servers/mcast/Makefile
++@@ -0,0 +1,8 @@
+++# Makefile for mcast server proc
+++PROG=	mcast
+++SRCS=	main.c groups.c reply.c table.c utility.c deadlock.c
+++
+++DPADD+=	${LIBSYS}
+++LDADD+=	-lsys
+++
+++.include <minix.service.mk>
++diff --git a/minix/servers/mcast/deadlock.c b/minix/servers/mcast/deadlock.c
++new file mode 100644
++index 0000000..9119d9d
++--- /dev/null
+++++ b/minix/servers/mcast/deadlock.c
++@@ -0,0 +1,341 @@
+++#include "mcast.h"
+++#include "deadlock.h"
+++#include "groups.h"
+++bool Send[NR_PROCS][NR_PROCS];               //Sending status
+++bool Receive[NR_PROCS];          //Receiving status
+++mc_member_list_t ProcessList;
+++int total=0;										//Total number of registered processes on list
+++void printProcessList()								//print all registered processes
+++{
+++	int i;
+++	printf("Total processes = %d\n",total);
+++	printf("Process list:\n");
+++	for (i=0;i<total;i++)
+++		printf("Pid %2d: %d\n",i,(int)ProcessList[i]->pid);
+++}
+++
+++void printGroup()									//Print all valid groups
+++{
+++	printf("Group list:\n");
+++	int i,j;
+++	for (i=0;i<MAX_GROUPS;i++)
+++		if (group_list[i].nmembers!=0)
+++		{
+++			printf("Group %d: ",i);
+++			for (j=0;j<NR_PROCS;j++)
+++				if (group_list[i].member_list[j]!=NULL)
+++					printf("%d ",(int)group_list[i].member_list[j]->pid);
+++			puts("");
+++		}
+++}
+++
+++void printSendMatrix()								//Print the sending matrix
+++{
+++	int i,j;
+++	puts("Send matrix:");
+++	if (total>0)
+++	{
+++		for (i=0;i<=total;i++) printf("------");
+++		puts("");
+++		printf("     |");
+++		for (i=0;i<total;i++) printf("%5d|",(int)ProcessList[i]->pid);
+++		puts("");
+++		for (i=0;i<=total;i++) printf("------");
+++		puts("");
+++		for (i=0;i<total;i++)
+++		{
+++			printf("%5d|",(int)ProcessList[i]->pid);
+++			for (j=0;j<total;j++)
+++				printf("%5d|",(int)Send[i][j]);
+++			puts("");
+++		}
+++		for (i=0;i<=total;i++) printf("------");
+++		puts("");
+++	}
+++}
+++
+++void printReceiveMatrix()							//Print the receiving matrix
+++{
+++	int i,j;
+++	puts("Receive matrix:");
+++	if (total>0)
+++	{
+++		for (i=0;i<total;i++)
+++		{
+++			printf("Pid : %7d | %d\n",ProcessList[i]->pid,Receive[i]);
+++		}
+++	}
+++}
+++
+++void printAll()										//For debug
+++{
+++	printProcessList();
+++	printGroup();
+++	printSendMatrix();
+++	printReceiveMatrix();
+++}
+++
+++int ProcessActive(int pid)							//Check if a process is active. Returns -1 if active, 
+++{													//0 if pid not found or inactive(safe to Delete or CloseGroup)
+++	int t;
+++	t=FindIndex(pid);
+++	if (t==-1) 
+++	{
+++		puts("Pid not found in ProcessActive");
+++		return 0;
+++	}
+++	int i;
+++	for (i=0;i<total;i++)
+++	{
+++		if (Send[t][i]==1) return -1;
+++	//	if (Send[i][t]==1) return -1;
+++		if (Receive[t]==1) return -1;
+++	}
+++	return 0;
+++}
+++
+++int EnterSend(int pid, int GIndex)					//Enter sending blocking
+++{
+++	int i,t,k;
+++	t=FindIndex(pid);
+++	if (t==-1)
+++	{
+++		puts("Cannot enter send : pid not found");
+++		return 0;
+++	}
+++	for (i=0;i<NR_PROCS;i++)
+++	{
+++		if (group_list[GIndex].member_list[i]!=NULL)
+++		{
+++			k=FindIndex((int)group_list[GIndex].member_list[i]->pid);
+++			if (k!=-1)
+++				Send[t][k]=1;
+++		}
+++	}
+++	return 0;
+++}
+++
+++int EnterReceive(int pid, int GIndex)				//Enter receiving blocking
+++{
+++	int t;
+++	t=FindIndex(pid);
+++	if (t==-1)
+++	{
+++		puts("Cannot enter receive : pid not found");
+++		return 0;
+++	}
+++	Receive[t]=1;
+++	return 0;
+++}
+++
+++int ExitSend(int pid, int GIndex)					//Exit sending blocking
+++{
+++	int i,t;
+++	t=FindIndex(pid);
+++	if (t==-1)
+++	{
+++		puts("Cannot exit send : pid not found");
+++		return 0;
+++	}
+++	for (i=0;i<total;i++) Send[t][i]=0;
+++	return 0;
+++}
+++
+++int ExitReceive(int pid, int GIndex)				//Exit receiving blocking
+++{
+++	int t;
+++	t=FindIndex(pid);
+++	if (t==-1)
+++	{
+++		puts("Cannot exit receive : pid not found");
+++		return 0;
+++	}
+++	Receive[t]=0;
+++	return 0;
+++}
+++
+++int SendSafe(int pid, int GIndex)					//Check if it is safe to send. Returns 0 if safe, -1 if unsafe
+++{
+++	if (group_list[GIndex].nmembers==0)	return 0;
+++	int t;
+++	t=FindIndex(pid);
+++	if (t==-1)
+++	{
+++		puts("Send not safe : pid not found");
+++		return -1;
+++	}
+++	return CircleCheckSend(t,GIndex);
+++}
+++
+++int ReceiveSafe(int pid, int GIndex)				//Check if it is safe to receive. Returns 0 if safe, -1 if unsafe
+++{
+++	//if (valid_member((endpoint_t)pid,GIndex)==1) return -1;
+++	//else return 0;
+++	if (FindIndex(pid)==-1)
+++	{
+++		puts("Receive not safe : pid not found");
+++		return -1;
+++	}
+++	return 0;
+++}
+++
+++int CircleCheckSend(int PIndex, int GIndex)			//Circle checking for sending. Returns 0 if safe, -1 if unsafe
+++{
+++	int head,tail,i,t;
+++	int queue[NR_PROCS];
+++	head=0;
+++	tail=0;
+++	queue[head]=PIndex;
+++	for (i=0;i<NR_PROCS;i++)
+++	{
+++		if (group_list[GIndex].member_list[i]!=NULL)
+++		{
+++			t=FindIndex((int)group_list[GIndex].member_list[i]->pid);
+++			if (t==PIndex) return -1;
+++			if (t==-1)
+++			{
+++				puts("Circle check aborted : member not in process list");
+++				return -1;
+++			}
+++			tail++;
+++			queue[tail]=t;
+++		}
+++	}
+++	head++;
+++	while(head<=tail)
+++	{
+++		printf("Head is %d\n",queue[head]);
+++		for (i=0;i<NR_PROCS;i++)
+++		{
+++			if (Send[queue[head]][i]!=0)
+++			{
+++				if (i==PIndex) return -1;
+++				tail++;
+++				queue[tail]=i;
+++
+++			}
+++		}
+++		head++;
+++	}
+++	return 0;
+++}
+++
+++/*
+++int CircleCheckReceive(int PIndex, int GIndex)		//Circle checking for receiving. Returns 0 if safe, -1 if unsafe
+++{
+++	int queue[NR_PROCS];
+++	int head,tail,i,t;
+++	head=0;
+++	tail=0;
+++	queue[head]=PIndex;
+++	for (i=0;i<NR_PROCS;i++)
+++	{
+++		if (group_list[i].nmembers!=0)
+++		{
+++			t=FindIndex((int)group_list[GIndex].member_list[i]->pid);
+++			if (t==PIndex) return -1;
+++			tail++;
+++			queue[tail]=t;
+++		}
+++	}
+++	head++;
+++	while(head<=tail)
+++	{
+++		for (i=0;i<NR_PROCS;i++)
+++		{
+++			if (Receive[queue[head]][i]!=0)
+++			{
+++				if (i==PIndex) return -1;
+++				tail++;
+++				queue[tail]=i;
+++
+++			}
+++		}
+++		head++;
+++	}
+++	return 0;
+++}
+++*/
+++
+++
+++int FindIndex(int pid)								//Find the index in process list of a given Pid, returns -1 if not found
+++{
+++	int i;
+++	for (i=0;i<total;i++)
+++		if ((int)ProcessList[i]->pid==pid) return i;
+++	return -1;
+++}
+++
+++int ProcessRegister(mc_member_t *p)					//Register a new process into process list
+++{
+++	if (FindIndex((int)p->pid)!=-1) return -1;					//Error : process already in list
+++	if (total==NR_PROCS) return -2;							//Error : max number of processes
+++	ProcessList[total]=p;
+++	total++;
+++	int i;
+++	for (i=0;i<total;i++)
+++	{
+++		Send[i][total-1]=0;
+++		Send[total-1][i]=0;
+++	}
+++	Receive[total-1]=0;
+++	return 0;
+++}
+++
+++int ProcessDelete(int pid)							//Delete a process from process list
+++{
+++	int t;
+++	mc_member_t *p;
+++	t=FindIndex(pid);
+++	if (t==-1)
+++	{
+++		puts("Cannot delete : Pid not found.");
+++		return -1;
+++	}
+++	p=ProcessList[t];										//Error : Pid not found
+++	if (ProcessActive(pid)==-1)
+++	{
+++		printf("Cannot delete %d: Process active.\n", pid);
+++      printAll();
+++		return -1;						//Error : Process still active
+++	}
+++   printf("ProcessDelete performing deletion at %d of pid %d\n",t, pid);
+++	int i,j,k;
+++	for (i=t;i<total-1;i++)										//Delete from sending and receiving matrix
+++		for (j=0;j<total;j++)									//
+++		{														//
+++			Send[i][j]=Send[i+1][j];							//
+++		}														//a
+++	for (j=0;j<total;j++)										//
+++		for (i=t;i<total-1;i++)									//
+++		{														//
+++			Send[j][i]=Send[j][i+1];							//
+++		}														//
+++	for (i=0;i<total;i++)										//
+++	{															//
+++		Send[i][total-1]=0;										//
+++		Send[total-1][i]=0;										//Delete from sending and receiving matrix
+++	}
+++	for (i=t;i<total-1;i++){
+++      Receive[i]=Receive[i+1];
+++   }
+++	Receive[total-1]=0;
+++	for (i=t;i<total-1;i++)										//Delete from process list
+++		ProcessList[i]=ProcessList[i+1];
+++	total--;
+++   printf("freeing %x\n",(unsigned int)p);
+++	free(p);
+++	return 0;
+++}
+++
+++void deadlock_init()								//Initialize all lists
+++{
+++	int i,j;
+++	total=0;
+++	for (i=0;i<NR_PROCS;i++)
+++	{									//Sending and receiving matrix
+++		for (j=0;j<NR_PROCS;j++)
+++			Send[i][j]=0;
+++		Receive[i]=0;
+++	}
+++}
++diff --git a/minix/servers/mcast/deadlock.h b/minix/servers/mcast/deadlock.h
++new file mode 100644
++index 0000000..ed4af4f
++--- /dev/null
+++++ b/minix/servers/mcast/deadlock.h
++@@ -0,0 +1,27 @@
+++#include "types.h"
+++extern bool Send[NR_PROCS][NR_PROCS];
+++extern bool Receive[NR_PROCS];
+++extern mc_member_list_t ProcessList;				//A list of processes
+++
+++int CircleCheckSend(int PIndex, int GIndex);
+++//int CircleCheckReceive(int PIndex, int GIndex);
+++int FindIndex(int pid);
+++int ProcessRegister(mc_member_t *p);
+++int ProcessDelete(int pid);
+++int SendSafe(int pid, int GIndex);
+++int ReceiveSafe(int pid, int GIndex);
+++int EnterSend(int pid, int GIndex);
+++int EnterReceive(int pid, int GIndex);
+++int ExitSend(int pid, int GIndex);
+++int ExitReceive(int pid, int GIndex);
+++int ProcessActive(int pid);
+++void deadlock_init();
+++
+++
+++void printAll();
+++void printSendMatrix();
+++void printReceiveMatrix();
+++void printGroup();
+++void printProcessList();
+++
+++
++diff --git a/minix/servers/mcast/groups.c b/minix/servers/mcast/groups.c
++new file mode 100644
++index 0000000..6202233
++--- /dev/null
+++++ b/minix/servers/mcast/groups.c
++@@ -0,0 +1,411 @@
+++#include "mcast.h"
+++#include "types.h"
+++#include "deadlock.h"
+++#include "reply.h"
+++#include "groups.h"
+++#include "utility.h"
+++
+++group_list_t group_list;
+++/* Decide Messages Structure
+++ * Each member in group should have pointer
+++ * to next object to get
+++ */
+++//unistd.h for msend
+++/* int main(int argv, char **argc)
+++   {
+++   init();
+++   return 0;
+++   }
+++ */
+++void init_groups()
+++{
+++        int i,j;
+++        for(i = 0; i < MAX_GROUPS; i++){
+++                group_list[i].nmembers = 0;
+++                group_list[i].b_sender = NULL;
+++            for(j = 0; j < NR_PROCS; j++){
+++                    group_list[i].member_list[j] = NULL;
+++            }
+++            
+++        }
+++}
+++
+++//MESSAGE APPENDING MUST BE ATOMIC
+++/* src - Source data
+++ * type - datatype
+++ * index - who sent from
+++ * gid - group id
+++ *
+++ * return: (OK) on success, (SUSPEND) to block sender, - on failure
+++ */
+++int msend(endpoint_t pid, const char *src, size_t size, int gid)
+++{
+++        int i, procnr;
+++        size_t com_size;
+++
+++        /* Check for a preexisting blocked sender */
+++        if(group_list[gid].b_sender != NULL){
+++                if(mcast_isokendpt(group_list[gid].b_sender->pid,&procnr) == (OK)){
+++                  /* valid blocked sender */
+++                  printf("One sender at a time can send to a group!\n");
+++                  return (EAGAIN);
+++                } else {
+++                  /* invalid blocked sender endpoint */
+++                  printf("Deleting invalid blocked sender\n");
+++                  ExitSend(group_list[gid].b_sender->pid,gid);
+++                  if(ProcessDelete(group_list[gid].b_sender->pid) != 0){
+++                          printf("ProcessDelete failed when deleting invalid blocked sender\n");
+++                          group_list[gid].b_sender = NULL;
+++                          return (EGENERIC);
+++                  }
+++                  group_list[gid].b_sender = NULL;
+++                }
+++        }
+++
+++        /* Register the sender */
+++        group_list[gid].b_sender = malloc(sizeof(mc_member_t));
+++        group_list[gid].b_sender->pid = pid;
+++        group_list[gid].b_sender->blocked = 0;
+++        ProcessRegister(group_list[gid].b_sender);
+++
+++        //ensure valid type,src,index gid
+++        int t=FindIndex((int)pid);
+++
+++        if (t==-1)
+++                return (EGENERIC);
+++                //Check if sender is in the process list
+++
+++        if(!valid_gid(gid))
+++                return (EINVAL);
+++        //>0 members in grpu
+++        //Check if src is valid?
+++
+++        //ATOMIC {
+++        
+++        printf("Performing deadlock detection\n");
+++        if (SendSafe(pid,gid)!=0)
+++        {
+++        //          printf("Would have returned ELOCKED\n");
+++                return (ELOCKED);
+++        }
+++        
+++        EnterSend((int)pid,gid);
+++        printf("Entering message send loop\n");
+++        group_list[gid].deliveries = 0;
+++        //For each process in grp
+++        for(i=0;i<NR_PROCS;i++){
+++                if(group_list[gid].member_list[i] == NULL)
+++                        continue;
+++                /* Process maybe not blocked and waiting ?*/ 
+++                if(group_list[gid].member_list[i]->blocked < 1){
+++                        //else mark as pending
+++                        printf("Process %d not blocked, block sender after this!\n", group_list[gid].member_list[i]->pid);
+++                        group_list[gid].member_list[i]->pending = 1;
+++                        group_list[gid].npending++;
+++                        continue;
+++                }
+++                com_size = MIN(group_list[gid].member_list[i]->datasize,size);
+++                printf("Attempting to copy %d bytes to ep %d\n", com_size, group_list[gid].member_list[i]->pid);
+++                /* reciever is going to exit(or is dead) so tell deadlock detector */
+++                ExitReceive((int)(group_list[gid].member_list[i]->pid),gid);
+++               /* interrupted system call? */
+++                if(mcast_isokendpt(group_list[gid].member_list[i]->pid, &procnr) != OK ||
+++                  sys_datacopy(pid, (vir_bytes)src, group_list[gid].member_list[i]->pid, group_list[gid].member_list[i]->dataptr, com_size) != (OK)){
+++                        /* Failed delivery! Deallocate everything pertaining to that proc. copying is unsafe since the proc is gone! */
+++                        printf("MCAST: msend detected interrupted receiver. Deallocating.\n");
+++                        if(group_list[gid].member_list[i]->pending > 0){
+++                                group_list[gid].npending--;
+++                        }
+++						      
+++                        rm_member(group_list[gid].member_list[i]->pid,gid);
+++                        continue;
+++                }
+++                /* delivery was successful */
+++                group_list[gid].deliveries++;
+++                /* Clear blocked flag */
+++                group_list[gid].member_list[i]->blocked = 0;
+++               /* unblock receiver */
+++                wake_up(group_list[gid].member_list[i]->pid, (OK));
+++        }
+++        //if any process is/was marked as pending
+++        if(group_list[gid].npending > 0){
+++                //block sender
+++                assert(group_list[gid].b_sender != NULL);
+++                group_list[gid].b_sender->blocked = 1;
+++                group_list[gid].b_sender->dataptr = (vir_bytes)src;
+++                group_list[gid].b_sender->datasize = size;
+++                return (SUSPEND);
+++        }
+++        //else return and invalidate the blocked sender pid
+++        ExitSend((int)pid,gid);
+++        assert(group_list[gid].b_sender->pid == pid);
+++        if(ProcessDelete(pid) != 0){
+++                printf("Unable to deregister sender from process list after send completed!\n");
+++                return (EGENERIC);
+++        }
+++        group_list[gid].b_sender = NULL;
+++        return group_list[gid].deliveries;
+++
+++        //Do the message delivery between EnterSend() and ExitSend()
+++
+++
+++        //index msg pointer should skip own data
+++        //advance index pointer to next msg
+++        //}
+++
+++}
+++/*Dest is destination location
+++ *gid is group id
+++ */
+++int mrecv(endpoint_t pid, void *dest, size_t size, int gid)
+++{
+++        int t=FindIndex((int)pid);
+++        int procnr;
+++        size_t com_size;
+++        if (t==-1)
+++                return EGENERIC;
+++        //Check if sender is in the process list
+++
+++        if(!valid_gid(gid))
+++                return EINVAL;
+++        if(!valid_member(pid,gid))   
+++                return EINVAL;
+++
+++        //Does the rx have a message pending?
+++        if(group_list[gid].b_sender != NULL && ProcessList[t]->pending > 0){
+++                assert(group_list[gid].npending > 0);
+++                /* has the sender been interrupted? */
+++                if(mcast_isokendpt(group_list[gid].b_sender->pid,&procnr) == OK){
+++
+++                        /* yes it does, deliver immediately (i.e. dont block) */
+++                        com_size = MIN(size, group_list[gid].b_sender->datasize);
+++                        printf("MRECV: immediate delivery, attempting to copy %d bytes to ep %d\n", com_size, group_list[gid].b_sender->pid);
+++                        if(sys_datacopy(group_list[gid].b_sender->pid, group_list[gid].b_sender->dataptr, pid, (vir_bytes)dest, com_size) == (OK)){
+++                                group_list[gid].deliveries++;
+++                        }
+++                        ProcessList[t]->pending = 0;
+++                        group_list[gid].npending--;
+++                        /* all pending messages handled? */
+++                        if(group_list[gid].npending == 0){
+++                                /* unblock sender */
+++                                ExitSend(group_list[gid].b_sender->pid,gid);
+++                                group_list[gid].b_sender->blocked = 0;
+++                                wake_up(group_list[gid].b_sender->pid, group_list[gid].deliveries);
+++                                if(ProcessDelete(group_list[gid].b_sender->pid) != 0){
+++                                        printf("ProcessDelete failed while unblocking sender in mrecv\n");
+++                                        return (EGENERIC);
+++                                }
+++                                group_list[gid].b_sender = NULL;
+++                        }
+++                        /* receive has been handled, return. */
+++                        return (OK);
+++                }
+++                else {
+++                        printf("MCAST: Blocked sender is no longer valid, handling as a blocking msend()\n");
+++                }       
+++        }
+++        /* Otherwise we are going to wait, begin deadlock safety checks */
+++		/*
+++        if (ReceiveSafe(pid,gid)!=0)
+++        {
+++                return (ELOCKED);
+++        }
+++		*/
+++        EnterReceive((int)pid,gid);
+++        //Do the message delivery between EnterReceive() and ExitReceive()
+++        /* store info and block receiver */
+++        ProcessList[t]->blocked = 1;
+++        ProcessList[t]->dataptr = (vir_bytes)dest;
+++        ProcessList[t]->datasize = size;
+++        /* Caller is getting blocked, receiver will ExitReceive() in the msend() handler */
+++        return (SUSPEND);
+++}
+++
+++int opengroup(endpoint_t pid, int gid)
+++{
+++	if(!valid_gid(gid))
+++		return EINVAL;
+++	else
+++		add_member(pid, gid);
+++	return OK;
+++}
+++int closegroup(endpoint_t pid, int gid)
+++{
+++
+++        if(valid_gid(gid) && valid_member(pid,gid))
+++        {
+++			rm_member(pid,gid);
+++                return OK;
+++        } else {
+++                return EINVAL;
+++        }
+++}
+++mc_member_t* find_member_index(endpoint_t pid, int gid, int *index)
+++{
+++	int i;
+++	for(i = 0; i < NR_PROCS; i++)
+++	{
+++		if(group_list[gid].member_list[i] != NULL)
+++		{
+++			if(group_list[gid].member_list[i]->pid == pid)
+++			{
+++				*index = i;
+++				return group_list[gid].member_list[i];
+++			}
+++		}
+++	}
+++	*index = -1;
+++	return NULL;
+++}
+++int find_next_index(int gid)
+++{
+++	int i;
+++	for(i = 0; i < NR_PROCS; i++)
+++	{
+++		if(group_list[gid].member_list[i] == NULL)
+++		{
+++			return i;
+++		}
+++	}
+++	return -1;
+++}
+++
+++/*
+++void add_group(int gid)
+++{
+++        if(gid < 32)
+++        {
+++                mc_group_t group;
+++                group.nmembers = 0;
+++                group_list[gid] = group;
+++        }
+++}
+++*/
+++/*
+++void rm_group(int gid)
+++{
+++        group_list[gid].valid = 0;
+++}
+++*/
+++void add_member(endpoint_t pid, int gid)
+++{
+++	if(!valid_member(pid,gid)) //Not already a member  
+++	{
+++		group_list[gid].nmembers++;
+++		int i = find_next_index(gid);
+++		//mc_member_t *mem = find_member_index(pid,gid,&i);
+++		//Member not part of list *mem is NULL
+++		//TODO only malloc if it isnt in the process list
+++		int mindex = FindIndex((int)pid); 
+++		if(mindex == -1 && i != -1) 
+++		{
+++			group_list[gid].member_list[i] = malloc(sizeof(mc_member_t));
+++			//INSTANTIATE VARS
+++			group_list[gid].member_list[i]->pending = 0;
+++			group_list[gid].member_list[i]->blocked = 0;
+++			group_list[gid].member_list[i]->pid = pid;
+++			group_list[gid].member_list[i]->numgroups = 1;
+++			//TODO check for -2 error code and propagate up
+++			ProcessRegister(group_list[gid].member_list[i]);
+++		}
+++		else if(i != -1)
+++		{
+++			group_list[gid].member_list[i] = ProcessList[mindex];
+++			group_list[gid].member_list[i]->numgroups++; 
+++		}
+++		else if(i == -1)
+++		{
+++			printf("Member list fill\n");
+++		}
+++	}
+++}
+++int recovergroup(int gid){
+++        int i,procnr;
+++        /* Handle invalid group properly */
+++        if(gid < 0 || gid > MAX_GROUPS)
+++                return (EINVAL);
+++        /* fail all blocked senders and receivers with ELOCKED */
+++        for(i=0; i<NR_PROCS; i++){
+++                if(group_list[gid].member_list[i] == NULL)
+++                        continue;
+++                /* clear all pending requests */
+++                if(group_list[gid].member_list[i]->pending > 0){
+++                        group_list[gid].member_list[i]->pending = 0;
+++                        group_list[gid].npending--;
+++                }
+++                /* wake all blocked receivers with ELOCKED */
+++                if(group_list[gid].member_list[i]->blocked == 1){
+++                        group_list[gid].member_list[i]->blocked = 0;
+++                        ExitReceive(group_list[gid].member_list[i]->pid, gid);
+++                        wake_up(group_list[gid].member_list[i]->pid, (ELOCKED));
+++                }
+++                /* is there a blocked sender? If so wake and return ELOCKED. */
+++                if(group_list[gid].b_sender != NULL){
+++                        assert(mcast_isokendpt(group_list[gid].member_list[i]->pid,&procnr));
+++                        wake_up(group_list[gid].b_sender->pid, (ELOCKED));
+++                        ExitSend(group_list[gid].b_sender->pid, gid);
+++                        if(ProcessDelete(group_list[gid].b_sender->pid) != 0){
+++                                printf("ProcessDelete failed in recovergroup\n");
+++                                group_list[gid].b_sender = NULL;
+++                                return (EGENERIC);
+++                        }
+++                        group_list[gid].b_sender = NULL;
+++                }
+++        }
+++        return (OK);
+++}
+++void rm_member(endpoint_t pid, int gid)
+++{
+++        if(valid_member(pid,gid)) //Ensure its a member
+++        {
+++				int mindex = FindIndex(pid); 
+++				int index;
+++				find_member_index(pid,gid,&index);
+++            printf("find_member_index\n");
+++				assert(index != -1);
+++				assert(mindex != -1);
+++				assert(group_list[gid].member_list[index]->numgroups != 0);
+++				if(group_list[gid].member_list[index]->pending != 0){
+++                    /* removing a member with a pending message */
+++                    group_list[gid].npending--;
+++            }
+++            /* Opportunity to unblock sender if all receivers are gone */
+++               if(group_list[gid].npending == 0 && group_list[gid].b_sender != NULL && group_list[gid].b_sender->blocked > 0){
+++                    /* unblock sender */
+++                    ExitSend(group_list[gid].b_sender->pid,gid);
+++                    group_list[gid].b_sender->blocked = 0;
+++                    wake_up(group_list[gid].b_sender->pid, (EAGAIN));
+++                    if(ProcessDelete(group_list[gid].b_sender->pid) != 0){
+++                            printf("ProcessDelete failed while unblocking sender in closegroup\n");
+++                    }
+++                    group_list[gid].b_sender = NULL;
+++                }
+++
+++            if(group_list[gid].member_list[index]->numgroups == 1)
+++				{
+++					group_list[gid].member_list[index]->numgroups = 0;
+++               printf("Enter processdelete in closegroup\n");
+++               ProcessDelete(group_list[gid].member_list[index]->pid);
+++               printf("Exit processdelete in closegroup\n");
+++            }
+++                group_list[gid].nmembers--;
+++				    group_list[gid].member_list[index] = NULL;
+++        }
+++}
+++int valid_gid(int gid)
+++{
+++        if(gid < MAX_GROUPS && gid >= 0)
+++                return 1;
+++        return 0;
+++}
+++//Checks if gid is valid, and if member of index exists, and within bounds
+++int valid_member(endpoint_t pid,int gid)
+++{
+++        if(!valid_gid(gid))
+++        	return 0;
+++		int index;
+++		mc_member_t *mem = find_member_index(pid,gid,&index);
+++		if(mem == NULL)
+++			return 0;
+++        return 1;
+++}
++diff --git a/minix/servers/mcast/groups.h b/minix/servers/mcast/groups.h
++new file mode 100644
++index 0000000..5ae5865
++--- /dev/null
+++++ b/minix/servers/mcast/groups.h
++@@ -0,0 +1,20 @@
+++#include <string.h>
+++#include <stdlib.h>
+++
+++int msend(endpoint_t pid, const char *src, size_t size, int gid);
+++int mrecv(endpoint_t pid, void *dest, size_t size, int gid);
+++int valid_index(int index);
+++int msg_add(void *src);
+++int opengroup(endpoint_t pid, int gid);
+++int closegroup(endpoint_t pid, int gid);
+++int recovergroup(int gid);
+++void add_group(int gid);
+++void rm_group(int gid);
+++void add_member(endpoint_t pid, int gid);
+++void rm_member(endpoint_t pid, int gid);
+++int valid_gid(int gid);
+++int valid_member(endpoint_t pid,int gid);
+++int msg_add(void *src);
+++void init_groups();
+++mc_member_t* find_member_index(endpoint_t pid, int gid, int *index);
+++int find_next_index(int gid);
++diff --git a/minix/servers/mcast/main.c b/minix/servers/mcast/main.c
++new file mode 100644
++index 0000000..fcb176d
++--- /dev/null
+++++ b/minix/servers/mcast/main.c
++@@ -0,0 +1,175 @@
+++/* This file contains the main program of the mcast server. It is responsible
+++ * for implementing the multicast IPC functions.
+++ */
+++
+++#define _MAIN
+++#include "mcast.h"
+++#include "types.h"
+++#include "reply.h"
+++#include "groups.h"
+++#include "deadlock.h"
+++#include "utility.h"
+++
+++extern int (* const call_vec[])(void);
+++
+++/* Declare some local functions. */
+++static void sef_local_startup(void);
+++static int sef_cb_init_fresh(int, sef_init_info_t *);
+++static void sef_cb_signal_handler(int);
+++
+++/* globals */
+++message m_in;	/* the incoming message itself is kept here. */
+++int call_nr;	/* system call number */
+++int who_e;	/* caller's endpoint */
+++int result;	/* result to system call */
+++endpoint_t bproc;
+++vir_bytes dstaddr;
+++int dstlen;
+++/*===========================================================================*
+++ *				handlers				     *
+++ *===========================================================================*/
+++
+++int do_test(void){
+++	printf("test of mcast server process\n");
+++	printAll();
+++	return(OK);
+++}
+++/*
+++int do_msend(void){
+++	int rv;
+++	printf("msend called\n");
+++	if(bproc != -1){
+++		printf("msend unblock %d\n", bproc);
+++			 copy from the sender to the receiver 
+++		printf("Attempt to copy %d bytes \n", MIN(dstlen,m_in.m_m1.m1i2));
+++		rv = sys_datacopy(who_e, (vir_bytes)m_in.m_m1.m1p1, bproc, dstaddr, MIN(dstlen,(vir_bytes)m_in.m_m1.m1i2));
+++		wake_up(bproc,OK);	
+++		bproc = -1;
+++	}
+++	return rv;
+++}
+++int do_mreceive(void){
+++	printf("mreceive called\n");
+++	 save parameters of caller 
+++	bproc = who_e;
+++	dstaddr = (vir_bytes)m_in.m_m1.m1p1;
+++	dstlen = m_in.m_m1.m1i2;
+++	return(SUSPEND);
+++}
+++*/
+++int do_msend(void){
+++   printf("msend called\n");
+++	return msend(who_e, m_in.m_m1.m1p1, m_in.m_m1.m1i2, m_in.m_m1.m1i1);	
+++}
+++
+++int do_mreceive(void){
+++   printf("mreceive called\n");
+++	return mrecv(who_e, m_in.m_m1.m1p1, m_in.m_m1.m1i2, m_in.m_m1.m1i1);	
+++}
+++
+++int do_opengroup(void){
+++	printf("opengroup called\n");
+++	return opengroup(who_e, m_in.m_m1.m1i1);
+++}
+++int do_closegroup(void){
+++	printf("closegroup called\n");
+++	return closegroup(who_e, m_in.m_m1.m1i1);
+++}
+++int do_recovergroup(void){
+++	printf("recovergroup called\n");
+++	return recovergroup(m_in.m_m1.m1i1);
+++}
+++	
+++/*===========================================================================*
+++ *				main loop				     *
+++ *===========================================================================*/
+++
+++int main(void)
+++{
+++	int rv;
+++	unsigned int call_index;
+++	/* SEF local startup. */
+++	sef_local_startup();
+++	printf("starting mcast server process\n");
+++	bproc = -1;
+++	/* This is MCAST's main loop - get work and do it, forever and forever. */
+++	while (TRUE) {
+++		int ipc_status;
+++
+++		/* Wait for the next message and extract useful information from it. */
+++		if (sef_receive_status(ANY, &m_in, &ipc_status) != OK)
+++			panic("MCAST sef_receive error");
+++		who_e = m_in.m_source;	/* who sent the message */
+++		call_nr = m_in.m_type;	/* system call number */
+++
+++		/* Check for system notifications first. Special cases. */
+++		if (is_ipc_notify(ipc_status)) {
+++			switch(who_e){
+++				/* ignore for now */
+++				default :
+++					break;
+++			}
+++
+++			continue; /* Don't reply. */
+++		}
+++		/* If the system call number is valid, perform the call. */
+++		if(IS_MCAST_CALL(call_nr) && (call_nr - MCAST_BASE) < NR_MCAST_CALLS ){	
+++			call_index = (unsigned int) (call_nr - MCAST_BASE);
+++			result = (*call_vec[call_index])();
+++		} else {
+++			result = no_sys(who_e, call_nr);
+++		}
+++      printf("Syscall returning %d\n",result);
+++
+++		/* Send reply. */
+++		if (result != SUSPEND) {
+++         m_in.m_type = (OK);  		/* build reply message */
+++         m_in.m_m1.m1i1 = result;
+++			reply(who_e, &m_in);		/* send it away */
+++		}
+++	}
+++	return(OK);
+++}
+++
+++/*===========================================================================*
+++ *			       sef_local_startup			     *
+++ *===========================================================================*/
+++static void sef_local_startup()
+++{
+++  /* Register init callbacks. */
+++  sef_setcb_init_fresh(sef_cb_init_fresh);
+++//  sef_setcb_init_lu(sef_cb_init_fresh);
+++  sef_setcb_init_restart(sef_cb_init_fresh);
+++
+++  /* Register signal callbacks. */
+++  sef_setcb_signal_handler(sef_cb_signal_handler);
+++
+++  /* Let SEF perform startup. */
+++  sef_startup();
+++}
+++
+++/*===========================================================================*
+++ *		            sef_cb_init_fresh                                *
+++ *===========================================================================*/
+++static int sef_cb_init_fresh(int UNUSED(type), sef_init_info_t *UNUSED(info))
+++{
+++/* Initialize mcast server */
+++	printf("MCAST: sef_cb_init_fresh called, initializing\n");
+++	init_groups();
+++	deadlock_init();
+++  return(OK);
+++}
+++
+++/*===========================================================================*
+++ *		            sef_cb_signal_handler                            *
+++ *===========================================================================*/
+++static void sef_cb_signal_handler(int signo)
+++{
+++  /* Only check for termination signal, ignore anything else. */
+++  if (signo != SIGTERM) return;
+++  printf("MCAST: exiting on SIGTERM\n");
+++  /* Shutting down. */ 
+++
+++  exit(0);
+++}
+++
++diff --git a/minix/servers/mcast/mcast.h b/minix/servers/mcast/mcast.h
++new file mode 100644
++index 0000000..8980e2b
++--- /dev/null
+++++ b/minix/servers/mcast/mcast.h
++@@ -0,0 +1,19 @@
+++/* This is the master header for the multicast server.  It includes some other files
+++ * and defines the principal constants.
+++ */
+++#define _SYSTEM		1	/* tell headers that this is the kernel */
+++#define MIN(a, b) (((a)<(b)) ? (a) : (b))
+++/* The following are so basic, all the *.c files get them automatically. */
+++#include <minix/config.h>	/* MUST be first */
+++#include <sys/types.h>
+++#include <minix/const.h>
+++#include <minix/callnr.h>
+++#include <stdlib.h>
+++#include <assert.h>
+++
+++#include <minix/syslib.h>
+++#include <minix/sysutil.h>
+++
+++#include <errno.h>
+++
+++#include "proto.h"
++diff --git a/minix/servers/mcast/proto.h b/minix/servers/mcast/proto.h
++new file mode 100644
++index 0000000..c9897f2
++--- /dev/null
+++++ b/minix/servers/mcast/proto.h
++@@ -0,0 +1,14 @@
+++/* Function prototypes. */
+++
+++
+++/* main.c */
+++int main(void);
+++void setreply(int proc_nr, int result);
+++
+++/* handlers */
+++int do_test(void);
+++int do_msend(void);
+++int do_mreceive(void);
+++int do_opengroup(void);
+++int do_closegroup(void);
+++int do_recovergroup(void);
++diff --git a/minix/servers/mcast/reply.c b/minix/servers/mcast/reply.c
++new file mode 100644
++index 0000000..d7abaca
++--- /dev/null
+++++ b/minix/servers/mcast/reply.c
++@@ -0,0 +1,29 @@
+++#include "mcast.h"
+++#include "reply.h"
+++#include <assert.h>
+++#include <string.h>
+++/*===========================================================================*
+++ *				wake_up					     *
+++ *===========================================================================*/
+++
+++int wake_up(endpoint_t ep, int retcode){
+++	message m_out;
+++	memset(&m_out,0x00,sizeof(message));
+++	assert(retcode != (SUSPEND));
+++	m_out.m_m1.m1i1 = retcode; /* build reply message */
+++	m_out.m_source = MCAST_PROC_NR;
+++   m_out.m_type = (OK);
+++	return reply(ep, &m_out);	
+++}
+++
+++int reply(endpoint_t who_e, message *m_ptr)
+++{
+++	int s = ipc_send(who_e, m_ptr);    /* send the message */
+++	if (OK != s){
+++		printf("MCAST: unable to send reply to %d: %d\n", who_e, s);
+++		return(-EAGAIN);
+++	}
+++	return (OK);
+++}
+++
+++
++diff --git a/minix/servers/mcast/reply.h b/minix/servers/mcast/reply.h
++new file mode 100644
++index 0000000..89e05f9
++--- /dev/null
+++++ b/minix/servers/mcast/reply.h
++@@ -0,0 +1,3 @@
+++
+++int reply(endpoint_t who_e, message *m_ptr);
+++int wake_up(endpoint_t, int);
++diff --git a/minix/servers/mcast/table.c b/minix/servers/mcast/table.c
++new file mode 100644
++index 0000000..2d6f1ff
++--- /dev/null
+++++ b/minix/servers/mcast/table.c
++@@ -0,0 +1,18 @@
+++/* This file contains the table used to map system call numbers onto the
+++ * routines that perform them.
+++ */
+++
+++#define _TABLE
+++
+++#include "mcast.h"
+++
+++#define CALL(n) [((n) - MCAST_BASE)]
+++
+++int (* const call_vec[NR_MCAST_CALLS])(void) = {
+++	CALL(MCAST_TEST)	= do_test,
+++	CALL(MCAST_MSEND)	= do_msend,
+++	CALL(MCAST_MRECEIVE)	= do_mreceive,
+++	CALL(MCAST_OPENGROUP)	= do_opengroup,
+++	CALL(MCAST_CLOSEGROUP)	= do_closegroup,
+++	CALL(MCAST_RECOVERGROUP)	= do_recovergroup
+++};
++diff --git a/minix/servers/mcast/types.h b/minix/servers/mcast/types.h
++new file mode 100644
++index 0000000..f27335d
++--- /dev/null
+++++ b/minix/servers/mcast/types.h
++@@ -0,0 +1,31 @@
+++#define MAX_GROUPS 32
+++#ifndef _MCAST_TYPES
+++#define _MCAST_TYPES
+++#include <minix/config.h>
+++#include <stdbool.h>
+++//int ProcessList[NR_PROCS];
+++
+++typedef struct {
+++   endpoint_t pid;
+++	unsigned char blocked;
+++	unsigned char pending;
+++	vir_bytes dataptr;
+++	size_t numgroups; //Number of groups member is part of
+++	size_t datasize;
+++} mc_member_t;
+++
+++typedef mc_member_t *mc_member_list_t[NR_PROCS];
+++
+++typedef struct {
+++	//group number implied as index in list
+++	mc_member_t *b_sender;
+++   int deliveries;
+++	int npending;
+++	int nmembers;
+++	mc_member_list_t member_list;
+++} mc_group_t;
+++
+++typedef mc_group_t group_list_t[MAX_GROUPS];
+++//mc_group_t mc_group_list_t[MAX_GROUPS];
+++extern group_list_t group_list;
+++#endif
++diff --git a/minix/servers/mcast/utility.c b/minix/servers/mcast/utility.c
++new file mode 100644
++index 0000000..942c6c2
++--- /dev/null
+++++ b/minix/servers/mcast/utility.c
++@@ -0,0 +1,33 @@
+++/* This file contains some utility routines for MCAST.
+++ *
+++ * The entry points are:
+++ *   no_sys:		called for invalid system call numbers
+++ *   mcast_isokendpt:		verifies if a given endpoint is valid
+++ */
+++
+++#include "mcast.h"
+++#include <minix/endpoint.h>
+++#include "utility.h"
+++
+++/*===========================================================================*
+++ *				no_sys					     *
+++ *===========================================================================*/
+++int no_sys(int who_e, int call_nr)
+++{
+++        /* A system call number not implemented by MCAST has been requested. */
+++        printf("MCAST: in no_sys, call nr %d from %d\n", call_nr, who_e);
+++        return(ENOSYS);
+++}
+++/*===========================================================================*
+++ *          mcast_isokendpt                                                  *
+++ *===========================================================================*/
+++int mcast_isokendpt(endpoint_t endpoint, int *proc)
+++{
+++        if(endpoint == NONE)
+++                return EINVAL;
+++        *proc = getnpid(endpoint);
+++        printf("isokendpt npid=%d\n", *proc);
+++        if(*proc < 0)
+++                return EINVAL;
+++        return OK;
+++}
++diff --git a/minix/servers/mcast/utility.h b/minix/servers/mcast/utility.h
++new file mode 100644
++index 0000000..8a2dff0
++--- /dev/null
+++++ b/minix/servers/mcast/utility.h
++@@ -0,0 +1,2 @@
+++int mcast_isokendpt(endpoint_t endpoint, int *proc);
+++int no_sys(int who_e, int call_nr);
++diff --git a/minix/servers/rs/table.c b/minix/servers/rs/table.c
++index f2d177f..d6b3efa 100644
++--- a/minix/servers/rs/table.c
+++++ b/minix/servers/rs/table.c
++@@ -25,6 +25,7 @@ struct boot_image_priv boot_image_priv_table[] = {
++ {MIB_PROC_NR,  "mib",    SRV_F  },
++ {PFS_PROC_NR,  "pfs",    SRV_F  },
++ {MFS_PROC_NR,"fs_imgrd", SRV_F  },
+++{MCAST_PROC_NR,"mcast", SRV_F  },
++ {INIT_PROC_NR, "init",   USR_F  },
++ {NULL_BOOT_NR, "",       0,     } /* null entry */
++ };
++@@ -37,6 +38,7 @@ struct boot_image_sys boot_image_sys_table[] = {
++   { PM_PROC_NR,       SRVR_SF                           },
++   { SCHED_PROC_NR,    SRVR_SF                           },
++   { VFS_PROC_NR,      SRVR_SF                           },
+++  { MCAST_PROC_NR,    SRV_SF                            },
++   { MFS_PROC_NR,      0                                 },
++   { DEFAULT_BOOT_NR,  SRV_SF                            } /* default entry */
++ };
++diff --git a/minix/usr.bin/Makefile b/minix/usr.bin/Makefile
++index 65f9057..023786b 100644
++--- a/minix/usr.bin/Makefile
+++++ b/minix/usr.bin/Makefile
++@@ -11,5 +11,22 @@ SUBDIR+=	ministat
++ SUBDIR+=	mtop
++ SUBDIR+=	toproto
++ SUBDIR+=	trace
+++SUBDIR+=	syscalltest
+++SUBDIR+=	receive_test_0
+++SUBDIR+=	send_test_0
+++SUBDIR+=	receive_test_1
+++SUBDIR+=	send_test_1
+++SUBDIR+=	recover_test_0
+++SUBDIR+=	openwait_test_0
+++SUBDIR+=	deadlock_test_0
+++SUBDIR+=	no_group_test_0
+++SUBDIR+=	kill_test_0
+++SUBDIR+=	kill_test_1
+++SUBDIR+=	kill_test_2
+++SUBDIR+=	kill_test_3
+++SUBDIR+=	kill_test_4
+++SUBDIR+=	kill_test_5
+++
+++
++ 
++ .include <bsd.subdir.mk>
++diff --git a/minix/usr.bin/deadlock_test_0/Makefile b/minix/usr.bin/deadlock_test_0/Makefile
++new file mode 100644
++index 0000000..5d54979
++--- /dev/null
+++++ b/minix/usr.bin/deadlock_test_0/Makefile
++@@ -0,0 +1,9 @@
+++PROG=	deadlock_test_0
+++
+++DPADD=
+++LDADD=
+++
+++# BJG
+++WARNS=
+++
+++.include <bsd.prog.mk>
++diff --git a/minix/usr.bin/deadlock_test_0/deadlock_test_0.1 b/minix/usr.bin/deadlock_test_0/deadlock_test_0.1
++new file mode 100644
++index 0000000..33eff4f
++--- /dev/null
+++++ b/minix/usr.bin/deadlock_test_0/deadlock_test_0.1
++@@ -0,0 +1,39 @@
+++.\"	$OpenBSD: syscalltest.1,v 0.02 2016/10/27 21:29:14 jmc Exp $
+++.\" Copyright (c) 2016
+++.\"	Nash Kaminski.  All rights reserved.
+++.\"
+++.\" Redistribution and use in source and binary forms, with or without
+++.\" modification, are permitted provided that the following conditions
+++.\" are met:
+++.\" 1. Redistributions of source code must retain the above copyright
+++.\"    notice, this list of conditions and the following disclaimer.
+++.\" 2. Redistributions in binary form must reproduce the above copyright
+++.\"    notice, this list of conditions and the following disclaimer in the
+++.\"    documentation and/or other materials provided with the distribution.
+++.\" 3. Neither the name of the University nor the names of its contributors
+++.\"    may be used to endorse or promote products derived from this software
+++.\"    without specific prior written permission.
+++.\"
+++.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+++.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+++.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+++.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+++.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+++.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+++.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+++.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+++.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+++.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+++.\" SUCH DAMAGE.
+++.\"
+++.\"
+++.Dd $Mdocdate: October 28, 2016 $
+++.Dt DEADLOCK_TEST_0 1
+++.Os
+++.Sh NAME
+++.Nm deadlock_test_0
+++.Nd project 2 deadlock test program 0
+++.Sh SYNOPSIS
+++.Ek
+++.Sh DESCRIPTION
+++Induces deadlock by attempting to perform a blocking send to the group that it is a mamber of.
++diff --git a/minix/usr.bin/deadlock_test_0/deadlock_test_0.c b/minix/usr.bin/deadlock_test_0/deadlock_test_0.c
++new file mode 100644
++index 0000000..97cbcd7
++--- /dev/null
+++++ b/minix/usr.bin/deadlock_test_0/deadlock_test_0.c
++@@ -0,0 +1,19 @@
+++#include <unistd.h>
+++#include <stdio.h>
+++#include <errno.h>
+++const int group_nr = 0;
+++const char msg[] = "SettingTheRightBitsInTheRightPlaces!";
+++int main(int argc, char** args) {
+++	int rv;
+++   rv = openGroup(group_nr);
+++	printf("opengroup returned %i\n",rv);
+++	printf("testing msend syscall to group %d\n",group_nr);
+++	rv = msend(group_nr, msg, sizeof(msg));
+++	printf("msend returned %i\n",rv);
+++   if(rv != -ELOCKED){
+++           printf("Deadlock detection not functional\n");
+++   }
+++	rv = closeGroup(group_nr);
+++	printf("closegroup returned %i\n",rv);
+++   return 0;
+++}
++diff --git a/minix/usr.bin/kill_test_0/Makefile b/minix/usr.bin/kill_test_0/Makefile
++new file mode 100644
++index 0000000..f181854
++--- /dev/null
+++++ b/minix/usr.bin/kill_test_0/Makefile
++@@ -0,0 +1,9 @@
+++PROG=	kill_test_0
+++
+++DPADD=
+++LDADD=
+++
+++# BJG
+++WARNS=
+++
+++.include <bsd.prog.mk>
++diff --git a/minix/usr.bin/kill_test_0/kill_test_0.1 b/minix/usr.bin/kill_test_0/kill_test_0.1
++new file mode 100644
++index 0000000..8477082
++--- /dev/null
+++++ b/minix/usr.bin/kill_test_0/kill_test_0.1
++@@ -0,0 +1,39 @@
+++.\"	$OpenBSD: syscalltest.1,v 0.02 2016/10/27 21:29:14 jmc Exp $
+++.\" Copyright (c) 2016
+++.\"	Nash Kaminski.  All rights reserved.
+++.\"
+++.\" Redistribution and use in source and binary forms, with or without
+++.\" modification, are permitted provided that the following conditions
+++.\" are met:
+++.\" 1. Redistributions of source code must retain the above copyright
+++.\"    notice, this list of conditions and the following disclaimer.
+++.\" 2. Redistributions in binary form must reproduce the above copyright
+++.\"    notice, this list of conditions and the following disclaimer in the
+++.\"    documentation and/or other materials provided with the distribution.
+++.\" 3. Neither the name of the University nor the names of its contributors
+++.\"    may be used to endorse or promote products derived from this software
+++.\"    without specific prior written permission.
+++.\"
+++.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+++.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+++.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+++.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+++.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+++.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+++.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+++.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+++.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+++.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+++.\" SUCH DAMAGE.
+++.\"
+++.\"
+++.Dd $Mdocdate: October 30, 2016 $
+++.Dt KILL_TEST_X 1
+++.Os
+++.Sh NAME
+++.Nm kill_test_x
+++.Nd project 2 interrupted system call test program 0
+++.Sh SYNOPSIS
+++.Ek
+++.Sh DESCRIPTION
+++project 2 interrupted system call test program
++diff --git a/minix/usr.bin/kill_test_0/kill_test_0.c b/minix/usr.bin/kill_test_0/kill_test_0.c
++new file mode 100644
++index 0000000..c8367be
++--- /dev/null
+++++ b/minix/usr.bin/kill_test_0/kill_test_0.c
++@@ -0,0 +1,18 @@
+++#include <unistd.h>
+++#include <stdio.h>
+++#include <string.h>
+++const int group_nr = 0;
+++int main(int argc, char** args) {
+++	int rv;
+++	char msg[128];
+++	memset(msg,0x00,128);
+++   printf("calling opengroup\n");
+++	rv = openGroup(group_nr);
+++   printf("returned %i\n",rv);
+++   printf("Receiving from group 0 with risk of sender killed.\n");
+++	rv = mreceive(group_nr, msg, 127);
+++	printf("returned %i, message is %s\n",rv,msg);
+++	rv = closeGroup(group_nr);
+++   printf("closegroup returned %i\n",rv);
+++   return 0;
+++}
++\ No newline at end of file
++diff --git a/minix/usr.bin/kill_test_1/Makefile b/minix/usr.bin/kill_test_1/Makefile
++new file mode 100644
++index 0000000..dfd8e76
++--- /dev/null
+++++ b/minix/usr.bin/kill_test_1/Makefile
++@@ -0,0 +1,9 @@
+++PROG=	kill_test_1
+++
+++DPADD=
+++LDADD=
+++
+++# BJG
+++WARNS=
+++
+++.include <bsd.prog.mk>
++diff --git a/minix/usr.bin/kill_test_1/kill_test_1.1 b/minix/usr.bin/kill_test_1/kill_test_1.1
++new file mode 100644
++index 0000000..8477082
++--- /dev/null
+++++ b/minix/usr.bin/kill_test_1/kill_test_1.1
++@@ -0,0 +1,39 @@
+++.\"	$OpenBSD: syscalltest.1,v 0.02 2016/10/27 21:29:14 jmc Exp $
+++.\" Copyright (c) 2016
+++.\"	Nash Kaminski.  All rights reserved.
+++.\"
+++.\" Redistribution and use in source and binary forms, with or without
+++.\" modification, are permitted provided that the following conditions
+++.\" are met:
+++.\" 1. Redistributions of source code must retain the above copyright
+++.\"    notice, this list of conditions and the following disclaimer.
+++.\" 2. Redistributions in binary form must reproduce the above copyright
+++.\"    notice, this list of conditions and the following disclaimer in the
+++.\"    documentation and/or other materials provided with the distribution.
+++.\" 3. Neither the name of the University nor the names of its contributors
+++.\"    may be used to endorse or promote products derived from this software
+++.\"    without specific prior written permission.
+++.\"
+++.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+++.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+++.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+++.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+++.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+++.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+++.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+++.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+++.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+++.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+++.\" SUCH DAMAGE.
+++.\"
+++.\"
+++.Dd $Mdocdate: October 30, 2016 $
+++.Dt KILL_TEST_X 1
+++.Os
+++.Sh NAME
+++.Nm kill_test_x
+++.Nd project 2 interrupted system call test program 0
+++.Sh SYNOPSIS
+++.Ek
+++.Sh DESCRIPTION
+++project 2 interrupted system call test program
++diff --git a/minix/usr.bin/kill_test_1/kill_test_1.c b/minix/usr.bin/kill_test_1/kill_test_1.c
++new file mode 100644
++index 0000000..14e9f0c
++--- /dev/null
+++++ b/minix/usr.bin/kill_test_1/kill_test_1.c
++@@ -0,0 +1,19 @@
+++#include <unistd.h>
+++#include <stdio.h>
+++#include <string.h>
+++const int group_nr = 0;
+++int main(int argc, char** args) {
+++	int rv;
+++	char msg[128];
+++	memset(msg,0x00,128);
+++   printf("calling opengroup\n");
+++	rv = openGroup(group_nr);
+++   printf("returned %i\n",rv);
+++   printf("Receiving from group 0 with risk of sender killed.\n");
+++   sleep(15);
+++	rv = mreceive(group_nr, msg, 127);
+++	printf("returned %i, message is %s\n",rv,msg);
+++	rv = closeGroup(group_nr);
+++   printf("closegroup returned %i\n",rv);
+++   return 0;
+++}
++\ No newline at end of file
++diff --git a/minix/usr.bin/kill_test_2/Makefile b/minix/usr.bin/kill_test_2/Makefile
++new file mode 100644
++index 0000000..0847d8f
++--- /dev/null
+++++ b/minix/usr.bin/kill_test_2/Makefile
++@@ -0,0 +1,9 @@
+++PROG=	kill_test_2
+++
+++DPADD=
+++LDADD=
+++
+++# BJG
+++WARNS=
+++
+++.include <bsd.prog.mk>
++diff --git a/minix/usr.bin/kill_test_2/kill_test_2.1 b/minix/usr.bin/kill_test_2/kill_test_2.1
++new file mode 100644
++index 0000000..8477082
++--- /dev/null
+++++ b/minix/usr.bin/kill_test_2/kill_test_2.1
++@@ -0,0 +1,39 @@
+++.\"	$OpenBSD: syscalltest.1,v 0.02 2016/10/27 21:29:14 jmc Exp $
+++.\" Copyright (c) 2016
+++.\"	Nash Kaminski.  All rights reserved.
+++.\"
+++.\" Redistribution and use in source and binary forms, with or without
+++.\" modification, are permitted provided that the following conditions
+++.\" are met:
+++.\" 1. Redistributions of source code must retain the above copyright
+++.\"    notice, this list of conditions and the following disclaimer.
+++.\" 2. Redistributions in binary form must reproduce the above copyright
+++.\"    notice, this list of conditions and the following disclaimer in the
+++.\"    documentation and/or other materials provided with the distribution.
+++.\" 3. Neither the name of the University nor the names of its contributors
+++.\"    may be used to endorse or promote products derived from this software
+++.\"    without specific prior written permission.
+++.\"
+++.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+++.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+++.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+++.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+++.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+++.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+++.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+++.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+++.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+++.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+++.\" SUCH DAMAGE.
+++.\"
+++.\"
+++.Dd $Mdocdate: October 30, 2016 $
+++.Dt KILL_TEST_X 1
+++.Os
+++.Sh NAME
+++.Nm kill_test_x
+++.Nd project 2 interrupted system call test program 0
+++.Sh SYNOPSIS
+++.Ek
+++.Sh DESCRIPTION
+++project 2 interrupted system call test program
++diff --git a/minix/usr.bin/kill_test_2/kill_test_2.c b/minix/usr.bin/kill_test_2/kill_test_2.c
++new file mode 100644
++index 0000000..eec2f27
++--- /dev/null
+++++ b/minix/usr.bin/kill_test_2/kill_test_2.c
++@@ -0,0 +1,11 @@
+++#include <unistd.h>
+++#include <stdio.h>
+++const int group_nr = 0;
+++const char msg[] = "DeliverThisBeforeImKilled";
+++int main(int argc, char** args) {
+++	int rv;
+++	rv = msend(group_nr, msg, sizeof(msg));
+++	printf("Sender killed during sending to group %d\n",group_nr);
+++	printf("returned %i\n",rv);
+++	return 0;
+++}
++\ No newline at end of file
++diff --git a/minix/usr.bin/kill_test_3/Makefile b/minix/usr.bin/kill_test_3/Makefile
++new file mode 100644
++index 0000000..98f5ffb
++--- /dev/null
+++++ b/minix/usr.bin/kill_test_3/Makefile
++@@ -0,0 +1,9 @@
+++PROG=	kill_test_3
+++
+++DPADD=
+++LDADD=
+++
+++# BJG
+++WARNS=
+++
+++.include <bsd.prog.mk>
++diff --git a/minix/usr.bin/kill_test_3/kill_test_3.1 b/minix/usr.bin/kill_test_3/kill_test_3.1
++new file mode 100644
++index 0000000..8477082
++--- /dev/null
+++++ b/minix/usr.bin/kill_test_3/kill_test_3.1
++@@ -0,0 +1,39 @@
+++.\"	$OpenBSD: syscalltest.1,v 0.02 2016/10/27 21:29:14 jmc Exp $
+++.\" Copyright (c) 2016
+++.\"	Nash Kaminski.  All rights reserved.
+++.\"
+++.\" Redistribution and use in source and binary forms, with or without
+++.\" modification, are permitted provided that the following conditions
+++.\" are met:
+++.\" 1. Redistributions of source code must retain the above copyright
+++.\"    notice, this list of conditions and the following disclaimer.
+++.\" 2. Redistributions in binary form must reproduce the above copyright
+++.\"    notice, this list of conditions and the following disclaimer in the
+++.\"    documentation and/or other materials provided with the distribution.
+++.\" 3. Neither the name of the University nor the names of its contributors
+++.\"    may be used to endorse or promote products derived from this software
+++.\"    without specific prior written permission.
+++.\"
+++.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+++.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+++.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+++.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+++.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+++.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+++.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+++.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+++.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+++.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+++.\" SUCH DAMAGE.
+++.\"
+++.\"
+++.Dd $Mdocdate: October 30, 2016 $
+++.Dt KILL_TEST_X 1
+++.Os
+++.Sh NAME
+++.Nm kill_test_x
+++.Nd project 2 interrupted system call test program 0
+++.Sh SYNOPSIS
+++.Ek
+++.Sh DESCRIPTION
+++project 2 interrupted system call test program
++diff --git a/minix/usr.bin/kill_test_3/kill_test_3.c b/minix/usr.bin/kill_test_3/kill_test_3.c
++new file mode 100644
++index 0000000..e5cc7b7
++--- /dev/null
+++++ b/minix/usr.bin/kill_test_3/kill_test_3.c
++@@ -0,0 +1,18 @@
+++#include <unistd.h>
+++#include <stdio.h>
+++#include <string.h>
+++const int group_nr = 0;
+++int main(int argc, char** args) {
+++	int rv;
+++	char msg[128];
+++	memset(msg,0x00,128);
+++   printf("calling opengroup\n");
+++	rv = openGroup(group_nr);
+++   printf("returned %i\n",rv);
+++   printf("1 of 2 receivers gets killed before sender sends.\n");
+++	rv = mreceive(group_nr, msg, 127);
+++	printf("returned %i, message is %s\n",rv,msg);
+++	rv = closeGroup(group_nr);
+++   printf("closegroup returned %i\n",rv);
+++   return 0;
+++}
++\ No newline at end of file
++diff --git a/minix/usr.bin/kill_test_4/Makefile b/minix/usr.bin/kill_test_4/Makefile
++new file mode 100644
++index 0000000..43a42fd
++--- /dev/null
+++++ b/minix/usr.bin/kill_test_4/Makefile
++@@ -0,0 +1,9 @@
+++PROG=	kill_test_4
+++
+++DPADD=
+++LDADD=
+++
+++# BJG
+++WARNS=
+++
+++.include <bsd.prog.mk>
++diff --git a/minix/usr.bin/kill_test_4/kill_test_4.1 b/minix/usr.bin/kill_test_4/kill_test_4.1
++new file mode 100644
++index 0000000..8477082
++--- /dev/null
+++++ b/minix/usr.bin/kill_test_4/kill_test_4.1
++@@ -0,0 +1,39 @@
+++.\"	$OpenBSD: syscalltest.1,v 0.02 2016/10/27 21:29:14 jmc Exp $
+++.\" Copyright (c) 2016
+++.\"	Nash Kaminski.  All rights reserved.
+++.\"
+++.\" Redistribution and use in source and binary forms, with or without
+++.\" modification, are permitted provided that the following conditions
+++.\" are met:
+++.\" 1. Redistributions of source code must retain the above copyright
+++.\"    notice, this list of conditions and the following disclaimer.
+++.\" 2. Redistributions in binary form must reproduce the above copyright
+++.\"    notice, this list of conditions and the following disclaimer in the
+++.\"    documentation and/or other materials provided with the distribution.
+++.\" 3. Neither the name of the University nor the names of its contributors
+++.\"    may be used to endorse or promote products derived from this software
+++.\"    without specific prior written permission.
+++.\"
+++.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+++.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+++.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+++.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+++.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+++.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+++.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+++.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+++.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+++.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+++.\" SUCH DAMAGE.
+++.\"
+++.\"
+++.Dd $Mdocdate: October 30, 2016 $
+++.Dt KILL_TEST_X 1
+++.Os
+++.Sh NAME
+++.Nm kill_test_x
+++.Nd project 2 interrupted system call test program 0
+++.Sh SYNOPSIS
+++.Ek
+++.Sh DESCRIPTION
+++project 2 interrupted system call test program
++diff --git a/minix/usr.bin/kill_test_4/kill_test_4.c b/minix/usr.bin/kill_test_4/kill_test_4.c
++new file mode 100644
++index 0000000..e5cc7b7
++--- /dev/null
+++++ b/minix/usr.bin/kill_test_4/kill_test_4.c
++@@ -0,0 +1,18 @@
+++#include <unistd.h>
+++#include <stdio.h>
+++#include <string.h>
+++const int group_nr = 0;
+++int main(int argc, char** args) {
+++	int rv;
+++	char msg[128];
+++	memset(msg,0x00,128);
+++   printf("calling opengroup\n");
+++	rv = openGroup(group_nr);
+++   printf("returned %i\n",rv);
+++   printf("1 of 2 receivers gets killed before sender sends.\n");
+++	rv = mreceive(group_nr, msg, 127);
+++	printf("returned %i, message is %s\n",rv,msg);
+++	rv = closeGroup(group_nr);
+++   printf("closegroup returned %i\n",rv);
+++   return 0;
+++}
++\ No newline at end of file
++diff --git a/minix/usr.bin/kill_test_5/Makefile b/minix/usr.bin/kill_test_5/Makefile
++new file mode 100644
++index 0000000..5b26369
++--- /dev/null
+++++ b/minix/usr.bin/kill_test_5/Makefile
++@@ -0,0 +1,9 @@
+++PROG=	kill_test_5
+++
+++DPADD=
+++LDADD=
+++
+++# BJG
+++WARNS=
+++
+++.include <bsd.prog.mk>
++diff --git a/minix/usr.bin/kill_test_5/kill_test_5.1 b/minix/usr.bin/kill_test_5/kill_test_5.1
++new file mode 100644
++index 0000000..8477082
++--- /dev/null
+++++ b/minix/usr.bin/kill_test_5/kill_test_5.1
++@@ -0,0 +1,39 @@
+++.\"	$OpenBSD: syscalltest.1,v 0.02 2016/10/27 21:29:14 jmc Exp $
+++.\" Copyright (c) 2016
+++.\"	Nash Kaminski.  All rights reserved.
+++.\"
+++.\" Redistribution and use in source and binary forms, with or without
+++.\" modification, are permitted provided that the following conditions
+++.\" are met:
+++.\" 1. Redistributions of source code must retain the above copyright
+++.\"    notice, this list of conditions and the following disclaimer.
+++.\" 2. Redistributions in binary form must reproduce the above copyright
+++.\"    notice, this list of conditions and the following disclaimer in the
+++.\"    documentation and/or other materials provided with the distribution.
+++.\" 3. Neither the name of the University nor the names of its contributors
+++.\"    may be used to endorse or promote products derived from this software
+++.\"    without specific prior written permission.
+++.\"
+++.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+++.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+++.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+++.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+++.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+++.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+++.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+++.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+++.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+++.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+++.\" SUCH DAMAGE.
+++.\"
+++.\"
+++.Dd $Mdocdate: October 30, 2016 $
+++.Dt KILL_TEST_X 1
+++.Os
+++.Sh NAME
+++.Nm kill_test_x
+++.Nd project 2 interrupted system call test program 0
+++.Sh SYNOPSIS
+++.Ek
+++.Sh DESCRIPTION
+++project 2 interrupted system call test program
++diff --git a/minix/usr.bin/kill_test_5/kill_test_5.c b/minix/usr.bin/kill_test_5/kill_test_5.c
++new file mode 100644
++index 0000000..e8be9a1
++--- /dev/null
+++++ b/minix/usr.bin/kill_test_5/kill_test_5.c
++@@ -0,0 +1,10 @@
+++#include <unistd.h>
+++#include <stdio.h>
+++const int group_nr = 0;
+++const char msg[] = "DeliverThisBeforeReceiverKilled";
+++int main(int argc, char** args) {
+++	int rv;
+++	rv = msend(group_nr, msg, sizeof(msg));
+++	printf("returned %i\n",rv);
+++	return 0;
+++}
++\ No newline at end of file
++diff --git a/minix/usr.bin/no_group_test_0/Makefile b/minix/usr.bin/no_group_test_0/Makefile
++new file mode 100644
++index 0000000..89cbc4c
++--- /dev/null
+++++ b/minix/usr.bin/no_group_test_0/Makefile
++@@ -0,0 +1,9 @@
+++PROG=	no_group_test_0
+++
+++DPADD=
+++LDADD=
+++
+++# BJG
+++WARNS=
+++
+++.include <bsd.prog.mk>
++diff --git a/minix/usr.bin/no_group_test_0/no_group_test_0.1 b/minix/usr.bin/no_group_test_0/no_group_test_0.1
++new file mode 100644
++index 0000000..5e0adfe
++--- /dev/null
+++++ b/minix/usr.bin/no_group_test_0/no_group_test_0.1
++@@ -0,0 +1,39 @@
+++.\"	$OpenBSD: syscalltest.1,v 0.02 2016/10/27 21:29:14 jmc Exp $
+++.\" Copyright (c) 2016
+++.\"	Nash Kaminski.  All rights reserved.
+++.\"
+++.\" Redistribution and use in source and binary forms, with or without
+++.\" modification, are permitted provided that the following conditions
+++.\" are met:
+++.\" 1. Redistributions of source code must retain the above copyright
+++.\"    notice, this list of conditions and the following disclaimer.
+++.\" 2. Redistributions in binary form must reproduce the above copyright
+++.\"    notice, this list of conditions and the following disclaimer in the
+++.\"    documentation and/or other materials provided with the distribution.
+++.\" 3. Neither the name of the University nor the names of its contributors
+++.\"    may be used to endorse or promote products derived from this software
+++.\"    without specific prior written permission.
+++.\"
+++.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+++.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+++.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+++.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+++.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+++.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+++.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+++.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+++.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+++.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+++.\" SUCH DAMAGE.
+++.\"
+++.\"
+++.Dd $Mdocdate: October 30, 2016 $
+++.Dt NO_GROUP_TEST_0 1
+++.Os
+++.Sh NAME
+++.Nm NO_GROUP_TEST
+++.Nd project 2 system call exception test program 0
+++.Sh SYNOPSIS
+++.Ek
+++.Sh DESCRIPTION
+++Attempts an mreceive while not a member of the group, should not be allowed.
++diff --git a/minix/usr.bin/no_group_test_0/no_group_test_0.c b/minix/usr.bin/no_group_test_0/no_group_test_0.c
++new file mode 100644
++index 0000000..674a049
++--- /dev/null
+++++ b/minix/usr.bin/no_group_test_0/no_group_test_0.c
++@@ -0,0 +1,13 @@
+++#include <unistd.h>
+++#include <stdio.h>
+++#include <string.h>
+++const int group_nr = 0;
+++int main(int argc, char** args) {
+++	int rv;
+++	char msg[128];
+++	memset(msg,0x00,128);
+++   printf("Receiving from group 0 without OpenGroup.\n");
+++	rv = mreceive(group_nr, msg, 127);
+++	printf("returned %i, message is %s\n",rv,msg);
+++   return 0;
+++}
++\ No newline at end of file
++diff --git a/minix/usr.bin/openwait_test_0/Makefile b/minix/usr.bin/openwait_test_0/Makefile
++new file mode 100644
++index 0000000..1d6bbbb
++--- /dev/null
+++++ b/minix/usr.bin/openwait_test_0/Makefile
++@@ -0,0 +1,9 @@
+++PROG=	openwait_test_0
+++
+++DPADD=
+++LDADD=
+++
+++# BJG
+++WARNS=
+++
+++.include <bsd.prog.mk>
++diff --git a/minix/usr.bin/openwait_test_0/openwait_test_0.1 b/minix/usr.bin/openwait_test_0/openwait_test_0.1
++new file mode 100644
++index 0000000..14a8eb4
++--- /dev/null
+++++ b/minix/usr.bin/openwait_test_0/openwait_test_0.1
++@@ -0,0 +1,39 @@
+++.\"	$OpenBSD: syscalltest.1,v 0.02 2016/10/27 21:29:14 jmc Exp $
+++.\" Copyright (c) 2016
+++.\"	Nash Kaminski.  All rights reserved.
+++.\"
+++.\" Redistribution and use in source and binary forms, with or without
+++.\" modification, are permitted provided that the following conditions
+++.\" are met:
+++.\" 1. Redistributions of source code must retain the above copyright
+++.\"    notice, this list of conditions and the following disclaimer.
+++.\" 2. Redistributions in binary form must reproduce the above copyright
+++.\"    notice, this list of conditions and the following disclaimer in the
+++.\"    documentation and/or other materials provided with the distribution.
+++.\" 3. Neither the name of the University nor the names of its contributors
+++.\"    may be used to endorse or promote products derived from this software
+++.\"    without specific prior written permission.
+++.\"
+++.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+++.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+++.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+++.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+++.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+++.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+++.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+++.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+++.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+++.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+++.\" SUCH DAMAGE.
+++.\"
+++.\"
+++.Dd $Mdocdate: October 28, 2016 $
+++.Dt OPENWAIT_TEST_0 1
+++.Os
+++.Sh NAME
+++.Nm openwait_test_0
+++.Nd project 2 openGroup/closeGroup system call test program 0
+++.Sh SYNOPSIS
+++.Ek 
+++.Sh DESCRIPTION
+++Calls openGroup on group 0, waits 5 seconds and calls closegroup without receiving.
++diff --git a/minix/usr.bin/openwait_test_0/openwait_test_0.c b/minix/usr.bin/openwait_test_0/openwait_test_0.c
++new file mode 100644
++index 0000000..1335a51
++--- /dev/null
+++++ b/minix/usr.bin/openwait_test_0/openwait_test_0.c
++@@ -0,0 +1,16 @@
+++#include <unistd.h>
+++#include <stdio.h>
+++#include <string.h>
+++const int group_nr = 0;
+++int main(int argc, char** args) {
+++	int rv;
+++   printf("calling opengroup(0)\n");
+++	rv = openGroup(group_nr);
+++   printf("returned %i\n",rv);
+++   printf("waiting 5 seconds\n");
+++   sleep(5);
+++   printf("calling closegroup(0)\n");
+++	rv = closeGroup(group_nr);
+++   printf("returned %i\n",rv);
+++   return 0;
+++}
++diff --git a/minix/usr.bin/receive_test_0/Makefile b/minix/usr.bin/receive_test_0/Makefile
++new file mode 100644
++index 0000000..7fa70c6
++--- /dev/null
+++++ b/minix/usr.bin/receive_test_0/Makefile
++@@ -0,0 +1,9 @@
+++PROG=	receive_test_0
+++
+++DPADD=
+++LDADD=
+++
+++# BJG
+++WARNS=
+++
+++.include <bsd.prog.mk>
++diff --git a/minix/usr.bin/receive_test_0/receive_test_0.1 b/minix/usr.bin/receive_test_0/receive_test_0.1
++new file mode 100644
++index 0000000..462b38b
++--- /dev/null
+++++ b/minix/usr.bin/receive_test_0/receive_test_0.1
++@@ -0,0 +1,39 @@
+++.\"	$OpenBSD: syscalltest.1,v 0.02 2016/10/27 21:29:14 jmc Exp $
+++.\" Copyright (c) 2016
+++.\"	Nash Kaminski.  All rights reserved.
+++.\"
+++.\" Redistribution and use in source and binary forms, with or without
+++.\" modification, are permitted provided that the following conditions
+++.\" are met:
+++.\" 1. Redistributions of source code must retain the above copyright
+++.\"    notice, this list of conditions and the following disclaimer.
+++.\" 2. Redistributions in binary form must reproduce the above copyright
+++.\"    notice, this list of conditions and the following disclaimer in the
+++.\"    documentation and/or other materials provided with the distribution.
+++.\" 3. Neither the name of the University nor the names of its contributors
+++.\"    may be used to endorse or promote products derived from this software
+++.\"    without specific prior written permission.
+++.\"
+++.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+++.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+++.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+++.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+++.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+++.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+++.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+++.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+++.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+++.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+++.\" SUCH DAMAGE.
+++.\"
+++.\"
+++.Dd $Mdocdate: October 28, 2016 $
+++.Dt RECEIVE_TEST_0 1
+++.Os
+++.Sh NAME
+++.Nm receive_test_0
+++.Nd project 2 receiving system call test program 0
+++.Sh SYNOPSIS
+++.Ek
+++.Sh DESCRIPTION
+++project 2 system call test program 0
++diff --git a/minix/usr.bin/receive_test_0/receive_test_0.c b/minix/usr.bin/receive_test_0/receive_test_0.c
++new file mode 100644
++index 0000000..8974b10
++--- /dev/null
+++++ b/minix/usr.bin/receive_test_0/receive_test_0.c
++@@ -0,0 +1,18 @@
+++#include <unistd.h>
+++#include <stdio.h>
+++#include <string.h>
+++const int group_nr = 0;
+++int main(int argc, char** args) {
+++	int rv;
+++	char msg[128];
+++	memset(msg,0x00,128);
+++   printf("calling opengroup\n");
+++	rv = openGroup(group_nr);
+++   printf("returned %i\n",rv);
+++   printf("testing mreceive syscall from group 0\n");
+++	rv = mreceive(group_nr, msg, 127);
+++	printf("returned %i, message is %s\n",rv,msg);
+++	rv = closeGroup(group_nr);
+++   printf("closegroup returned %i\n",rv);
+++   return 0;
+++}
++diff --git a/minix/usr.bin/receive_test_1/Makefile b/minix/usr.bin/receive_test_1/Makefile
++new file mode 100644
++index 0000000..1fc311a
++--- /dev/null
+++++ b/minix/usr.bin/receive_test_1/Makefile
++@@ -0,0 +1,9 @@
+++PROG=	receive_test_1
+++
+++DPADD=
+++LDADD=
+++
+++# BJG
+++WARNS=
+++
+++.include <bsd.prog.mk>
++diff --git a/minix/usr.bin/receive_test_1/receive_test_1.1 b/minix/usr.bin/receive_test_1/receive_test_1.1
++new file mode 100644
++index 0000000..7edcb0c
++--- /dev/null
+++++ b/minix/usr.bin/receive_test_1/receive_test_1.1
++@@ -0,0 +1,39 @@
+++.\"	$OpenBSD: syscalltest.1,v 0.02 2016/10/27 21:29:14 jmc Exp $
+++.\" Copyright (c) 2016
+++.\"	Nash Kaminski.  All rights reserved.
+++.\"
+++.\" Redistribution and use in source and binary forms, with or without
+++.\" modification, are permitted provided that the following conditions
+++.\" are met:
+++.\" 1. Redistributions of source code must retain the above copyright
+++.\"    notice, this list of conditions and the following disclaimer.
+++.\" 2. Redistributions in binary form must reproduce the above copyright
+++.\"    notice, this list of conditions and the following disclaimer in the
+++.\"    documentation and/or other materials provided with the distribution.
+++.\" 3. Neither the name of the University nor the names of its contributors
+++.\"    may be used to endorse or promote products derived from this software
+++.\"    without specific prior written permission.
+++.\"
+++.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+++.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+++.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+++.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+++.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+++.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+++.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+++.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+++.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+++.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+++.\" SUCH DAMAGE.
+++.\"
+++.\"
+++.Dd $Mdocdate: October 28, 2016 $
+++.Dt RECEIVE_TEST_1 1
+++.Os
+++.Sh NAME
+++.Nm receive_test_1
+++.Nd project 2 receiving system call test program 1
+++.Sh SYNOPSIS
+++.Ek
+++.Sh DESCRIPTION
+++Project 2 system call test program 1. Performs an mreceive from group 1.
++diff --git a/minix/usr.bin/receive_test_1/receive_test_1.c b/minix/usr.bin/receive_test_1/receive_test_1.c
++new file mode 100644
++index 0000000..fdaf6f0
++--- /dev/null
+++++ b/minix/usr.bin/receive_test_1/receive_test_1.c
++@@ -0,0 +1,18 @@
+++#include <unistd.h>
+++#include <stdio.h>
+++#include <string.h>
+++const int group_nr = 1;
+++int main(int argc, char** args) {
+++        int rv;
+++        char msg[128];
+++        memset(msg,0x00,128);
+++        printf("calling opengroup\n");
+++        rv = openGroup(group_nr);
+++        printf("returned %i\n",rv);
+++        printf("testing mreceive syscall from group %d\n", group_nr);
+++        rv = mreceive(group_nr, msg, 127);
+++        printf("returned %i, message is %s\n",rv,msg);
+++        rv = closeGroup(group_nr);
+++        printf("closeGroup returned %i\n",rv);
+++        return 0;
+++}
++diff --git a/minix/usr.bin/recover_test_0/Makefile b/minix/usr.bin/recover_test_0/Makefile
++new file mode 100644
++index 0000000..ce2db7d
++--- /dev/null
+++++ b/minix/usr.bin/recover_test_0/Makefile
++@@ -0,0 +1,9 @@
+++PROG=	recover_test_0
+++
+++DPADD=
+++LDADD=
+++
+++# BJG
+++WARNS=
+++
+++.include <bsd.prog.mk>
++diff --git a/minix/usr.bin/recover_test_0/recover_test_0.1 b/minix/usr.bin/recover_test_0/recover_test_0.1
++new file mode 100644
++index 0000000..bf13b3f
++--- /dev/null
+++++ b/minix/usr.bin/recover_test_0/recover_test_0.1
++@@ -0,0 +1,39 @@
+++.\"	$OpenBSD: syscalltest.1,v 0.02 2016/10/27 21:29:14 jmc Exp $
+++.\" Copyright (c) 2016
+++.\"	Nash Kaminski.  All rights reserved.
+++.\"
+++.\" Redistribution and use in source and binary forms, with or without
+++.\" modification, are permitted provided that the following conditions
+++.\" are met:
+++.\" 1. Redistributions of source code must retain the above copyright
+++.\"    notice, this list of conditions and the following disclaimer.
+++.\" 2. Redistributions in binary form must reproduce the above copyright
+++.\"    notice, this list of conditions and the following disclaimer in the
+++.\"    documentation and/or other materials provided with the distribution.
+++.\" 3. Neither the name of the University nor the names of its contributors
+++.\"    may be used to endorse or promote products derived from this software
+++.\"    without specific prior written permission.
+++.\"
+++.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+++.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+++.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+++.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+++.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+++.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+++.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+++.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+++.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+++.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+++.\" SUCH DAMAGE.
+++.\"
+++.\"
+++.Dd $Mdocdate: October 28, 2016 $
+++.Dt RECOVER_TEST_0 1
+++.Os
+++.Sh NAME
+++.Nm recover_test_0
+++.Nd project 2 recoverGroup system call test program 0
+++.Sh SYNOPSIS
+++.Ek
+++.Sh DESCRIPTION
+++Calls recovergroup on group 0.
++diff --git a/minix/usr.bin/recover_test_0/recover_test_0.c b/minix/usr.bin/recover_test_0/recover_test_0.c
++new file mode 100644
++index 0000000..28e6bc9
++--- /dev/null
+++++ b/minix/usr.bin/recover_test_0/recover_test_0.c
++@@ -0,0 +1,11 @@
+++#include <unistd.h>
+++#include <stdio.h>
+++#include <string.h>
+++const int group_nr = 0;
+++int main(int argc, char** args) {
+++	int rv;
+++   printf("calling recovergroup(0)\n");
+++	rv = recoverGroup(group_nr);
+++   printf("returned %i\n",rv);
+++   return 0;
+++}
++diff --git a/minix/usr.bin/send_test_0/Makefile b/minix/usr.bin/send_test_0/Makefile
++new file mode 100644
++index 0000000..f86ae43
++--- /dev/null
+++++ b/minix/usr.bin/send_test_0/Makefile
++@@ -0,0 +1,9 @@
+++PROG=	send_test_0
+++
+++DPADD=
+++LDADD=
+++
+++# BJG
+++WARNS=
+++
+++.include <bsd.prog.mk>
++diff --git a/minix/usr.bin/send_test_0/send_test_0.1 b/minix/usr.bin/send_test_0/send_test_0.1
++new file mode 100644
++index 0000000..98909a3
++--- /dev/null
+++++ b/minix/usr.bin/send_test_0/send_test_0.1
++@@ -0,0 +1,39 @@
+++.\"	$OpenBSD: syscalltest.1,v 0.02 2016/10/27 21:29:14 jmc Exp $
+++.\" Copyright (c) 2016
+++.\"	Nash Kaminski.  All rights reserved.
+++.\"
+++.\" Redistribution and use in source and binary forms, with or without
+++.\" modification, are permitted provided that the following conditions
+++.\" are met:
+++.\" 1. Redistributions of source code must retain the above copyright
+++.\"    notice, this list of conditions and the following disclaimer.
+++.\" 2. Redistributions in binary form must reproduce the above copyright
+++.\"    notice, this list of conditions and the following disclaimer in the
+++.\"    documentation and/or other materials provided with the distribution.
+++.\" 3. Neither the name of the University nor the names of its contributors
+++.\"    may be used to endorse or promote products derived from this software
+++.\"    without specific prior written permission.
+++.\"
+++.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+++.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+++.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+++.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+++.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+++.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+++.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+++.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+++.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+++.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+++.\" SUCH DAMAGE.
+++.\"
+++.\"
+++.Dd $Mdocdate: October 28, 2016 $
+++.Dt SEND_TEST_0 1
+++.Os
+++.Sh NAME
+++.Nm send_test_0
+++.Nd project 2 sending system call test program 0
+++.Sh SYNOPSIS
+++.Ek
+++.Sh DESCRIPTION
+++project 2 system call test program 0
++diff --git a/minix/usr.bin/send_test_0/send_test_0.c b/minix/usr.bin/send_test_0/send_test_0.c
++new file mode 100644
++index 0000000..37da7cf
++--- /dev/null
+++++ b/minix/usr.bin/send_test_0/send_test_0.c
++@@ -0,0 +1,11 @@
+++#include <unistd.h>
+++#include <stdio.h>
+++const int group_nr = 0;
+++const char msg[] = "SettingTheRightBitsInTheRightPlaces!";
+++int main(int argc, char** args) {
+++	int rv;
+++	printf("testing msend syscall to group %d\n",group_nr);
+++	rv = msend(group_nr, msg, sizeof(msg));
+++	printf("returned %i\n",rv);
+++	return 0;
+++}
++diff --git a/minix/usr.bin/send_test_1/Makefile b/minix/usr.bin/send_test_1/Makefile
++new file mode 100644
++index 0000000..d2de6c5
++--- /dev/null
+++++ b/minix/usr.bin/send_test_1/Makefile
++@@ -0,0 +1,9 @@
+++PROG=	send_test_1
+++
+++DPADD=
+++LDADD=
+++
+++# BJG
+++WARNS=
+++
+++.include <bsd.prog.mk>
++diff --git a/minix/usr.bin/send_test_1/send_test_1.1 b/minix/usr.bin/send_test_1/send_test_1.1
++new file mode 100644
++index 0000000..52ec267
++--- /dev/null
+++++ b/minix/usr.bin/send_test_1/send_test_1.1
++@@ -0,0 +1,39 @@
+++.\"	$OpenBSD: syscalltest.1,v 0.02 2016/10/27 21:29:14 jmc Exp $
+++.\" Copyright (c) 2016
+++.\"	Nash Kaminski.  All rights reserved.
+++.\"
+++.\" Redistribution and use in source and binary forms, with or without
+++.\" modification, are permitted provided that the following conditions
+++.\" are met:
+++.\" 1. Redistributions of source code must retain the above copyright
+++.\"    notice, this list of conditions and the following disclaimer.
+++.\" 2. Redistributions in binary form must reproduce the above copyright
+++.\"    notice, this list of conditions and the following disclaimer in the
+++.\"    documentation and/or other materials provided with the distribution.
+++.\" 3. Neither the name of the University nor the names of its contributors
+++.\"    may be used to endorse or promote products derived from this software
+++.\"    without specific prior written permission.
+++.\"
+++.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+++.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+++.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+++.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+++.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+++.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+++.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+++.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+++.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+++.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+++.\" SUCH DAMAGE.
+++.\"
+++.\"
+++.Dd $Mdocdate: October 28, 2016 $
+++.Dt SEND_TEST_1 1
+++.Os
+++.Sh NAME
+++.Nm send_test_1
+++.Nd project 2 sending system call test program 1
+++.Sh SYNOPSIS
+++.Ek
+++.Sh DESCRIPTION
+++Project 2 system call test program 1. Performs an msend to group 1 and exits.
++diff --git a/minix/usr.bin/send_test_1/send_test_1.c b/minix/usr.bin/send_test_1/send_test_1.c
++new file mode 100644
++index 0000000..bdb25c2
++--- /dev/null
+++++ b/minix/usr.bin/send_test_1/send_test_1.c
++@@ -0,0 +1,11 @@
+++#include <unistd.h>
+++#include <stdio.h>
+++const int group_nr = 1;
+++const char msg[] = "EngineeringInReverse!";
+++int main(int argc, char** args) {
+++	int rv;
+++	printf("testing msend syscall to group %d\n",group_nr);
+++	rv = msend(group_nr, msg, sizeof(msg));
+++	printf("returned %i\n",rv);
+++	return 0;
+++}
++diff --git a/minix/usr.bin/syscalltest/Makefile b/minix/usr.bin/syscalltest/Makefile
++new file mode 100644
++index 0000000..0b7b23f
++--- /dev/null
+++++ b/minix/usr.bin/syscalltest/Makefile
++@@ -0,0 +1,9 @@
+++PROG=	syscalltest
+++
+++DPADD=
+++LDADD=
+++
+++# BJG
+++WARNS=
+++
+++.include <bsd.prog.mk>
++diff --git a/minix/usr.bin/syscalltest/syscalltest.1 b/minix/usr.bin/syscalltest/syscalltest.1
++new file mode 100644
++index 0000000..c2ee419
++--- /dev/null
+++++ b/minix/usr.bin/syscalltest/syscalltest.1
++@@ -0,0 +1,39 @@
+++.\"	$OpenBSD: syscalltest.1,v 0.02 2016/10/27 21:29:14 jmc Exp $
+++.\" Copyright (c) 2016
+++.\"	Nash Kaminski.  All rights reserved.
+++.\"
+++.\" Redistribution and use in source and binary forms, with or without
+++.\" modification, are permitted provided that the following conditions
+++.\" are met:
+++.\" 1. Redistributions of source code must retain the above copyright
+++.\"    notice, this list of conditions and the following disclaimer.
+++.\" 2. Redistributions in binary form must reproduce the above copyright
+++.\"    notice, this list of conditions and the following disclaimer in the
+++.\"    documentation and/or other materials provided with the distribution.
+++.\" 3. Neither the name of the University nor the names of its contributors
+++.\"    may be used to endorse or promote products derived from this software
+++.\"    without specific prior written permission.
+++.\"
+++.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+++.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+++.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+++.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+++.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+++.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+++.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+++.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+++.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+++.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+++.\" SUCH DAMAGE.
+++.\"
+++.\"
+++.Dd $Mdocdate: October 27, 2016 $
+++.Dt SYSCALLTEST 1
+++.Os
+++.Sh NAME
+++.Nm syscalltest
+++.Nd project 2 system call test program
+++.Sh SYNOPSIS
+++.Ek
+++.Sh DESCRIPTION
+++project 2 system call test program
++diff --git a/minix/usr.bin/syscalltest/syscalltest.c b/minix/usr.bin/syscalltest/syscalltest.c
++new file mode 100644
++index 0000000..e7a441f
++--- /dev/null
+++++ b/minix/usr.bin/syscalltest/syscalltest.c
++@@ -0,0 +1,9 @@
+++#include <unistd.h>
+++#include <stdio.h>
+++int main(int argc, char** args) {
+++	int rv;
+++	printf("testing mtest syscall\n");
+++	rv = mtest();
+++	printf("returned %i\n",rv);
+++	return 0;
+++}
++diff --git a/releasetools/Makefile b/releasetools/Makefile
++index 7b4bed4..021ba4f 100644
++--- a/releasetools/Makefile
+++++ b/releasetools/Makefile
++@@ -24,6 +24,7 @@ PROGRAMS+= ${PROGROOT}/minix/servers/mib/mib
++ PROGRAMS+= ${PROGROOT}/minix/servers/vm/vm
++ PROGRAMS+= ${PROGROOT}/minix/fs/pfs/pfs
++ PROGRAMS+= ${PROGROOT}/minix/fs/mfs/mfs
+++PROGRAMS+= ${PROGROOT}/minix/servers/mcast/mcast
++ PROGRAMS+= ${PROGROOT}/sbin/init/init
++ 
++ all usage help:
++diff --git a/releasetools/image.defaults b/releasetools/image.defaults
++index e2a5f61..af164ff 100644
++--- a/releasetools/image.defaults
+++++ b/releasetools/image.defaults
++@@ -1,7 +1,7 @@
++ : ${OBJ=../obj.${ARCH}}
++ : ${CROSS_TOOLS=${OBJ}/"tooldir.`uname -s`-`uname -r`-`uname -m`"/bin}
++ : ${CROSS_PREFIX=${CROSS_TOOLS}/${TOOLCHAIN_TRIPLET}}
++-: ${JOBS=1}
+++: ${JOBS=3}
++ : ${DESTDIR=${OBJ}/destdir.$ARCH}
++ : ${RELEASEDIR=${OBJ}/releasedir/$ARCH/binary}
++ : ${RELEASETOOLSDIR=./releasetools/}
++diff --git a/releasetools/x86_hdimage.sh b/releasetools/x86_hdimage.sh
++index 32f69a1..0c16017 100755
++--- a/releasetools/x86_hdimage.sh
+++++ b/releasetools/x86_hdimage.sh
++@@ -20,12 +20,12 @@ then
++ 	exit 1
++ fi
++ 
++-# we create a disk image of about 2 gig's
+++# we create a disk image of about 4.5 gig's
++ # for alignment reasons, prefer sizes which are multiples of 4096 bytes
++ : ${BOOTXX_SECS=32}
++-: ${ROOT_SIZE=$((  128*(2**20) - ${BOOTXX_SECS} * 512 ))}
++-: ${HOME_SIZE=$((  128*(2**20) ))}
++-: ${USR_SIZE=$((  1792*(2**20) ))}
+++: ${ROOT_SIZE=$((  256*(2**20) - ${BOOTXX_SECS} * 512 ))}
+++: ${HOME_SIZE=$((  256*(2**20) ))}
+++: ${USR_SIZE=$((  4096*(2**20) ))}
++ : ${EFI_SIZE=$((  0  ))}
++ 
++ # set up disk creation environment
++@@ -45,9 +45,10 @@ workdir_add_kernel minix/$RELEASE_VERSION
++ 
++ # add boot.cfg
++ cat >${ROOT_DIR}/boot.cfg <<END_BOOT_CFG
++-menu=Start MINIX 3:load_mods /boot/minix_default/mod*; multiboot /boot/minix_default/kernel rootdevname=c0d0p0
++-menu=Start latest MINIX 3:load_mods /boot/minix_latest/mod*; multiboot /boot/minix_latest/kernel rootdevname=c0d0p0
++-menu=Start latest MINIX 3 in single user mode:load_mods /boot/minix_latest/mod*; multiboot /boot/minix_latest/kernel rootdevname=c0d0p0 bootopts=-s
+++consdev=com0
+++menu=Start MINIX 3:load_mods /boot/minix_default/mod*; multiboot /boot/minix_default/kernel rootdevname=c0d0p0 cttyline=0 cttybaud=115200
+++menu=Start latest MINIX 3:load_mods /boot/minix_latest/mod*; multiboot /boot/minix_latest/kernel rootdevname=c0d0p0 cttyline=0 cttybaud=115200
+++menu=Start latest MINIX 3 in single user mode:load_mods /boot/minix_latest/mod*; multiboot /boot/minix_latest/kernel rootdevname=c0d0p0 bootopts=-s cttyline=0 cttybaud=115200
++ menu=Start MINIX 3 ALIX:load_mods /boot/minix_default/mod*;multiboot /boot/minix_default/kernel rootdevname=c0d0p0 console=tty00 consdev=com0 ata_no_dma=1
++ menu=Edit menu option:edit
++ menu=Drop to boot prompt:prompt
++diff --git a/share/Makefile b/share/Makefile
++index 170e56d..2e48bb5 100644
++--- a/share/Makefile
+++++ b/share/Makefile
++@@ -1,7 +1,6 @@
++ #	$NetBSD: Makefile,v 1.33 2014/08/08 09:34:10 apb Exp $
++ #	from @(#)Makefile	8.1 (Berkeley) 6/5/93
++ 
++-# Missing:  ms
++ 
++ .include <bsd.own.mk>
++ #__MINIX: dict doc examples man me \
++diff --git a/share/misc/Makefile b/share/misc/Makefile
++index c4cd964..b90242c 100644
++--- a/share/misc/Makefile
+++++ b/share/misc/Makefile
++@@ -5,7 +5,8 @@ FILES=	NetBSD.el acronyms acronyms-o acronyms.comp airport ascii \
++ 	birthtoken bsd-family-tree \
++ 	country domains operator \
++ 	eqnchar flowers indent.pro inter.phone language man.template \
++-	mdoc.template na.phone na.postal style zipcodes
+++	mdoc.template na.phone na.postal style zipcodes test0.sh test1.sh test2.sh test3.sh test4.sh killtest0.sh killtest1.sh
+++
++ FILESDIR=${BINDIR}/misc
++ 
++ # TO AVOID INSTALLING THE POTENTIALLY OFFENSIVE FORTUNES, RUN 'make' with
++diff --git a/share/misc/killtest0.sh b/share/misc/killtest0.sh
++new file mode 100755
++index 0000000..3b0b781
++--- /dev/null
+++++ b/share/misc/killtest0.sh
++@@ -0,0 +1,18 @@
+++#!/bin/sh
+++
+++echo Killing Test 0 starting
+++echo 2 receivers in Group 0
+++echo 1 receiver calls receive from Group 0
+++echo Sender sends to Group 0
+++echo Sender gets killed
+++echo The other receiver calls receive from Group 0
+++echo EXPECTED OUTPUT: One copy of the actual message
+++kill_test_0 &
+++kill_test_1 &
+++sleep 1
+++kill_test_2 &
+++ps | grep -v grep | grep kill_test_2 | awk '{print $1}' | xargs kill
+++sleep 1
+++echo One receiver should still be running
+++ps | grep -v grep | grep kill_test
+++echo --Test script exiting--
++diff --git a/share/misc/killtest1.sh b/share/misc/killtest1.sh
++new file mode 100644
++index 0000000..958c1bc
++--- /dev/null
+++++ b/share/misc/killtest1.sh
++@@ -0,0 +1,13 @@
+++#!/bin/sh
+++
+++echo Killing Test 1 starting
+++echo 2 receivers in Group 0
+++echo 2 receiver call receive from Group 0
+++echo 1 receiver gets killed
+++echo Sender sends to Group 0
+++kill_test_3 &
+++kill_test_4 &
+++sleep 1
+++ps | grep -v grep | grep kill_test_3 | awk '{print $1}' | xargs kill
+++sleep 1
+++kill_test_5
++diff --git a/share/misc/test0.sh b/share/misc/test0.sh
++new file mode 100755
++index 0000000..b1d0760
++--- /dev/null
+++++ b/share/misc/test0.sh
++@@ -0,0 +1,7 @@
+++#!/bin/sh
+++
+++echo Test 0 starting
+++echo 1 Receiver, then 1 Sender, Group 0
+++echo Sender and Receiver should return, Receiver getting message
+++receive_test_0 &
+++send_test_0 
++diff --git a/share/misc/test1.sh b/share/misc/test1.sh
++new file mode 100755
++index 0000000..a415dfb
++--- /dev/null
+++++ b/share/misc/test1.sh
++@@ -0,0 +1,8 @@
+++#!/bin/sh
+++
+++echo Test 1 starting
+++echo 1 Sender, then 1 Receiver, Group 0
+++echo Sender and Receiver should return, Receiver get message
+++send_test_0
+++receive_test_0 &
+++send_test_1
++diff --git a/share/misc/test2.sh b/share/misc/test2.sh
++new file mode 100755
++index 0000000..f124dfa
++--- /dev/null
+++++ b/share/misc/test2.sh
++@@ -0,0 +1,19 @@
+++#!/bin/sh
+++
+++echo Test 2 starting
+++echo 5 Receivers, then 1 Sender, Group 0
+++echo Sender and all Receivers should return, all getting message
+++receive_test_0 &
+++receive_test_0 &
+++receive_test_0 &
+++receive_test_0 &
+++receive_test_0 &
+++send_test_0 
+++echo 5 Receivers, then 1 Sender, Group 1
+++echo Sender and all Receivers should return, all getting message
+++receive_test_1 &
+++receive_test_1 &
+++receive_test_1 &
+++receive_test_1 &
+++receive_test_1 &
+++send_test_1 
++diff --git a/share/misc/test3.sh b/share/misc/test3.sh
++new file mode 100755
++index 0000000..3d7401f
++--- /dev/null
+++++ b/share/misc/test3.sh
++@@ -0,0 +1,8 @@
+++#!/bin/sh
+++
+++echo Test 3 starting
+++echo Opengroup without receiving and have a proc send to the group, then closegroup. 
+++echo Sender should not block indefinitely
+++openwait_test_0 &
+++sleep 1
+++send_test_0 
++diff --git a/share/misc/test4.sh b/share/misc/test4.sh
++new file mode 100755
++index 0000000..1f4bcf2
++--- /dev/null
+++++ b/share/misc/test4.sh
++@@ -0,0 +1,6 @@
+++#!/bin/sh
+++
+++echo Test 4 starting
+++echo Script should return and not print failure message.
+++echo msend should detect deadlock and return -ELOCKED or -208.
+++deadlock_test_0
 diff --git a/distrib/sets/lists/minix-base/md.i386 b/distrib/sets/lists/minix-base/md.i386
 index 3280f85..6609d16 100644
 --- a/distrib/sets/lists/minix-base/md.i386
@@ -3109,14 +6346,36 @@ index c4cd964..b90242c 100644
  
  # TO AVOID INSTALLING THE POTENTIALLY OFFENSIVE FORTUNES, RUN 'make' with
 diff --git a/share/misc/killtest0.sh b/share/misc/killtest0.sh
-new file mode 100755
-index 0000000..3b0b781
+new file mode 100644
+index 0000000..d6ff613
 --- /dev/null
 +++ b/share/misc/killtest0.sh
+@@ -0,0 +1,16 @@
++#!/bin/sh
++
++echo Interrupted syscall test 0 starting
++echo 2 receivers in Group 0
++echo 2 receiver call receive from Group 0
++echo 1 receiver gets killed
++echo Sender sends to Group 0
++echo EXPECTED OUTPUT: One copy of message
++kill_test_3 &
++kill_test_4 &
++sleep 1
++ps | grep -v grep | grep kill_test_3 | awk '{print $1}' | xargs kill
++sleep 1
++ps | grep -v grep | grep kill_test
++echo One receiver should be running
++kill_test_5
+diff --git a/share/misc/killtest1.sh b/share/misc/killtest1.sh
+new file mode 100755
+index 0000000..24dc1f2
+--- /dev/null
++++ b/share/misc/killtest1.sh
 @@ -0,0 +1,18 @@
 +#!/bin/sh
 +
-+echo Killing Test 0 starting
++echo Killing Test 1 starting
 +echo 2 receivers in Group 0
 +echo 1 receiver calls receive from Group 0
 +echo Sender sends to Group 0
@@ -3132,25 +6391,6 @@ index 0000000..3b0b781
 +echo One receiver should still be running
 +ps | grep -v grep | grep kill_test
 +echo --Test script exiting--
-diff --git a/share/misc/killtest1.sh b/share/misc/killtest1.sh
-new file mode 100644
-index 0000000..958c1bc
---- /dev/null
-+++ b/share/misc/killtest1.sh
-@@ -0,0 +1,13 @@
-+#!/bin/sh
-+
-+echo Killing Test 1 starting
-+echo 2 receivers in Group 0
-+echo 2 receiver call receive from Group 0
-+echo 1 receiver gets killed
-+echo Sender sends to Group 0
-+kill_test_3 &
-+kill_test_4 &
-+sleep 1
-+ps | grep -v grep | grep kill_test_3 | awk '{print $1}' | xargs kill
-+sleep 1
-+kill_test_5
 diff --git a/share/misc/test0.sh b/share/misc/test0.sh
 new file mode 100755
 index 0000000..b1d0760
