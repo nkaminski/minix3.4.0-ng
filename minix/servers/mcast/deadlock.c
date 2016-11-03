@@ -88,7 +88,7 @@ int ProcessActive(int pid)							//Check if a process is active. Returns -1 if a
 	for (i=0;i<total;i++)
 	{
 		if (Send[t][i]==1) return -1;
-		if (Send[i][t]==1) return -1;
+	//	if (Send[i][t]==1) return -1;
 		if (Receive[t]==1) return -1;
 	}
 	return 0;
@@ -295,10 +295,11 @@ int ProcessDelete(int pid)							//Delete a process from process list
 	p=ProcessList[t];										//Error : Pid not found
 	if (ProcessActive(pid)==-1)
 	{
-		puts("Cannot delete : Process active.");
+		printf("Cannot delete %d: Process active.\n", pid);
+      printAll();
 		return -1;						//Error : Process still active
 	}
-   printf("ProcessDelete performing deletion at %d\n",t);
+   printf("ProcessDelete performing deletion at %d of pid %d\n",t, pid);
 	int i,j,k;
 	for (i=t;i<total-1;i++)										//Delete from sending and receiving matrix
 		for (j=0;j<total;j++)									//

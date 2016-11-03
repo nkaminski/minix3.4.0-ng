@@ -45,7 +45,7 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
 
         /* Check for a preexisting blocked sender */
         if(group_list[gid].b_sender != NULL){
-                if(mcast_isokendpt(group_list[gid].b_sender->pid,&procnr)){
+                if(mcast_isokendpt(group_list[gid].b_sender->pid,&procnr) == (OK)){
                   /* valid blocked sender */
                   printf("One sender at a time can send to a group!\n");
                   return (EAGAIN);
@@ -65,6 +65,7 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
         /* Register the sender */
         group_list[gid].b_sender = malloc(sizeof(mc_member_t));
         group_list[gid].b_sender->pid = pid;
+        group_list[gid].b_sender->blocked = 0;
         ProcessRegister(group_list[gid].b_sender);
 
         //ensure valid type,src,index gid
@@ -95,18 +96,7 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
         for(i=0;i<NR_PROCS;i++){
                 if(group_list[gid].member_list[i] == NULL)
                         continue;
-                /* interrupted system call? */
-                if(mcast_isokendpt(group_list[gid].member_list[i]->pid, &procnr) != OK){
-                        /* Do NOT deliver! Deallocate everything pertaining to that proc. copying is unsafe since the proc is gone! */
-                        printf("MCAST: msend detected interrupted receiver. Deallocating.\n");
-                        if(group_list[gid].member_list[i]->pending > 0){
-                                group_list[gid].npending--;
-                        }
-                        ExitReceive(group_list[gid].member_list[i]->pid,gid);
-						      rm_member(group_list[gid].member_list[i]->pid,gid);
-                        continue;
-                }
-                //if blocked waiting
+                /* Process maybe not blocked and waiting ?*/ 
                 if(group_list[gid].member_list[i]->blocked < 1){
                         //else mark as pending
                         printf("Process %d not blocked, block sender after this!\n", group_list[gid].member_list[i]->pid);
@@ -114,19 +104,27 @@ int msend(endpoint_t pid, const char *src, size_t size, int gid)
                         group_list[gid].npending++;
                         continue;
                 }
-
-                /* proc is blocked */
-                //deliver msg and unblock
                 com_size = MIN(group_list[gid].member_list[i]->datasize,size);
                 printf("Attempting to copy %d bytes to ep %d\n", com_size, group_list[gid].member_list[i]->pid);
-                if(sys_datacopy(pid, (vir_bytes)src, group_list[gid].member_list[i]->pid, group_list[gid].member_list[i]->dataptr, com_size) == (OK)){
-                  group_list[gid].deliveries++;
+                /* reciever is going to exit(or is dead) so tell deadlock detector */
+                ExitReceive((int)(group_list[gid].member_list[i]->pid),gid);
+               /* interrupted system call? */
+                if(mcast_isokendpt(group_list[gid].member_list[i]->pid, &procnr) != OK ||
+                  sys_datacopy(pid, (vir_bytes)src, group_list[gid].member_list[i]->pid, group_list[gid].member_list[i]->dataptr, com_size) != (OK)){
+                        /* Failed delivery! Deallocate everything pertaining to that proc. copying is unsafe since the proc is gone! */
+                        printf("MCAST: msend detected interrupted receiver. Deallocating.\n");
+                        if(group_list[gid].member_list[i]->pending > 0){
+                                group_list[gid].npending--;
+                        }
+						      
+                        rm_member(group_list[gid].member_list[i]->pid,gid);
+                        continue;
                 }
+                /* delivery was successful */
+                group_list[gid].deliveries++;
                 /* Clear blocked flag */
                 group_list[gid].member_list[i]->blocked = 0;
-                /* reciever is going to exit so tell deadlock detector */
-                ExitReceive(group_list[gid].member_list[i]->pid,gid);
-                /* unblock receiver */
+               /* unblock receiver */
                 wake_up(group_list[gid].member_list[i]->pid, (OK));
         }
         //if any process is/was marked as pending
@@ -372,7 +370,7 @@ void rm_member(endpoint_t pid, int gid)
                     group_list[gid].npending--;
             }
             /* Opportunity to unblock sender if all receivers are gone */
-               if(group_list[gid].npending == 0 && group_list[gid].b_sender != NULL){
+               if(group_list[gid].npending == 0 && group_list[gid].b_sender != NULL && group_list[gid].b_sender->blocked > 0){
                     /* unblock sender */
                     ExitSend(group_list[gid].b_sender->pid,gid);
                     group_list[gid].b_sender->blocked = 0;

@@ -2,6 +2,7 @@
  *
  * The entry points are:
  *   no_sys:		called for invalid system call numbers
+ *   mcast_isokendpt:		verifies if a given endpoint is valid
  */
 
 #include "mcast.h"
@@ -18,14 +19,15 @@ int no_sys(int who_e, int call_nr)
         return(ENOSYS);
 }
 /*===========================================================================*
- *          rs_isokendpt                 *
+ *          mcast_isokendpt                                                  *
  *===========================================================================*/
 int mcast_isokendpt(endpoint_t endpoint, int *proc)
 {
         if(endpoint == NONE)
                 return EINVAL;
-        *proc = _ENDPOINT_P(endpoint);
-        if(*proc < -NR_TASKS || *proc >= NR_PROCS)
+        *proc = getnpid(endpoint);
+        printf("isokendpt npid=%d\n", *proc);
+        if(*proc < 0)
                 return EINVAL;
         return OK;
 }
