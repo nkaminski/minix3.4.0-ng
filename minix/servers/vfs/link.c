@@ -5,6 +5,7 @@
  * The entry points into this file are
  *   do_link:         perform the LINK system call
  *   do_unlink:	      perform the UNLINK and RMDIR system calls
+ *   do_undelete:	      perform the UNDELETE system calls
  *   do_rename:	      perform the RENAME system call
  *   do_truncate:     perform the TRUNCATE system call
  *   do_ftruncate:    perform the FTRUNCATE system call
@@ -162,7 +163,17 @@ int do_unlink(void)
   put_vnode(dirp);
   return(r);
 }
-
+/*===========================================================================*
+ *				do_undelete				     *
+ *===========================================================================*/
+int do_undelete(void)
+{
+/* Perform the undelete(name) system call.
+ * The syscall might provide 'name' embedded in the message.
+ */
+   printf("undelete system call called\n");
+   return (OK);
+}
 /*===========================================================================*
  *				do_rename				     *
  *===========================================================================*/

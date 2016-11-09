@@ -133,8 +133,10 @@
 #define VFS_GETSOCKNAME		(VFS_BASE + 61)
 #define VFS_GETPEERNAME		(VFS_BASE + 62)
 #define VFS_SHUTDOWN		(VFS_BASE + 63)
+#define VFS_UNDELETE		(VFS_BASE + 64)
+#define VFS_RCMKDIR		(VFS_BASE + 65)
 
-#define NR_VFS_CALLS		64	/* highest number from base plus one */
+#define NR_VFS_CALLS		66	/* highest number from base plus one */
 
 /*===========================================================================*
  *				Calls to mcast server			     *

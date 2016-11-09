@@ -142,6 +142,7 @@ pid_t	 tcgetpgrp(int);
 int	 tcsetpgrp(int, pid_t);
 __aconst char *ttyname(int);
 int	 unlink(const char *);
+int	 undelete(const char *);
 ssize_t	 write(int, const void *, size_t);
 
 

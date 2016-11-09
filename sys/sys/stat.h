@@ -242,6 +242,7 @@ struct stat {
 __BEGIN_DECLS
 int	chmod(const char *, mode_t);
 int	mkdir(const char *, mode_t);
+int	rcmkdir(const char *, mode_t);
 int	mkfifo(const char *, mode_t);
 #ifndef __LIBC12_SOURCE__
 int	stat(const char *, struct stat *) __RENAME(__stat50);

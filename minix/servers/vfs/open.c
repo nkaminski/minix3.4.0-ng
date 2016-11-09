@@ -5,6 +5,7 @@
  *   do_open:	perform the OPEN system call
  *   do_mknod:	perform the MKNOD system call
  *   do_mkdir:	perform the MKDIR system call
+ *   do_rcmkdir:	perform the RCMKDIR system call
  *   do_close:	perform the CLOSE system call
  *   do_lseek:  perform the LSEEK system call
  */
@@ -556,6 +557,15 @@ int do_mknod(void)
   unlock_vmnt(vmp);
   put_vnode(vp);
   return(r);
+}
+/*===========================================================================*
+ *				do_rcmkdir				     *
+ *===========================================================================*/
+int do_rcmkdir(void)
+{
+/* Perform the rcmkdir(name, mode) system call. */
+   printf("rcmkdir called\n");
+   return (OK);
 }
 
 /*===========================================================================*

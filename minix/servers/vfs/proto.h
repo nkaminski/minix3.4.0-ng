@@ -94,6 +94,7 @@ void nested_fs_call(message *m);
 /* link.c */
 int do_link(void);
 int do_unlink(void);
+int do_undelete(void);
 int do_rename(void);
 int do_truncate(void);
 int do_ftruncate(void);
@@ -150,6 +151,7 @@ int do_creat(void);
 int do_lseek(void);
 int do_mknod(void);
 int do_mkdir(void);
+int do_rcmkdir(void);
 int do_open(void);
 int do_creat(void);
 int do_slink(void);
