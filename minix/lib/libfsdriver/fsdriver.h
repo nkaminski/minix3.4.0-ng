@@ -31,6 +31,8 @@ extern int fsdriver_bwrite(const struct fsdriver * __restrict,
 	const message * __restrict, message * __restrict);
 extern int fsdriver_unlink(const struct fsdriver * __restrict,
 	const message * __restrict, message * __restrict);
+extern int fsdriver_undelete(const struct fsdriver * __restrict,
+	const message * __restrict, message * __restrict);
 extern int fsdriver_rmdir(const struct fsdriver * __restrict,
 	const message * __restrict, message * __restrict);
 extern int fsdriver_unmount(const struct fsdriver * __restrict,
@@ -48,6 +50,8 @@ extern int fsdriver_write(const struct fsdriver * __restrict,
 extern int fsdriver_mknod(const struct fsdriver * __restrict,
 	const message * __restrict, message * __restrict);
 extern int fsdriver_mkdir(const struct fsdriver * __restrict,
+	const message * __restrict, message * __restrict);
+extern int fsdriver_rcmkdir(const struct fsdriver * __restrict,
 	const message * __restrict, message * __restrict);
 extern int fsdriver_create(const struct fsdriver * __restrict,
 	const message * __restrict, message * __restrict);

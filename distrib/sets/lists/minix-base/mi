@@ -41,6 +41,7 @@
 ./bin/ps                                                minix-base
 ./bin/pwd                                               minix-base
 ./bin/rcmd                                              minix-base
+./bin/rcmkdir                                           minix-base
 ./bin/rcp                                               minix-base
 ./bin/read                                              minix-base      obsolete
 ./bin/readclock                                         minix-base
@@ -57,6 +58,7 @@
 ./bin/test                                              minix-base
 ./bin/umask                                             minix-base      obsolete
 ./bin/umount                                            minix-base
+./bin/undelete                                          minix-base
 ./bin/update_bootcfg                                    minix-base
 ./bin/updateboot                                        minix-base
 ./bin/wait                                              minix-base      obsolete

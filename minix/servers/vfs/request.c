@@ -560,6 +560,43 @@ int req_mkdir(
   return(r);
 }
 
+/*===========================================================================*
+ *				req_rcmkdir	      			     *
+ *===========================================================================*/
+int req_rcmkdir(
+  endpoint_t fs_e,
+  ino_t inode_nr,
+  char *lastc,
+  uid_t uid,
+  gid_t gid,
+  mode_t dmode
+)
+{
+  int r;
+  cp_grant_id_t grant_id;
+  size_t len;
+  message m;
+
+  len = strlen(lastc) + 1;
+  grant_id = cpf_grant_direct(fs_e, (vir_bytes)lastc, len, CPF_READ);
+  if(grant_id == -1)
+	  panic("req_mkdir: cpf_grant_direct failed");
+
+  /* Fill in request message */
+  m.m_type = REQ_RCMKDIR;
+  m.m_vfs_fs_mkdir.inode = inode_nr;
+  m.m_vfs_fs_mkdir.mode = dmode;
+  m.m_vfs_fs_mkdir.uid = uid;
+  m.m_vfs_fs_mkdir.gid = gid;
+  m.m_vfs_fs_mkdir.grant = grant_id;
+  m.m_vfs_fs_mkdir.path_len = len;
+
+  /* Send/rec request */
+  r = fs_sendrec(fs_e, &m);
+  cpf_revoke(grant_id);
+
+  return(r);
+}
 
 /*===========================================================================*
  *				req_mknod	      			     *
@@ -1182,6 +1219,36 @@ char *lastc;
   return(r);
 }
 
+/*===========================================================================*
+ *				req_undelete	     			     *
+ *===========================================================================*/
+int req_undelete(fs_e, inode_nr, lastc)
+endpoint_t fs_e;
+ino_t inode_nr;
+char *lastc;
+{
+  cp_grant_id_t grant_id;
+  size_t len;
+  int r;
+  message m;
+
+  len = strlen(lastc) + 1;
+  grant_id = cpf_grant_direct(fs_e, (vir_bytes) lastc, len, CPF_READ);
+  if(grant_id == -1)
+	  panic("req_undelete: cpf_grant_direct failed");
+
+  /* Fill in request message */
+  m.m_type = REQ_UNDELETE;
+  m.m_vfs_fs_unlink.inode = inode_nr;
+  m.m_vfs_fs_unlink.grant = grant_id;
+  m.m_vfs_fs_unlink.path_len = len;
+
+  /* Send/rec request */
+  r = fs_sendrec(fs_e, &m);
+  cpf_revoke(grant_id);
+
+  return(r);
+}
 
 /*===========================================================================*
  *				req_unmount	    			     *

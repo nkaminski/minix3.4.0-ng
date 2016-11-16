@@ -47,6 +47,7 @@ struct fsdriver_dentry {
 #define FSC_PEEK	2		/* peek or bpeek call */
 
 #define FSC_UNLINK	0		/* unlink call */
+#define FSC_UNDELETE	0		/* undelete call */
 #define FSC_RMDIR	1		/* rmdir call */
 
 /* Function call table for file system services. */
@@ -73,10 +74,13 @@ struct fsdriver {
 	    gid_t gid, struct fsdriver_node *node);
 	int (*fdr_mkdir)(ino_t dir_nr, char *name, mode_t mode, uid_t uid,
 	    gid_t gid);
+	int (*fdr_rcmkdir)(ino_t dir_nr, char *name, mode_t mode, uid_t uid,
+	    gid_t gid);
 	int (*fdr_mknod)(ino_t dir_nr, char *name, mode_t mode, uid_t uid,
 	    gid_t gid, dev_t rdev);
 	int (*fdr_link)(ino_t dir_nr, char *name, ino_t ino_nr);
 	int (*fdr_unlink)(ino_t dir_nr, char *name, int call);
+	int (*fdr_undelete)(ino_t dir_nr, char *name, int call);
 	int (*fdr_rmdir)(ino_t dir_nr, char *name, int call);
 	int (*fdr_rename)(ino_t old_dir_nr, char *old_name, ino_t new_dir_nr,
 	    char *new_name);

@@ -70,6 +70,10 @@ int fs_mknod(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid,
   return(err_code);
 }
 
+int fs_rcmkdir(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid){
+        printf("rcmkdir call in mfs server proc, name is %s\n", name);
+        return (OK);
+}
 
 /*===========================================================================*
  *				fs_mkdir				     *

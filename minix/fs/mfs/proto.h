@@ -35,6 +35,7 @@ ssize_t fs_rdlink(ino_t ino_nr, struct fsdriver_data *data, size_t bytes);
 int fs_rename(ino_t old_dir_nr, char *old_name, ino_t new_dir_nr,
 	char *new_name);
 int fs_unlink(ino_t dir_nr, char *name, int call);
+int fs_undelete(ino_t dir_nr, char *name, int call);
 int truncate_inode(struct inode *rip, off_t len);
 
 /* misc.c */
@@ -50,6 +51,7 @@ int fs_mountpt(ino_t ino_nr);
 int fs_create(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid,
 	struct fsdriver_node *node);
 int fs_mkdir(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid);
+int fs_rcmkdir(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid);
 int fs_mknod(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid,
 	dev_t dev);
 int fs_slink(ino_t dir_nr, char *name, uid_t uid, gid_t gid,

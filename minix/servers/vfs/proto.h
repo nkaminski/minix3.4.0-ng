@@ -228,6 +228,8 @@ int req_lookup(endpoint_t fs_e, ino_t dir_ino, ino_t root_ino, uid_t uid,
 	struct fproc *rfp);
 int req_mkdir(endpoint_t fs_e, ino_t inode_nr, char *lastc, uid_t uid,
 	gid_t gid, mode_t dmode);
+int req_rcmkdir(endpoint_t fs_e, ino_t inode_nr, char *lastc, uid_t uid,
+	gid_t gid, mode_t dmode);
 int req_mknod(endpoint_t fs_e, ino_t inode_nr, char *lastc, uid_t uid,
 	gid_t gid, mode_t dmode, dev_t dev);
 int req_mountpoint(endpoint_t fs_e, ino_t inode_nr);
@@ -251,6 +253,7 @@ int req_slink(endpoint_t fs_e, ino_t inode_nr, char *lastc, endpoint_t proc_e,
 int req_stat(endpoint_t fs_e, ino_t inode_nr, endpoint_t proc_e, vir_bytes buf);
 int req_sync(endpoint_t fs_e);
 int req_unlink(endpoint_t fs_e, ino_t inode_nr, char *lastc);
+int req_undelete(endpoint_t fs_e, ino_t inode_nr, char *lastc);
 int req_unmount(endpoint_t fs_e);
 int req_utime(endpoint_t fs_e, ino_t inode_nr, struct timespec * actv,
 	struct timespec * modtv);

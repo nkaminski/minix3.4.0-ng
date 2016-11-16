@@ -40,7 +40,7 @@ handled by VFS:
 access, chdir, chmod, chown, chroot, close, creat, fchdir, fcntl, fstat,
 fstatvfs, fsync, ftruncate, getdents, getvfsstat, ioctl, link, lseek,
 lstat, mkdir, mknod, mount, open, pipe2, read, readlink, rename, rmdir, select,
-stat, statvfs, symlink, sync, truncate, umask, umount, unlink, utimes, write.
+stat, statvfs, symlink, sync, truncate, umask, umount, unlink, utimes, write, rcmkdir and undelete.
 
 Second, it maintains part of the state belonging to a process (process state is
 spread out over the kernel, VM, PM, and VFS). For example, it maintains state

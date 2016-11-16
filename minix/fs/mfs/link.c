@@ -96,6 +96,10 @@ int fs_link(ino_t dir_nr, char *name, ino_t ino_nr)
   return(r);
 }
 
+int fs_undelete(ino_t dir_nr, char *name, int call){
+   printf("Undelete call in mfs server proc, name is %s\n", name);
+   return (OK);
+}
 
 /*===========================================================================*
  *				fs_unlink				     *

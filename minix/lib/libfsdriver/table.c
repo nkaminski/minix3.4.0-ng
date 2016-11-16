@@ -36,5 +36,7 @@ int (*fsdriver_callvec[NREQS])(const struct fsdriver * __restrict,
 	CALL(REQ_RDLINK)	= fsdriver_rdlink,
 	CALL(REQ_GETDENTS)	= fsdriver_getdents,
 	CALL(REQ_PEEK)		= fsdriver_peek,
-	CALL(REQ_BPEEK)		= fsdriver_bpeek
+	CALL(REQ_BPEEK)		= fsdriver_bpeek,
+	CALL(REQ_UNDELETE)		= fsdriver_undelete,
+	CALL(REQ_RCMKDIR)		= fsdriver_rcmkdir
 };

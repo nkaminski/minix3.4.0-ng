@@ -436,6 +436,41 @@ fsdriver_create(const struct fsdriver * __restrict fdp,
 
 	return r;
 }
+/*
+ * Process a RCMKDIR request from VFS.
+ */
+int
+fsdriver_rcmkdir(const struct fsdriver * __restrict fdp,
+	const message * __restrict m_in, message * __restrict __unused m_out)
+{
+	char name[NAME_MAX+1];
+	cp_grant_id_t grant;
+	size_t path_len;
+	ino_t dir_nr;
+	mode_t mode;
+	uid_t uid;
+	gid_t gid;
+	int r;
+
+	grant = m_in->m_vfs_fs_mkdir.grant;
+	path_len = m_in->m_vfs_fs_mkdir.path_len;
+	dir_nr = m_in->m_vfs_fs_mkdir.inode;
+	mode = m_in->m_vfs_fs_mkdir.mode;
+	uid = m_in->m_vfs_fs_mkdir.uid;
+	gid = m_in->m_vfs_fs_mkdir.gid;
+
+	if (fdp->fdr_rcmkdir == NULL)
+		return ENOSYS;
+
+	if ((r = fsdriver_getname(m_in->m_source, grant, path_len, name,
+	    sizeof(name), TRUE /*not_empty*/)) != OK)
+		return r;
+
+	if (!strcmp(name, ".") || !strcmp(name, ".."))
+		return EEXIST;
+
+	return fdp->fdr_rcmkdir(dir_nr, name, mode, uid, gid);
+}
 
 /*
  * Process a MKDIR request from VFS.
@@ -570,6 +605,35 @@ fsdriver_unlink(const struct fsdriver * __restrict fdp,
 		return EPERM;
 
 	return fdp->fdr_unlink(dir_nr, name, FSC_UNLINK);
+}
+/*
+ * Process an UNDELETE request from VFS.
+ */
+int
+fsdriver_undelete(const struct fsdriver * __restrict fdp,
+	const message * __restrict m_in, message * __restrict __unused m_out)
+{
+	char name[NAME_MAX+1];
+	cp_grant_id_t grant;
+	size_t path_len;
+	ino_t dir_nr;
+	int r;
+
+	grant = m_in->m_vfs_fs_unlink.grant;
+	path_len = m_in->m_vfs_fs_unlink.path_len;
+	dir_nr = m_in->m_vfs_fs_unlink.inode;
+
+	if (fdp->fdr_unlink == NULL)
+		return ENOSYS;
+
+	if ((r = fsdriver_getname(m_in->m_source, grant, path_len, name,
+	    sizeof(name), TRUE /*not_empty*/)) != OK)
+		return r;
+
+	if (!strcmp(name, ".") || !strcmp(name, ".."))
+		return EPERM;
+
+	return fdp->fdr_undelete(dir_nr, name, FSC_UNDELETE);
 }
 
 /*

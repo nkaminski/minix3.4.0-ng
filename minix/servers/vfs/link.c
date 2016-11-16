@@ -172,7 +172,43 @@ int do_undelete(void)
  * The syscall might provide 'name' embedded in the message.
  */
    printf("undelete system call called\n");
-   return (OK);
+  struct vnode *dirp, *dirp_l;
+  struct vmnt *vmp;
+  int r;
+  char fullpath[PATH_MAX];
+  struct lookup resolve;
+
+  if (copy_path(fullpath, sizeof(fullpath)) != OK)
+	return(err_code);
+
+  lookup_init(&resolve, fullpath, PATH_RET_SYMLINK, &vmp, &dirp_l);
+  resolve.l_vmnt_lock = VMNT_WRITE;
+  resolve.l_vnode_lock = VNODE_WRITE;
+
+  /* Get the last directory in the path. */
+  if ((dirp = last_dir(&resolve, fp)) == NULL) return(err_code);
+
+  /* Make sure that the object is a directory */
+  if (!S_ISDIR(dirp->v_mode)) {
+	unlock_vnode(dirp);
+	unlock_vmnt(vmp);
+	put_vnode(dirp);
+	return(ENOTDIR);
+  }
+  upgrade_vmnt_lock(vmp);
+
+  if (job_call_nr == VFS_UNDELETE){
+     r = req_undelete(dirp->v_fs_e, dirp->v_inode_nr, fullpath);
+  }
+  else{
+     printf("Undelete called via unknown syscall number\n");
+     r = ENOSYS;
+  }
+
+  unlock_vnode(dirp);
+  unlock_vmnt(vmp);
+  put_vnode(dirp);
+  return(r);
 }
 /*===========================================================================*
  *				do_rename				     *

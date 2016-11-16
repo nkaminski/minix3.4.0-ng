@@ -318,6 +318,7 @@
 ./usr/man/man1/pwhash.1                                 minix-man
 ./usr/man/man1/ranlib.1                                 minix-man       binutils
 ./usr/man/man1/rcmd.1                                   minix-man
+./usr/man/man1/rcmkdir.1                                   minix-man
 ./usr/man/man1/rcp.1                                    minix-man
 ./usr/man/man1/read.1                                   minix-man       obsolete
 ./usr/man/man1/readelf.1                                minix-man       binutils
@@ -403,6 +404,7 @@
 ./usr/man/man1/umount.1                                 minix-man
 ./usr/man/man1/uname.1                                  minix-man
 ./usr/man/man1/uncompress.1                             minix-man
+./usr/man/man1/undelete.1                               minix-man
 ./usr/man/man1/unexpand.1                               minix-man
 ./usr/man/man1/unifdef.1                                minix-man
 ./usr/man/man1/unifdefall.1                             minix-man

@@ -564,8 +564,37 @@ int do_mknod(void)
 int do_rcmkdir(void)
 {
 /* Perform the rcmkdir(name, mode) system call. */
-   printf("rcmkdir called\n");
-   return (OK);
+  mode_t bits;			/* mode bits for the new inode */
+  int r;
+  struct vnode *vp;
+  struct vmnt *vmp;
+  char fullpath[PATH_MAX];
+  struct lookup resolve;
+  mode_t dirmode;
+
+  if (copy_path(fullpath, sizeof(fullpath)) != OK)
+	return(err_code);
+  dirmode = job_m_in.m_lc_vfs_path.mode;
+
+  lookup_init(&resolve, fullpath, PATH_NOFLAGS, &vmp, &vp);
+  resolve.l_vmnt_lock = VMNT_WRITE;
+  resolve.l_vnode_lock = VNODE_WRITE;
+
+  bits = I_DIRECTORY | (dirmode & RWX_MODES & fp->fp_umask);
+  if ((vp = last_dir(&resolve, fp)) == NULL) return(err_code);
+
+  /* Make sure that the object is a directory */
+  if (!S_ISDIR(vp->v_mode)) {
+	r = ENOTDIR;
+  } else if ((r = forbidden(fp, vp, W_BIT|X_BIT)) == OK) {
+	r = req_rcmkdir(vp->v_fs_e, vp->v_inode_nr, fullpath, fp->fp_effuid,
+		      fp->fp_effgid, bits);
+  }
+
+  unlock_vnode(vp);
+  unlock_vmnt(vmp);
+  put_vnode(vp);
+  return(r);
 }
 
 /*===========================================================================*
