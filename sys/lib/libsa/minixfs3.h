@@ -43,6 +43,10 @@ typedef uint32_t block_t;
 #define NR_TZONES	10	/* total # zone numbers in an inode */
 #define NIADDR		2       /* Indirect addresses in inode */
 
+#define UNDELETE_NONE 0x00
+#define UNDELETE_RECOVERABLE 0x01
+#define UNDELETE_HIDDEN 0x02
+
 struct mfs_dinode {
 	uint16_t  mdi_mode;	/* file type, protection, etc. */
 	uint16_t  mdi_nlinks;	/* how many links to this file */
@@ -61,11 +65,12 @@ struct mfs_dinode {
  * directory entries, so this can't be changed
  * without breaking filesystems.
  */
-#define MFS_DIRSIZ	60
+#define MFS_DIRSIZ	59
 
 struct mfs_direct {
 	uint32_t  mfsd_ino;
-	char      mfsd_name[MFS_DIRSIZ];
+   uint8_t   mfsd_rc_flags;
+   char      mfsd_name[MFS_DIRSIZ];
 } __packed;
 
 struct mfs_sblock {

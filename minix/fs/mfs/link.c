@@ -95,6 +95,9 @@ int fs_link(ino_t dir_nr, char *name, ino_t ino_nr)
   put_inode(ip);
   return(r);
 }
+/*===========================================================================*
+ *				fs_undelete				     *
+ *===========================================================================*/
 
 int fs_undelete(ino_t dir_nr, char *name, int call){
    printf("Undelete call in mfs server proc, name is %s\n", name);
@@ -246,8 +249,14 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
 	rip->i_nlinks--;	/* entry deleted from parent's dir */
 	rip->i_update |= CTIME;
 	IN_MARKDIRTY(rip);
+  } else if( r == HIDDEN ){
+	/* file was hidden and not actually deleted */
+   printf("Recoverable hidden file resulted from unlink() call!\n");
+   rip->i_update |= CTIME;
+	IN_MARKDIRTY(rip);
+   r = OK;
   }
-
+  
   put_inode(rip);
   return(r);
 }

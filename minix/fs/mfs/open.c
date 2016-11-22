@@ -71,14 +71,20 @@ int fs_mknod(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid,
 }
 
 int fs_rcmkdir(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid){
-        printf("rcmkdir call in mfs server proc, name is %s\n", name);
-        return (OK);
+   printf("rcmkdir call in mfs server proc, name is %s\n", name);
+   return fs_mkdir_expand(dir_nr, name, mode, uid, gid, 1);
 }
-
 /*===========================================================================*
  *				fs_mkdir				     *
  *===========================================================================*/
-int fs_mkdir(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid)
+int fs_mkdir(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid){
+   return fs_mkdir_expand(dir_nr, name, mode, uid, gid, 0);
+}
+
+/*===========================================================================*
+ *				fs_mkdir_expand				     *
+ *===========================================================================*/
+int fs_mkdir_expand(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid, char is_rcdir)
 {
   int r1, r2;			/* status codes */
   ino_t dot, dotdot;		/* inode numbers for . and .. */
@@ -102,7 +108,7 @@ int fs_mkdir(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid)
   dot = rip->i_num;		/* inode number of the new dir itself */
 
   /* Now make dir entries for . and .. unless the disk is completely full. */
-  r1 = search_dir(rip, ".", &dot, ENTER);	/* enter . in the new dir */
+  r1 = search_dir_expand(rip, ".", &dot, ENTER, is_rcdir);	/* enter . in the new dir */
   r2 = search_dir(rip, "..", &dotdot, ENTER);	/* enter .. in the new dir */
 
   /* If both . and .. were successfully entered, increment the link counts. */

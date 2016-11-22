@@ -85,7 +85,6 @@ const char *string;		/* component name to look for */
   return(rip);
 }
 
-
 /*===========================================================================*
  *				search_dir				     *
  *===========================================================================*/
@@ -94,6 +93,20 @@ register struct inode *ldir_ptr; /* ptr to inode for dir to search */
 const char *string;		 /* component to search for */
 ino_t *numb;			 /* pointer to inode number */
 int flag;			 /* LOOK_UP, ENTER, DELETE or IS_EMPTY */
+{
+   /* never shows hidden entries */
+   return search_dir_expand(ldir_ptr,string,numb,flag,0);
+}
+
+/*===========================================================================*
+ *				search_dir_expand				     *
+ *===========================================================================*/
+int search_dir_expand(ldir_ptr, string, numb, flag, show_hidden)
+register struct inode *ldir_ptr; /* ptr to inode for dir to search */
+const char *string;		 /* component to search for */
+ino_t *numb;			 /* pointer to inode number */
+int flag;			 /* LOOK_UP, ENTER, DELETE or IS_EMPTY */
+int show_hidden; /* Show hidden/deleted directory entries */
 {
 /* This function searches the directory whose inode is pointed to by 'ldip':
  * if (flag == ENTER)  enter 'string' in the directory with inode # '*numb';
@@ -106,6 +119,7 @@ int flag;			 /* LOOK_UP, ENTER, DELETE or IS_EMPTY */
  */
   register struct direct *dp = NULL;
   register struct buf *bp = NULL;
+  register struct direct *dparent = NULL;
   int i, r, e_hit, t, match;
   off_t pos;
   unsigned new_slots, old_slots;
@@ -141,6 +155,16 @@ int flag;			 /* LOOK_UP, ENTER, DELETE or IS_EMPTY */
 	assert(ldir_ptr->i_dev != NO_DEV);
 	assert(bp != NULL);
 
+   /* Find parent dir. */
+	for (dp = &b_dir(bp)[0];
+		dp < &b_dir(bp)[NR_DIR_ENTRIES(ldir_ptr->i_sp->s_block_size)];
+		dp++) {
+       /* capture the address of the parent dir */
+		if (strcmp(dp->mfs_d_name, "." ) == 0){
+              dparent = dp;
+              break;
+      }
+	}
 	/* Search a directory block. */
 	for (dp = &b_dir(bp)[0];
 		dp < &b_dir(bp)[NR_DIR_ENTRIES(ldir_ptr->i_sp->s_block_size)];
@@ -149,8 +173,7 @@ int flag;			 /* LOOK_UP, ENTER, DELETE or IS_EMPTY */
 			if (flag == ENTER) e_hit = TRUE;
 			break;
 		}
-
-		/* Match occurs if string found. */
+  	/* Match occurs if string found. */
 		if (flag != ENTER && dp->mfs_d_ino != NO_ENTRY) {
 			if (flag == IS_EMPTY) {
 				/* If this test succeeds, dir is not empty. */
@@ -160,7 +183,16 @@ int flag;			 /* LOOK_UP, ENTER, DELETE or IS_EMPTY */
 			} else {
 				if (strncmp(dp->mfs_d_name, string,
 					sizeof(dp->mfs_d_name)) == 0){
-					match = 1;
+                    /* entry found, is it hidden(deleted) or is the option set to show hidden entries? */
+                    if(dp->mfs_rcdir_flags & UNDELETE_HIDDEN){
+                            /* hidden, bit 1 bust be set else inconsistent state */
+                            assert(dp->mfs_rcdir_flags & UNDELETE_RECOVERABLE);
+                            if(show_hidden)
+                                    match = 1;
+                    } else{
+                           /* normal entry */
+				             	 match = 1;
+                    }
 				}
 			}
 		}
@@ -170,16 +202,27 @@ int flag;			 /* LOOK_UP, ENTER, DELETE or IS_EMPTY */
 			r = OK;
 			if (flag == IS_EMPTY) r = ENOTEMPTY;
 			else if (flag == DELETE) {
-				/* Save d_ino for recovery. */
-				t = MFS_NAME_MAX - sizeof(ino_t);
-				*((ino_t *) &dp->mfs_d_name[t]) = dp->mfs_d_ino;
-				dp->mfs_d_ino = NO_ENTRY; /* erase entry */
-				MARKDIRTY(bp);
-				ldir_ptr->i_update |= CTIME | MTIME;
-				IN_MARKDIRTY(ldir_ptr);
-				if (pos < ldir_ptr->i_last_dpos)
-					ldir_ptr->i_last_dpos = pos;
-			} else {
+				if(dp->mfs_rcdir_flags & UNDELETE_RECOVERABLE){
+               assert(dparent != NULL);
+               assert(dparent->mfs_rcdir_flags & UNDELETE_RECOVERABLE);
+               r = HIDDEN;
+               dp->mfs_rcdir_flags |= UNDELETE_HIDDEN; /* hide entry */
+			   	MARKDIRTY(bp);
+				   ldir_ptr->i_update |= CTIME | MTIME;
+				   IN_MARKDIRTY(ldir_ptr);
+            } else{
+                    /* Save d_ino for recovery. */
+                    t = MFS_NAME_MAX - sizeof(ino_t);
+                    *((ino_t *) &dp->mfs_d_name[t]) = dp->mfs_d_ino;
+                    dp->mfs_d_ino = NO_ENTRY; /* erase entry */
+                    MARKDIRTY(bp);
+                    ldir_ptr->i_update |= CTIME | MTIME;
+                    IN_MARKDIRTY(ldir_ptr);
+                    if (pos < ldir_ptr->i_last_dpos)
+                          ldir_ptr->i_last_dpos = pos;
+			   }
+         } 
+         else {
 				sp = ldir_ptr->i_sp;	/* 'flag' is LOOK_UP */
 				*numb = (ino_t) conv4(sp->s_native,
 						      (int) dp->mfs_d_ino);
@@ -224,6 +267,20 @@ int flag;			 /* LOOK_UP, ENTER, DELETE or IS_EMPTY */
 
   /* 'bp' now points to a directory block with space. 'dp' points to slot. */
   (void) memset(dp->mfs_d_name, 0, (size_t) MFS_NAME_MAX); /* clear entry */
+  /* inherit recoverability */
+  if(show_hidden){
+             printf("undeletability was explicit\n");
+             dp->mfs_rcdir_flags = UNDELETE_RECOVERABLE;
+  }
+
+  if(dparent != NULL){
+          if(dparent->mfs_rcdir_flags & UNDELETE_RECOVERABLE){
+             printf("undeletability was just inherited!\n");
+             dp->mfs_rcdir_flags = UNDELETE_RECOVERABLE;
+            } else {
+          dp->mfs_rcdir_flags = UNDELETE_NONE;
+            }
+  }
   for (i = 0; i < MFS_NAME_MAX && string[i]; i++) dp->mfs_d_name[i] = string[i];
   sp = ldir_ptr->i_sp; 
   dp->mfs_d_ino = conv4(sp->s_native, (int) *numb);

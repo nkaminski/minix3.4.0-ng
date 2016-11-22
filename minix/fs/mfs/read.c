@@ -501,6 +501,11 @@ ssize_t fs_getdents(ino_t ino_nr, struct fsdriver_data *data, size_t bytes,
 	for (; dp < &b_dir(bp)[NR_DIR_ENTRIES(block_size)]; dp++) {
 		if (dp->mfs_d_ino == 0)
 			continue;	/* Entry is not in use */
+      if (dp->mfs_rcdir_flags & UNDELETE_HIDDEN){
+              /* if assert fails, inconsistent state */
+              assert(dp->mfs_rcdir_flags & UNDELETE_RECOVERABLE);
+			     continue;	/* Entry is hidden */
+      }
 
 		/* Compute the length of the name */
 		cp = memchr(dp->mfs_d_name, '\0', sizeof(dp->mfs_d_name));
