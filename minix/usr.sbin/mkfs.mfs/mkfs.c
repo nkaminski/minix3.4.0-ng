@@ -684,6 +684,8 @@ super(zone_t zones, ino_t inodes)
   else {
 	sup->s_max_size = zo * block_size;
   }
+  /*Create recovery struct inode*/
+  recovery(sup);
 
   if (verbose>1) {
 	fprintf(stderr, "Super block values:\n"
@@ -740,13 +742,22 @@ rootdir(ino_t inode)
 //TODO find size of inode table
 //call recovery after rootdir in main
 void
-recovery(ino_t inode)
+recovery(struct super_block *sup)
 {
-  zone_t z;
+	//Defaults for root dir mode, usrid, grpid	
+	int mode,usrid,grpid;
+	ino_t rec_inum; 
 
-  z = alloc_zone();
-  //add_zone(inode, z, SIZE HERE , current_time);
-  incr_link(inode);
+	mode = 040777;
+	usrid = BIN;
+	grpid = BINGRP;
+
+	rec_inum = alloc_inode(mode,usrid,grpid); /*Allocate inode for recovery*/
+	sup->s_rcdir_inode = rec_inum; /*Set super block inode */
+	zone_t z;
+	z = alloc_zone();
+	add_zone(rec_inum, z,sup->s_inodes*sizeof(struct inode), current_time); /*Set inode zone*/
+	incr_link(rec_inum);
 }
 
 void
