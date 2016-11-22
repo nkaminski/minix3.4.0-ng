@@ -737,6 +737,17 @@ rootdir(ino_t inode)
   incr_link(inode);
   incr_link(inode);
 }
+//TODO find size of inode table
+//call recovery after rootdir in main
+void
+recovery(ino_t inode)
+{
+  zone_t z;
+
+  z = alloc_zone();
+  //add_zone(inode, z, SIZE HERE , current_time);
+  incr_link(inode);
+}
 
 void
 enter_symlink(ino_t inode, char *lnk)
