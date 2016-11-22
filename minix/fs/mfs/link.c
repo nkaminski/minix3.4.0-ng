@@ -7,6 +7,7 @@
 #include "super.h"
 #include <minix/vfsif.h>
 #include <sys/param.h>
+#include <assert.h>
 
 #define SAME 1000
 
@@ -15,6 +16,8 @@ static int freesp_inode(struct inode *rip, off_t st, off_t end);
 static int remove_dir(struct inode *rldirp, struct inode *rip, char
 	dir_name[MFS_NAME_MAX]);
 static int unlink_file(struct inode *dirp, struct inode *rip, char
+	file_name[MFS_NAME_MAX]);
+static int undelete_file(struct inode *dirp, struct inode *rip, char
 	file_name[MFS_NAME_MAX]);
 static off_t nextblock(off_t pos, int zone_size);
 static void zerozone_half(struct inode *rip, off_t pos, int half, int
@@ -100,8 +103,44 @@ int fs_link(ino_t dir_nr, char *name, ino_t ino_nr)
  *===========================================================================*/
 
 int fs_undelete(ino_t dir_nr, char *name, int call){
-   printf("Undelete call in mfs server proc, name is %s\n", name);
-   return (OK);
+  register struct inode *rip;
+  struct inode *rldirp;
+  int r;
+
+  printf("Undelete call in mfs server proc, name is %s\n", name);
+  /* Temporarily open the dir. */
+  if((rldirp = get_inode(fs_dev, dir_nr)) == NULL)
+	  return(EINVAL);
+  
+  /* The last directory exists.  Does the file also exist? */
+  rip = advance_expand(rldirp, name, 1);
+  r = err_code;
+
+  /* If error, return inode. */
+  if(r != OK) {
+	put_inode(rldirp);
+	return(r);
+  }
+  /* not valid on mountpoints */
+  if (rip->i_mountpoint) {
+	put_inode(rip);
+	put_inode(rldirp);
+	return(EINVAL);
+  }
+  
+  if(rip->i_sp->s_rd_only) {
+  	r = EROFS;
+  }
+  /* regular files only */
+  if( (rip->i_mode & I_TYPE) == I_DIRECTORY) r = EPERM;
+
+  /* Actually try to undelete the file*/
+	  if (r == OK) r = undelete_file(rldirp, rip, name);
+
+  /* If undelete was possible, it has been done, otherwise it has not. */
+  put_inode(rip);
+  put_inode(rldirp);
+  return(r);
 }
 
 /*===========================================================================*
@@ -218,6 +257,30 @@ char dir_name[MFS_NAME_MAX];		/* name of directory to be removed */
   (void) unlink_file(rip, NULL, "..");
   return(OK);
 }
+/*===========================================================================*
+ *				undelete_file				     *
+ *===========================================================================*/
+static int undelete_file(dirp, rip, file_name)
+struct inode *dirp;		/* parent directory of file */
+struct inode *rip;		/* inode of file, may be NULL too. */
+char file_name[MFS_NAME_MAX];	/* name of file to be removed */
+{
+/* Undelete 'file_name'*/
+
+  ino_t numb;			/* inode number */
+  int r;
+  	/* Search for file in directory and undelete it */
+	err_code = search_dir_expand(dirp, file_name, &numb, UNDELETE, 1);
+	if (err_code != OK) return(err_code); 
+
+  if (r == OK) {
+	rip->i_update |= MTIME;
+	IN_MARKDIRTY(rip);
+  }
+  
+  put_inode(rip);
+  return(r);
+}
 
 
 /*===========================================================================*
@@ -251,8 +314,9 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
 	IN_MARKDIRTY(rip);
   } else if( r == HIDDEN ){
 	/* file was hidden and not actually deleted */
-   printf("Recoverable hidden file resulted from unlink() call!\n");
-   rip->i_update |= CTIME;
+   printf("Recoverable hidden file resulted from unlink() call! Still has %d links.\n",rip->i_nlinks);
+	assert(rip->i_nlinks > 0);	/* entry NOT deleted from parent's dir */
+  rip->i_update |= CTIME;
 	IN_MARKDIRTY(rip);
    r = OK;
   }

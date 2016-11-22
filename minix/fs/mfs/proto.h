@@ -51,7 +51,7 @@ int fs_mountpt(ino_t ino_nr);
 int fs_create(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid,
 	struct fsdriver_node *node);
 int fs_mkdir(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid);
-int fs_mkdir_expand(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid, char is_rcdir);
+int fs_mkdir_expand(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid, int is_rcdir);
 int fs_rcmkdir(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid);
 int fs_mknod(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid,
 	dev_t dev);
@@ -63,6 +63,7 @@ void fs_seek(ino_t ino_nr);
 int fs_lookup(ino_t dir_nr, char *name, struct fsdriver_node *node,
 	int *is_mountpt);
 struct inode *advance(struct inode *dirp, const char *string);
+struct inode *advance_expand(struct inode *dirp, const char *string, int show_hidden);
 int search_dir(struct inode *ldir_ptr, const char *string, ino_t *numb,
 	int flag);
 int search_dir_expand(struct inode *ldir_ptr, const char *string, ino_t *numb,

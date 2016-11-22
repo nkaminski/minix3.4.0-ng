@@ -40,14 +40,22 @@ int fs_lookup(ino_t dir_nr, char *name, struct fsdriver_node *node,
 
   return OK;
 }
-
-
 /*===========================================================================*
  *				advance					     *
  *===========================================================================*/
 struct inode *advance(dirp, string)
 struct inode *dirp;		/* inode for directory to be searched */
 const char *string;		/* component name to look for */
+{
+   return advance_expand(dirp, string, 0);
+}
+/*===========================================================================*
+ *				advance_expand					     *
+ *===========================================================================*/
+struct inode *advance_expand(dirp, string, show_hidden)
+struct inode *dirp;		/* inode for directory to be searched */
+const char *string;		/* component name to look for */
+int show_hidden;
 {
 /* Given a directory and a component of a path, look up the component in
  * the directory, find the inode, open it, and return a pointer to its inode
@@ -71,8 +79,10 @@ const char *string;		/* component name to look for */
   }
 
   /* If 'string' is not present in the directory, signal error. */
-  if ( (err_code = search_dir(dirp, string, &numb, LOOK_UP)) != OK) {
-	return(NULL);
+  if ( (err_code = search_dir_expand(dirp, string, &numb, LOOK_UP, show_hidden)) != OK) {
+	if(show_hidden)
+      printf("File to recover not found!\n");
+   return(NULL);
   }
 
   /* The component has been found in the directory.  Get inode. */
@@ -113,6 +123,7 @@ int show_hidden; /* Show hidden/deleted directory entries */
  * if (flag == DELETE) delete 'string' from the directory;
  * if (flag == LOOK_UP) search for 'string' and return inode # in 'numb';
  * if (flag == IS_EMPTY) return OK if only . and .. in dir else ENOTEMPTY;
+ * if (flag == UNDELETE) return OK if the file with name 'string' is able to be undeleted;
  *
  * This function, and this function alone, implements name truncation,
  * by simply considering only the first MFS_NAME_MAX bytes from 'string'.
@@ -201,6 +212,12 @@ int show_hidden; /* Show hidden/deleted directory entries */
 			/* LOOK_UP or DELETE found what it wanted. */
 			r = OK;
 			if (flag == IS_EMPTY) r = ENOTEMPTY;
+			else if (flag == UNDELETE){
+                 dp->mfs_rcdir_flags = UNDELETE_RECOVERABLE; /* unhide entry */
+            	  ldir_ptr->i_update |= MTIME;
+				     IN_MARKDIRTY(ldir_ptr);
+                 MARKDIRTY(bp);
+         }
 			else if (flag == DELETE) {
 				if(dp->mfs_rcdir_flags & UNDELETE_RECOVERABLE){
                assert(dparent != NULL);

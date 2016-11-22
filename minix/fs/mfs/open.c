@@ -84,7 +84,7 @@ int fs_mkdir(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid){
 /*===========================================================================*
  *				fs_mkdir_expand				     *
  *===========================================================================*/
-int fs_mkdir_expand(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid, char is_rcdir)
+int fs_mkdir_expand(ino_t dir_nr, char *name, mode_t mode, uid_t uid, gid_t gid, int is_rcdir)
 {
   int r1, r2;			/* status codes */
   ino_t dot, dotdot;		/* inode numbers for . and .. */
