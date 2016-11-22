@@ -38,7 +38,8 @@ EXTERN struct super_block {
   short s_pad2;			/* try to avoid compiler-dependent padding */
   unsigned short s_block_size;	/* block size in bytes. */
   char s_disk_version;		/* filesystem format sub-version */
-
+  uint32_t s_rcdir_inode;  /* inode that stores rcdir list */
+  
   /* The following items are only used when the super_block is in memory.
    * If this ever changes, i.e. more fields after s_disk_version has to go to
    * disk, update LAST_ONDISK_FIELD in super.c as that controls which part of the

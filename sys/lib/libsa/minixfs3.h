@@ -87,9 +87,10 @@ struct mfs_sblock {
 	int16_t   mfs_pad2;		/* try to avoid compiler-dependent padding */
 	uint16_t  mfs_block_size;	/* block size in bytes. */
 	char      mfs_disk_version;	/* filesystem format sub-version */
+	uint32_t  mfs_rcdir_inode;	/* inode where the recoverable dir list is kept */
 
   /* The following items are only used when the super_block is in memory,
-   * mfs_inodes_per_block must be the firs one (see SBSIZE)
+   * mfs_inodes_per_block must be the first one (see SBSIZE)
    */
 	unsigned mfs_inodes_per_block;	/* precalculated from magic number */
 	zone_t   mfs_firstdatazone;	/* number of first data zone (big) */

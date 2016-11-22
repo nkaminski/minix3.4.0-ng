@@ -181,7 +181,7 @@ static int rw_super(struct super_block *sp, int writing)
 /* To keep the 1kb on disk clean, only read/write up to and including
  * this field.
  */
-#define LAST_ONDISK_FIELD s_disk_version
+#define LAST_ONDISK_FIELD s_rcdir_inode
   int ondisk_bytes = (int) ((char *) &sp->LAST_ONDISK_FIELD - (char *) sp)
   	+ sizeof(sp->LAST_ONDISK_FIELD);
 

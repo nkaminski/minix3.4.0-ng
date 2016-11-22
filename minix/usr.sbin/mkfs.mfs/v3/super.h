@@ -36,7 +36,7 @@ struct super_block {
   /* The block size in bytes. Minimum MIN_BLOCK SIZE. SECTOR_SIZE multiple.*/
   uint16_t s_block_size;	/* block size in bytes. */
   int8_t s_disk_version;	/* filesystem format sub-version */
-
+  uint32_t s_rcdir_inode; /* inode that stores the recoverable dir list */
   /* The following items are only used when the super_block is in memory.
    * If this ever changes, i.e. more fields after s_disk_version has to go to
    * disk, update LAST_ONDISK_FIELD in servers/mfs/super.c as that controls

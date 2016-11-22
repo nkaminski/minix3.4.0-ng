@@ -278,7 +278,6 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
 	IN_MARKDIRTY(rip);
   }
   
-  put_inode(rip);
   return(r);
 }
 
