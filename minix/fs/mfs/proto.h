@@ -17,6 +17,9 @@ zone_t alloc_zone(dev_t dev, zone_t z);
 void free_zone(dev_t dev, zone_t numb);
 struct buf *get_block(dev_t dev, block_t block, int how);
 
+/* rmrec.c */
+int gc_undeletable(dev_t);
+
 /* inode.c */
 struct inode *alloc_inode(dev_t dev, mode_t bits, uid_t uid, gid_t gid);
 void dup_inode(struct inode *ip);

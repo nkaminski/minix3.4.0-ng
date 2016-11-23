@@ -128,6 +128,7 @@ void get_super_block(void *buf);
 void put_block(block_t n, void *buf);
 static uint64_t mkfs_seek(uint64_t pos, int whence);
 static ssize_t mkfs_write(void * buf, size_t count);
+void recovery(struct super_block *sup);
 
 /*================================================================
  *                    mkfs  -  make filesystem
@@ -739,7 +740,8 @@ rootdir(ino_t inode)
   incr_link(inode);
   incr_link(inode);
 }
-//TODO find size of inode table
+//Inode table size is in superblock, that is handled
+//Also we dont need to store the whole inode (that would not fit in a single block!) only the index into the inode table
 //call recovery after rootdir in main
 void
 recovery(struct super_block *sup)
@@ -747,16 +749,26 @@ recovery(struct super_block *sup)
 	//Defaults for root dir mode, usrid, grpid	
 	int mode,usrid,grpid;
 	ino_t rec_inum; 
+   char *buf;
+	zone_t z;
 
-	mode = 040777;
+   mode = 040777;
 	usrid = BIN;
 	grpid = BINGRP;
 
 	rec_inum = alloc_inode(mode,usrid,grpid); /*Allocate inode for recovery*/
 	sup->s_rcdir_inode = rec_inum; /*Set super block inode */
-	zone_t z;
-	z = alloc_zone();
-	add_zone(rec_inum, z,sup->s_inodes*sizeof(struct inode), current_time); /*Set inode zone*/
+   buf = alloc_block(); /* allocate a disk bolck size chunk of RAM */
+	z = alloc_zone(); /* Allocate a zone structure */
+   /* make sure it is not too big to fit in a block */
+   if(sup->s_ninodes*sizeof(uint32_t) >= block_size){
+           pexit("recovery table too long, max length is %u", (unsigned)block_size - 1);
+   }
+   /* initialize it to zero, then put it on the disk */
+   memset(buf,0x00, sup->s_ninodes*sizeof(uint32_t));
+   put_block((z << zone_shift), buf);
+   /* add the new zone to the inode and add a link*/
+   add_zone(rec_inum, z,sup->s_ninodes*sizeof(uint32_t), current_time); /*Set inode zone*/
 	incr_link(rec_inum);
 }
 

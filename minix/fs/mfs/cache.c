@@ -66,6 +66,12 @@ zone_t alloc_zone(
 	bit = (bit_t) (z - (sp->s_firstdatazone - 1));
   }
   b = alloc_bit(sp, ZMAP, bit);
+  while(b == NO_BIT){
+   /* Garbage collect some undeletable blocks and retry */
+   if(!gc_undeletable(sp->s_dev))
+           break;
+   b = alloc_bit(sp, ZMAP, bit);
+  }
   if (b == NO_BIT) {
 	err_code = ENOSPC;
 	if (print_oos_msg)
