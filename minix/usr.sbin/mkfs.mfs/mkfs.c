@@ -125,6 +125,7 @@ void special(char *string, int insertmode);
 __dead void usage(void);
 void get_block(block_t n, void *buf);
 void get_super_block(void *buf);
+void put_super_block(void *buf);
 void put_block(block_t n, void *buf);
 static uint64_t mkfs_seek(uint64_t pos, int whence);
 static ssize_t mkfs_write(void * buf, size_t count);
@@ -142,6 +143,7 @@ main(int argc, char *argv[])
   char *token[MAX_TOKENS], line[LINE_LEN], *sfx;
   struct fs_size fssize;
   int insertmode = 0;
+  struct super *sb;
 
   progname = argv[0];
 
@@ -326,6 +328,9 @@ main(int argc, char *argv[])
 		inodes = fssize.inocount;
 		blocks += blocks*extra_space_percent/100;
 		inodes += inodes*extra_space_percent/100;
+      /* one extra disk block and inode in dynamically sized FS's for the recovery data */
+      blocks++;
+      inodes++;
 /* XXX is it OK to write on stdout? Use warn() instead? Also consider using verbose */
 		fprintf(stderr, "dynamically sized filesystem: %u blocks, %u inodes\n",
 		    (unsigned int) blocks, (unsigned int) inodes);
@@ -420,6 +425,14 @@ main(int argc, char *argv[])
   root_inum = alloc_inode(mode, usrid, grpid);
   rootdir(root_inum);
   if (simple == 0) eat_dir(root_inum);
+  
+  /* allocate and initialize recovery data */
+  sb = malloc(SUPER_BLOCK_BYTES);
+  assert(sb!=NULL);
+  get_super_block(sb);
+  recovery(sb);
+  put_super_block(sb);
+  free(sb);
 
   if (print) print_fs();
   else if (verbose > 1) {
@@ -685,9 +698,7 @@ super(zone_t zones, ino_t inodes)
   else {
 	sup->s_max_size = zo * block_size;
   }
-  /*Create recovery struct inode*/
-  recovery(sup);
-
+  
   if (verbose>1) {
 	fprintf(stderr, "Super block values:\n"
 	    "\tnumber of inodes\t%12d\n"
@@ -751,25 +762,23 @@ recovery(struct super_block *sup)
 	ino_t rec_inum; 
    char *buf;
 	zone_t z;
-
+  
    mode = 040777;
 	usrid = BIN;
 	grpid = BINGRP;
 
 	rec_inum = alloc_inode(mode,usrid,grpid); /*Allocate inode for recovery*/
 	sup->s_rcdir_inode = rec_inum; /*Set super block inode */
-   buf = alloc_block(); /* allocate a disk bolck size chunk of RAM */
+   buf = alloc_block(); /* allocate a disk block size chunk of RAM */
 	z = alloc_zone(); /* Allocate a zone structure */
-   /* make sure it is not too big to fit in a block */
-   if(sup->s_ninodes*sizeof(uint32_t) >= block_size){
-           pexit("recovery table too long, max length is %u", (unsigned)block_size - 1);
-   }
+   
    /* initialize it to zero, then put it on the disk */
-   memset(buf,0x00, sup->s_ninodes*sizeof(uint32_t));
+   memset(buf,0x00, (block_size/sizeof(uint32_t))-1);
    put_block((z << zone_shift), buf);
    /* add the new zone to the inode and add a link*/
-   add_zone(rec_inum, z,sup->s_ninodes*sizeof(uint32_t), current_time); /*Set inode zone*/
+   add_zone(rec_inum, z,(block_size/sizeof(uint32_t))-1, current_time); /*Set inode zone*/
 	incr_link(rec_inum);
+   free(buf);
 }
 
 void
@@ -1147,7 +1156,6 @@ alloc_inode(int mode, int usrid, int grpid)
   int off;
   block_t b;
   struct inode *inodes;
-
   num = next_inode++;
   if (num > nrinodes) {
   	pexit("File system does not have enough inodes (only %llu)", nrinodes);
@@ -1532,7 +1540,17 @@ get_super_block(void *buf)
   if (k != SUPER_BLOCK_BYTES)
 	err(1, "get_super_block couldn't read super block");
 }
+/* write the super block. */
+void
+put_super_block(void *buf)
+{
+  ssize_t k;
 
+  mkfs_seek((off_t) SUPER_BLOCK_BYTES, SEEK_SET);
+  k = mkfs_write(buf, SUPER_BLOCK_BYTES);
+  if (k != SUPER_BLOCK_BYTES)
+	err(1, "put_super_block couldn't write super block");
+}
 /* Write a block. */
 void
 put_block(block_t n, void *buf)
