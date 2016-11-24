@@ -233,7 +233,8 @@ int show_hidden; /* Show hidden/deleted directory entries */
                               r = HIDDEN;
                               dp->mfs_rcdir_flags |= UNDELETE_HIDDEN; /* hide entry */
                               printf("About to call recovery_add\n");
-                              if(recovery_add(ldir_ptr->i_dev, dp->mfs_d_ino) != (OK)){
+                              assert(dparent != NULL);
+                              if(recovery_add(ldir_ptr->i_dev, dp->mfs_d_ino, dparent->mfs_d_ino) != (OK)){
                                       printf("Failed to create recoverable file so actually deleting!\n");
                                       // Real delete, save d_ino for recovery (not undelete recovery!). 
                                       t = MFS_NAME_MAX - sizeof(ino_t);
