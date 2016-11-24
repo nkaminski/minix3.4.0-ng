@@ -80,6 +80,7 @@ int recovery_add(dev_t dev,ino_t inode)
 			break;
 		}
 	}
+	printf("Inols[0] = %d\n",inols[0]);
 	if(r != OK)
 		printf("Recovery list is full, cannot add entry\n");
 
