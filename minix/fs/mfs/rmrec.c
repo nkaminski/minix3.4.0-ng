@@ -36,7 +36,7 @@ struct buf get_recovery(dev_t dev)
 	//give inode list in buf?	
 	return sbuf;
 }
-void put_recovery(dev_t dev, struct *sbuf)
+void put_recovery(dev_t dev, struct buf *sbuf)
 {
 	struct super_block *sp;//get super here(read)
 	sp->s_dev = dev;
