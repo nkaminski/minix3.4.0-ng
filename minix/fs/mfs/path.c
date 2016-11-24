@@ -211,66 +211,68 @@ int show_hidden; /* Show hidden/deleted directory entries */
 			}
 		}
 
-		if (match) {
-			/* LOOK_UP or DELETE found what it wanted. */
-			r = OK;
-			if (flag == IS_EMPTY) r = ENOTEMPTY;
-			else if (flag == UNDELETE){
-                 dp->mfs_rcdir_flags = UNDELETE_RECOVERABLE; /* unhide entry */
-                 recovery_remove(ldir_ptr->i_dev, dp->mfs_d_ino);
-            	  ldir_ptr->i_update |= MTIME;
-				     IN_MARKDIRTY(ldir_ptr);
-                 MARKDIRTY(bp);
-         }
-         else if (flag == DELETE) {
-                 /* show hidden == 1 for delete --> delete unconditionally! */
-                 if((dp->mfs_rcdir_flags & UNDELETE_RECOVERABLE) && (!show_hidden)){
-                         /* deleting a recoverable file and no force delete option */
-                         assert(dparent != NULL);
-                         assert(dparent->mfs_rcdir_flags & UNDELETE_RECOVERABLE);
-                         r = HIDDEN;
-                         dp->mfs_rcdir_flags |= UNDELETE_HIDDEN; /* hide entry */
-                         printf("About to call recovery_add\n");
-                         if(recovery_add(ldir_ptr->i_dev, dp->mfs_d_ino) != (OK)){
-                                 printf("Failed to create recoverable file so actually deleting!\n");
-                                 /* Real delete, save d_ino for recovery (not undelete recovery!). */
-                                 t = MFS_NAME_MAX - sizeof(ino_t);
-                                 *((ino_t *) &dp->mfs_d_name[t]) = dp->mfs_d_ino;
-                                 dp->mfs_d_ino = NO_ENTRY; /* erase entry */
-                                 ldir_ptr->i_update |= CTIME | MTIME;
-                                 if (pos < ldir_ptr->i_last_dpos)
-                                    ldir_ptr->i_last_dpos = pos;
-                                 r = (OK);
-                         }
-                         printf("Done with recovery_add\n");
-                         MARKDIRTY(bp);
-                         ldir_ptr->i_update |= CTIME | MTIME;
-                         IN_MARKDIRTY(ldir_ptr);
+      if (match) {
+              /* LOOK_UP, UNDELETE or DELETE found what it wanted. */
+              r = OK;
+              if (flag == IS_EMPTY) r = ENOTEMPTY;
+              else if (flag == UNDELETE){
+                      dp->mfs_rcdir_flags = UNDELETE_RECOVERABLE; /* unhide entry */
+                      printf("About to call recovery_remove\n");
+                      recovery_remove(ldir_ptr->i_dev, dp->mfs_d_ino);
+                      printf("called recovery_remove\n");
+                      ldir_ptr->i_update |= MTIME;
+                      IN_MARKDIRTY(ldir_ptr);
+                      MARKDIRTY(bp);
+              }
+              else if (flag == DELETE) {
+                      /* show hidden == 1 for delete --> delete unconditionally! */
+                      if((dp->mfs_rcdir_flags & UNDELETE_RECOVERABLE) && (!show_hidden)){
+                              /* deleting a recoverable file and no force delete option */
+                              assert(dparent != NULL);
+                              assert(dparent->mfs_rcdir_flags & UNDELETE_RECOVERABLE);
+                              r = HIDDEN;
+                              dp->mfs_rcdir_flags |= UNDELETE_HIDDEN; /* hide entry */
+                              printf("About to call recovery_add\n");
+                              if(recovery_add(ldir_ptr->i_dev, dp->mfs_d_ino) != (OK)){
+                                      printf("Failed to create recoverable file so actually deleting!\n");
+                                      // Real delete, save d_ino for recovery (not undelete recovery!). 
+                                      t = MFS_NAME_MAX - sizeof(ino_t);
+                                      *((ino_t *) &dp->mfs_d_name[t]) = dp->mfs_d_ino;
+                                      dp->mfs_d_ino = NO_ENTRY; 
+                                      ldir_ptr->i_update |= CTIME | MTIME;
+                                      if (pos < ldir_ptr->i_last_dpos)
+                                              ldir_ptr->i_last_dpos = pos;
+                                      r = (OK);
+                              }
+                              printf("Done with recovery_add\n");
+                              MARKDIRTY(bp);
+                              ldir_ptr->i_update |= CTIME | MTIME;
+                              IN_MARKDIRTY(ldir_ptr);
 
-                 } else{
-                         /* force delete or not recoverable */
-                         if(dp->mfs_rcdir_flags & UNDELETE_HIDDEN){
-                                 printf("Deleted a hidden file, removing from recovery list");
-                                 recovery_remove(ldir_ptr->i_dev, dp->mfs_d_ino);
-                         }
-                         /* Save d_ino for recovery. */
-                         t = MFS_NAME_MAX - sizeof(ino_t);
-                         *((ino_t *) &dp->mfs_d_name[t]) = dp->mfs_d_ino;
-                         dp->mfs_d_ino = NO_ENTRY; /* erase entry */
-                         MARKDIRTY(bp);
-                         ldir_ptr->i_update |= CTIME | MTIME;
-                         IN_MARKDIRTY(ldir_ptr);
-                         if (pos < ldir_ptr->i_last_dpos)
-                                 ldir_ptr->i_last_dpos = pos;
-                 }
-         } 
-         else {
-				sp = ldir_ptr->i_sp;	/* 'flag' is LOOK_UP */
-				*numb = (ino_t) conv4(sp->s_native,
-						      (int) dp->mfs_d_ino);
-			}
-			put_block(bp);
-			return(r);
+                      } else{
+                              /* force delete or not recoverable */
+                              if(dp->mfs_rcdir_flags & UNDELETE_HIDDEN){
+                                      printf("Deleted a hidden file, removing from recovery list");
+                                      recovery_remove(ldir_ptr->i_dev, dp->mfs_d_ino);
+                              }
+                              /* Save d_ino for recovery. */
+                              t = MFS_NAME_MAX - sizeof(ino_t);
+                              *((ino_t *) &dp->mfs_d_name[t]) = dp->mfs_d_ino;
+                              dp->mfs_d_ino = NO_ENTRY; /* erase entry */
+                              MARKDIRTY(bp);
+                              ldir_ptr->i_update |= CTIME | MTIME;
+                              IN_MARKDIRTY(ldir_ptr);
+                              if (pos < ldir_ptr->i_last_dpos)
+                                      ldir_ptr->i_last_dpos = pos;
+                      }
+              } 
+              else {
+                      sp = ldir_ptr->i_sp;	/* 'flag' is LOOK_UP */
+                      *numb = (ino_t) conv4(sp->s_native,
+                                      (int) dp->mfs_d_ino);
+              }
+              put_block(bp);
+              return(r);
 		}
 
 		/* Check for free slot for the benefit of ENTER. */

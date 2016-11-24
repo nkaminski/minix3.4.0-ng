@@ -5,6 +5,8 @@
 #include "inode.h"
 #include "super.h"
 
+static struct inode *ino;
+static struct buf *sbuf;
 
 int gc_undeletable(dev_t dev){
 
@@ -19,7 +21,7 @@ return 0;
 //struct buf *get_block_map(register struct inode *rip, u64_t position);
 //Set buf to inode list
 //Return size of buffer = #inodes pointers * sizeof(uint32_t)
-void get_recovery(dev_t dev, struct buf *sbuf, register struct inode *ino)
+void get_recovery(dev_t dev)
 {
 	struct super_block sp;//get super here(read)
 	sp.s_dev = dev;
@@ -32,12 +34,12 @@ void get_recovery(dev_t dev, struct buf *sbuf, register struct inode *ino)
 
 	ino = get_inode(dev,rcinode);
 	sbuf = get_block_map(ino, NORMAL);
-   
+   printf("sbuf->lmfs_bytes=%d, size=%d\n",sbuf->lmfs_bytes,size); 
    assert(sbuf != NULL);
 	assert(size == (sbuf->lmfs_bytes/sizeof(uint32_t))-1);
 	//give inode list in buf?	
 }
-void put_recovery(struct buf *sbuf, register struct inode *ino)
+void put_recovery()
 {
    /* not needed
 	struct super_block *sp;//get super here(read)
@@ -58,53 +60,48 @@ void put_recovery(struct buf *sbuf, register struct inode *ino)
 	//write list to block
 }
 //Return status for success
-int recovery_add(dev_t dev,ino_t inode)
+int recovery_add(dev_t dev,uint32_t inode_nr)
 {
-	register struct inode *ino;  
-	struct buf sbuf;
-	ino = get_inode(dev,inode);
-   get_recovery(dev,&sbuf,ino);
+   get_recovery(dev);
+   printf("got recovery\n");
 
 	//add to list here
-	size_t size = ((sbuf.lmfs_bytes)/sizeof(uint32_t))-1;
+   size_t size = ((sbuf->lmfs_bytes)/sizeof(uint32_t))-1;
 
 	int r = 1;
-	ino_t *inols = sbuf.data;
+	uint32_t *inols = sbuf->data;
 	size_t i;
 	for(i = 0; i < size; i++)
 	{
+	   printf("Inols[%d] = %d\n",i,inols[i]);
 		if(inols[i] == 0)
 		{
-			inols[i] = inode;
+			inols[i] = inode_nr;
 			r = OK;
 			break;
 		}
 	}
-	printf("Inols[0] = %d\n",inols[0]);
 	if(r != OK)
 		printf("Recovery list is full, cannot add entry\n");
-
-	put_recovery(&sbuf,ino);
-	put_inode(ino);
+   
+	put_recovery();
+   printf("put recovery\n");
 	return r;
 }
-void recovery_remove(dev_t dev,ino_t inode)
+void recovery_remove(dev_t dev,uint32_t inode_nr)
 {
-	register struct inode *ino;  
-	struct buf sbuf;
-	ino = get_inode(dev,inode);
-   get_recovery(dev,&sbuf,ino);
+   get_recovery(dev);
 
-	size_t size = ((sbuf.lmfs_bytes)/sizeof(uint32_t))-1;
+	size_t size = ((sbuf->lmfs_bytes)/sizeof(uint32_t))-1;
 	//remove from list here
-	ino_t *inols = sbuf.data;
+   uint32_t *inols = sbuf->data;
 	size_t i;
 	int rmi = -1;
 	int end = -1;
 	int r = 1;
 	for(i = 0; i < size; i++)
 	{
-		if(inols[i] == inode)	
+		if(inols[i] == inode_nr)	
 		{
 			rmi = i;
 		}
@@ -126,6 +123,5 @@ void recovery_remove(dev_t dev,ino_t inode)
 		//Not in list
 	}
 	
-	put_recovery(&sbuf,ino);
-	put_inode(ino);
+	put_recovery();
 }
