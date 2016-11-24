@@ -21,14 +21,14 @@ return 0;
 //Return size of buffer = #inodes pointers * sizeof(uint32_t)
 void get_recovery(dev_t dev, struct buf *sbuf, register struct inode *ino)
 {
-	struct super_block *sp;//get super here(read)
-	sp->s_dev = dev;
+	struct super_block sp;//get super here(read)
+	sp.s_dev = dev;
 
-	if(read_super(sp) != OK)
+	if(read_super(&sp) != OK)
 		panic("Couldnt Read Super for get Recovery");
 
-	size_t size = (sp->s_block_size/sizeof(uint32_t))-1; //Size of list
-	ino_t rcinode = sp->s_rcdir_inode;  /* inode that stores rcdir list */
+	size_t size = (sp.s_block_size/sizeof(uint32_t))-1; //Size of list
+	ino_t rcinode = sp.s_rcdir_inode;  /* inode that stores rcdir list */
 
 	ino = get_inode(dev,rcinode);
 	sbuf = get_block_map(ino, NORMAL);

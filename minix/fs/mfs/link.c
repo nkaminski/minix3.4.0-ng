@@ -309,6 +309,7 @@ int always; /* if nonzero, always actually unlink the file as opposed to allowin
   /* If rip is not NULL, it is used to get faster access to the inode. */
   if (rip == NULL) {
   	/* Search for file in directory and try to get its inode. */
+   printf("did a search with always %d\n", always);
 	err_code = search_dir(dirp, file_name, &numb, LOOK_UP);
 	if (err_code == OK) rip = get_inode(dirp->i_dev, (int) numb);
 	if (err_code != OK || rip == NULL) return(err_code);
@@ -330,8 +331,6 @@ int always; /* if nonzero, always actually unlink the file as opposed to allowin
 	IN_MARKDIRTY(rip);
    r = OK;
   }
-  
-  put_inode(rip);
   return(r);
 }
 
