@@ -19,10 +19,10 @@ struct buf *get_block(dev_t dev, block_t block, int how);
 
 /* rmrec.c */
 int gc_undeletable(dev_t);
-struct buf get_recovery(dev_t dev,register struct inode *ino);
-void put_recovery(dev_t dev, struct *sbuf, register struct inode *ino);
-int recovery_add(ino_t inode);
-void recovery_remove(ino_t inode);
+void recovery_remove(dev_t dev,ino_t inode);
+int recovery_add(dev_t dev,ino_t inode);
+void get_recovery(dev_t dev, struct buf *sbuf, register struct inode *ino);
+void put_recovery(struct buf *sbuf, register struct inode *ino);
 
 /* inode.c */
 struct inode *alloc_inode(dev_t dev, mode_t bits, uid_t uid, gid_t gid);
