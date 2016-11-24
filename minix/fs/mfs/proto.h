@@ -19,8 +19,8 @@ struct buf *get_block(dev_t dev, block_t block, int how);
 
 /* rmrec.c */
 int gc_undeletable(dev_t);
-struct buf get_recovery(dev_t dev);
-void put_recovery(dev_t dev, struct *sbuf);
+struct buf get_recovery(dev_t dev,register struct inode *ino);
+void put_recovery(dev_t dev, struct *sbuf, register struct inode *ino);
 int recovery_add(ino_t inode);
 void recovery_remove(ino_t inode);
 

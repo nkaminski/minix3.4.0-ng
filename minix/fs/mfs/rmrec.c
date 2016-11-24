@@ -18,7 +18,7 @@ return 0;
 //struct buf *get_block_map(register struct inode *rip, u64_t position);
 //Set buf to inode list
 //Return size of buffer = #inodes pointers * sizeof(uint32_t)
-struct buf get_recovery(dev_t dev)
+struct buf get_recovery(dev_t dev,register struct inode *ino)
 {
 	struct super_block *sp;//get super here(read)
 	sp->s_dev = dev;
@@ -29,14 +29,15 @@ struct buf get_recovery(dev_t dev)
 	size_t size = (sp->s_block_size/sizeof(uint32_t))-1; //Size of list
 	uint32_t rcinode = sp->s_rcdir_inode;  /* inode that stores rcdir list */
 
-	struct buf sbuf = get_block_map((ino_t)rcinode,0);
+	*ino = get_inode(dev,(ino_t)rcinode);
+	struct buf sbuf = get_block_map(*ino,0);
 
-	assert(size == sbuf->lmfs_bytes);
+	assert(size == (sbuf->lmfs_bytes)/sizeof(uint32_t));
 	MARKDIRTY(sbuf);
 	//give inode list in buf?	
 	return sbuf;
 }
-void put_recovery(dev_t dev, struct *sbuf)
+void put_recovery(dev_t dev, struct *sbuf, register struct inode *ino)
 {
 	struct super_block *sp;//get super here(read)
 	sp->s_dev = dev;
@@ -48,15 +49,34 @@ void put_recovery(dev_t dev, struct *sbuf)
 	size_t size = (sp->s_block_size/sizeof(uint32_t))-1; //Size of list
 
 	put_block(sbuf);
+	put_inode(ino);
 	//put inode list back
 	//write list to block
 }
 //Return status for success
-int recovery_add(ino_t inode)
+int recovery_add(dev_t dev,ino_t inode)
 {
+	register struct *ino;  
+	*ino = get_inode(dev,inode);
+	struct buf sbuf = get_recovery(dev,ino);
+
+	//add to list here
+	size_t size = (sbuf->lmfs_bytes)/sizeof(uint32_t);
+
+	int i;
+	//for(ino_t *inols = sbuf->data; inols != 
+	put_recovery(dev,sbuf,ino);
+	put_inode(ino);
 	return OK;
 }
-void recovery_remove(ino_t inode)
+void recovery_remove(dev_t dev,ino_t inode)
 {
-
+	register struct *ino;  
+	*ino = get_inode(dev,inode);
+	struct buf sbuf = get_recovery(dev,ino);
+	
+	//remove from list here
+	
+	put_recovery(dev,sbuf,ino);
+	put_inode(ino);
 }
