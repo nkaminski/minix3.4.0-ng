@@ -73,7 +73,7 @@ int recovery_add(dev_t dev,ino_t inode)
 	size_t i;
 	for(i = 0; i < size; i++)
 	{
-		if(inols[i] == NULL)
+		if(inols[i] == 0)
 		{
 			inols[i] = node;
 			r = OK;
@@ -98,8 +98,8 @@ void recovery_remove(dev_t dev,ino_t inode)
 	//remove from list here
 	ino_t *inols = sbuf.data;
 	size_t i;
-	size_t rmi = NULL;
-	size_t end = NULL;
+	int rmi = -1;
+	int end = -1;
 	int r = 1;
 	for(i = 0; i < size; i++)
 	{
@@ -107,19 +107,19 @@ void recovery_remove(dev_t dev,ino_t inode)
 		{
 			rmi = i;
 		}
-		if(inols[i] != NULL)
+		if(inols[i] != 0)
 		{
 			end = i;
 		}
-		if(inols[i] == NULL)
+		if(inols[i] == 0)
 			break;
 	}
-	if(rmi != NULL)
+	if(rmi != -1)
 	{
 		inols[rmi] = inols[end];
-		inols[end] = NULL;
+		inols[end] = 0;
 	}
-	else if(rmi == NULL)
+	else if(rmi == -1)
 	{
 		printf("Inode not in recovery list\n");
 		//Not in list
