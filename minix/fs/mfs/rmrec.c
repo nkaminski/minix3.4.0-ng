@@ -80,6 +80,8 @@ int recovery_add(dev_t dev,ino_t inode)
 			break;
 		}
 	}
+	if(r != OK)
+		printf("Recovery list is full, cannot add entry\n");
 
 	put_recovery(&sbuf,ino);
 	put_inode(ino);
@@ -111,19 +113,16 @@ void recovery_remove(dev_t dev,ino_t inode)
 		if(inols[i] == NULL)
 			break;
 	}
-	if(rmi == NULL)
-	{
-		//Not in list
-	}
-	if(end == NULL)
-	{
-		//List full
-	}
-	else if(rmi != NULL)
+	if(rmi != NULL)
 	{
 		inols[rmi] = NULL;
 		inols[rmi] = inols[end];
 		inols[end] = NULL;
+	}
+	else if(rmi == NULL)
+	{
+		printf("Inode not in recovery list\n");
+		//Not in list
 	}
 	
 	put_recovery(&sbuf,ino);
