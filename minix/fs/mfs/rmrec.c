@@ -94,7 +94,7 @@ void recovery_remove(dev_t dev,ino_t inode)
 	ino = get_inode(dev,inode);
    get_recovery(dev,&sbuf,ino);
 
-	size_t size = (sbuf.lmfs_bytes)/sizeof(uint32_t);
+	size_t size = ((sbuf.lmfs_bytes)/sizeof(uint32_t))-1;
 	//remove from list here
 	ino_t *inols = sbuf.data;
 	size_t i;
