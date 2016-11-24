@@ -217,7 +217,7 @@ int show_hidden; /* Show hidden/deleted directory entries */
 			if (flag == IS_EMPTY) r = ENOTEMPTY;
 			else if (flag == UNDELETE){
                  dp->mfs_rcdir_flags = UNDELETE_RECOVERABLE; /* unhide entry */
-                 recovery_remove(dp->mfs_d_ino);
+                 recovery_remove(ldir_ptr->i_dev, dp->mfs_d_ino);
             	  ldir_ptr->i_update |= MTIME;
 				     IN_MARKDIRTY(ldir_ptr);
                  MARKDIRTY(bp);
@@ -230,8 +230,8 @@ int show_hidden; /* Show hidden/deleted directory entries */
                          assert(dparent->mfs_rcdir_flags & UNDELETE_RECOVERABLE);
                          r = HIDDEN;
                          dp->mfs_rcdir_flags |= UNDELETE_HIDDEN; /* hide entry */
-
-                         if(recovery_add((ino_t)dp->mfs_d_ino) != (OK)){
+                         printf("About to call recovery_add\n");
+                         if(recovery_add(ldir_ptr->i_dev, dp->mfs_d_ino) != (OK)){
                                  printf("Failed to create recoverable file so actually deleting!\n");
                                  /* Real delete, save d_ino for recovery (not undelete recovery!). */
                                  t = MFS_NAME_MAX - sizeof(ino_t);
@@ -242,6 +242,7 @@ int show_hidden; /* Show hidden/deleted directory entries */
                                     ldir_ptr->i_last_dpos = pos;
                                  r = (OK);
                          }
+                         printf("Done with recovery_add\n");
                          MARKDIRTY(bp);
                          ldir_ptr->i_update |= CTIME | MTIME;
                          IN_MARKDIRTY(ldir_ptr);
@@ -250,7 +251,7 @@ int show_hidden; /* Show hidden/deleted directory entries */
                          /* force delete or not recoverable */
                          if(dp->mfs_rcdir_flags & UNDELETE_HIDDEN){
                                  printf("Deleted a hidden file, removing from recovery list");
-                                 recovery_remove(dp->mfs_d_ino);
+                                 recovery_remove(ldir_ptr->i_dev, dp->mfs_d_ino);
                          }
                          /* Save d_ino for recovery. */
                          t = MFS_NAME_MAX - sizeof(ino_t);
