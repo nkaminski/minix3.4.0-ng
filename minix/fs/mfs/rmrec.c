@@ -20,7 +20,10 @@ return 0;
 size_t get_recovery(void *buf)
 {
 	struct super_block *sp;//get super here(read)
-	read_super(sp);
+
+	if(read_super(sp) != OK)
+		panic("Couldnt Read Super for get Recovery");
+
 	size_t size = sp->s_ninodes*sizeof(uint32_t); //Size of list
 	uint32_t rcinode = sp->s_rcdir_inode;  /* inode that stores rcdir list */
 
@@ -34,7 +37,9 @@ size_t get_recovery(void *buf)
 void put_recovery(void *buf)
 {
 	struct super_block *sp;//get super here(read)
-	read_super(sp);
+	if(read_super(sp) != OK)
+		panic("Couldnt Read Super for put Recovery");
+
 	uint32_t rcinode = sp->s_rcdir_inode;  /* inode that stores rcdir list */
 	size_t size = sp->s_ninodes*sizeof(uint32_t);
 
