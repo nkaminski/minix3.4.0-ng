@@ -63,19 +63,61 @@ int recovery_add(dev_t dev,ino_t inode)
 	//add to list here
 	size_t size = (sbuf->lmfs_bytes)/sizeof(uint32_t);
 
-	int i;
-	//for(ino_t *inols = sbuf->data; inols != 
+	int r = 1;
+	ino_t *inols = sbuf->data;
+	size_t i;
+	for(i = 0; i < size; i++)
+	{
+		if(inols[i] == NULL)
+		{
+			inols[i] = node;
+			r = OK;
+			break;
+		}
+	}
+
 	put_recovery(dev,sbuf,ino);
 	put_inode(ino);
-	return OK;
+	return r;
 }
 void recovery_remove(dev_t dev,ino_t inode)
 {
 	register struct *ino;  
 	*ino = get_inode(dev,inode);
 	struct buf sbuf = get_recovery(dev,ino);
-	
+	size_t size = (sbuf->lmfs_bytes)/sizeof(uint32_t);
 	//remove from list here
+	size_t i;
+	size_t rmi = NULL;
+	size_t end = NULL;
+	int r = 1;
+	for(i = 0; i < size; i++)
+	{
+		if(inols[i] == inode)	
+		{
+			rmi = i;
+		}
+		if(inols[i] != NULL)
+		{
+			end = i;
+		}
+		if(inols[i] == NULL)
+			break;
+	}
+	if(rmi == NULL)
+	{
+		//Not in list
+	}
+	if(end == NULL)
+	{
+		//List full
+	}
+	else if(rmi != NULL)
+	{
+		inols[rmi] = NULL;
+		inols[rmi] = inols[end];
+		inols[end] = NULL;
+	}
 	
 	put_recovery(dev,sbuf,ino);
 	put_inode(ino);
