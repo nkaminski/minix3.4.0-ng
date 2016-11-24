@@ -18,7 +18,7 @@ return 0;
 //struct buf *get_block_map(register struct inode *rip, u64_t position);
 //Set buf to inode list
 //Return size of buffer = #inodes pointers * sizeof(uint32_t)
-size_t get_recovery(void *buf, dev_t dev)
+struct buf get_recovery(void *buf, dev_t dev)
 {
 	struct super_block *sp;//get super here(read)
 	sp->s_dev = dev;
@@ -26,14 +26,16 @@ size_t get_recovery(void *buf, dev_t dev)
 	if(read_super(sp) != OK)
 		panic("Couldnt Read Super for get Recovery");
 
-	size_t size = sp->s_ninodes*sizeof(uint32_t); //Size of list
+	size_t size = (sp->s_block_size/sizeof(uint32_t))-1; //Size of list
 	uint32_t rcinode = sp->s_rcdir_inode;  /* inode that stores rcdir list */
 
-	struct buf = get_block_map((ino_t)rcinode,0);
+	struct buf sbuf = get_block_map((ino_t)rcinode,0);
+	buf = sbuf->data;
+	assert(size == sbuf->lmfs_bytes);
 	//give inode list in buf?	
 	return size;
 }
-void put_recovery(struct *buf, dev_t dev)
+void put_recovery(struct *sbuf, dev_t dev)
 {
 	struct super_block *sp;//get super here(read)
 	sp->s_dev = dev;
@@ -42,7 +44,7 @@ void put_recovery(struct *buf, dev_t dev)
 		panic("Couldnt Read Super for put Recovery");
 
 	uint32_t rcinode = sp->s_rcdir_inode;  /* inode that stores rcdir list */
-	size_t size = sp->s_ninodes*sizeof(uint32_t);
+	size_t size = (sp->s_block_size/sizeof(uint32_t))-1; //Size of list
 
 	put_block(buf);
 	//put inode list back
