@@ -132,6 +132,7 @@ int show_hidden; /* Show hidden/deleted directory entries */
   register struct buf *bp = NULL;
   register struct direct *dparent = NULL;
   int i, r, e_hit, t, match;
+  ino_t rcdir_inode;
   off_t pos;
   unsigned new_slots, old_slots;
   struct super_block *sp;
@@ -165,6 +166,8 @@ int show_hidden; /* Show hidden/deleted directory entries */
 
 	assert(ldir_ptr->i_dev != NO_DEV);
 	assert(bp != NULL);
+   /* inode number of the recoverable directory structure */
+   rcdir_inode = ldir_ptr->i_sp->s_rcdir_inode;
 
    /* Find parent dir. */
 	for (dp = &b_dir(bp)[0];
@@ -214,30 +217,51 @@ int show_hidden; /* Show hidden/deleted directory entries */
 			if (flag == IS_EMPTY) r = ENOTEMPTY;
 			else if (flag == UNDELETE){
                  dp->mfs_rcdir_flags = UNDELETE_RECOVERABLE; /* unhide entry */
+                 recovery_remove(dp->mfs_d_ino);
             	  ldir_ptr->i_update |= MTIME;
 				     IN_MARKDIRTY(ldir_ptr);
                  MARKDIRTY(bp);
          }
-			else if (flag == DELETE) {
-				if(dp->mfs_rcdir_flags & UNDELETE_RECOVERABLE){
-               assert(dparent != NULL);
-               assert(dparent->mfs_rcdir_flags & UNDELETE_RECOVERABLE);
-               r = HIDDEN;
-               dp->mfs_rcdir_flags |= UNDELETE_HIDDEN; /* hide entry */
-			   	MARKDIRTY(bp);
-				   ldir_ptr->i_update |= CTIME | MTIME;
-				   IN_MARKDIRTY(ldir_ptr);
-            } else{
-                    /* Save d_ino for recovery. */
-                    t = MFS_NAME_MAX - sizeof(ino_t);
-                    *((ino_t *) &dp->mfs_d_name[t]) = dp->mfs_d_ino;
-                    dp->mfs_d_ino = NO_ENTRY; /* erase entry */
-                    MARKDIRTY(bp);
-                    ldir_ptr->i_update |= CTIME | MTIME;
-                    IN_MARKDIRTY(ldir_ptr);
-                    if (pos < ldir_ptr->i_last_dpos)
-                          ldir_ptr->i_last_dpos = pos;
-			   }
+         else if (flag == DELETE) {
+                 /* show hidden == 1 for delete --> delete unconditionally! */
+                 if((dp->mfs_rcdir_flags & UNDELETE_RECOVERABLE) && (!show_hidden)){
+                         /* deleting a recoverable file and no force delete option */
+                         assert(dparent != NULL);
+                         assert(dparent->mfs_rcdir_flags & UNDELETE_RECOVERABLE);
+                         r = HIDDEN;
+                         dp->mfs_rcdir_flags |= UNDELETE_HIDDEN; /* hide entry */
+
+                         if(recovery_add((ino_t)dp->mfs_d_ino) != (OK)){
+                                 printf("Failed to create recoverable file so actually deleting!\n");
+                                 /* Real delete, save d_ino for recovery (not undelete recovery!). */
+                                 t = MFS_NAME_MAX - sizeof(ino_t);
+                                 *((ino_t *) &dp->mfs_d_name[t]) = dp->mfs_d_ino;
+                                 dp->mfs_d_ino = NO_ENTRY; /* erase entry */
+                                 ldir_ptr->i_update |= CTIME | MTIME;
+                                 if (pos < ldir_ptr->i_last_dpos)
+                                    ldir_ptr->i_last_dpos = pos;
+                                 r = (OK);
+                         }
+                         MARKDIRTY(bp);
+                         ldir_ptr->i_update |= CTIME | MTIME;
+                         IN_MARKDIRTY(ldir_ptr);
+
+                 } else{
+                         /* force delete or not recoverable */
+                         if(dp->mfs_rcdir_flags & UNDELETE_HIDDEN){
+                                 printf("Deleted a hidden file, removing from recovery list");
+                                 recovery_remove(dp->mfs_d_ino);
+                         }
+                         /* Save d_ino for recovery. */
+                         t = MFS_NAME_MAX - sizeof(ino_t);
+                         *((ino_t *) &dp->mfs_d_name[t]) = dp->mfs_d_ino;
+                         dp->mfs_d_ino = NO_ENTRY; /* erase entry */
+                         MARKDIRTY(bp);
+                         ldir_ptr->i_update |= CTIME | MTIME;
+                         IN_MARKDIRTY(ldir_ptr);
+                         if (pos < ldir_ptr->i_last_dpos)
+                                 ldir_ptr->i_last_dpos = pos;
+                 }
          } 
          else {
 				sp = ldir_ptr->i_sp;	/* 'flag' is LOOK_UP */
@@ -288,20 +312,22 @@ int show_hidden; /* Show hidden/deleted directory entries */
   if(show_hidden){
              printf("undeletability was explicit\n");
              dp->mfs_rcdir_flags = UNDELETE_RECOVERABLE;
-  }
-
-  if(dparent != NULL){
-          if(dparent->mfs_rcdir_flags & UNDELETE_RECOVERABLE){
+  } else if(dparent != NULL){
+          if((dparent->mfs_rcdir_flags & UNDELETE_RECOVERABLE) && (strcmp(dp->mfs_d_name, ".." ) != 0)){
              printf("undeletability was just inherited!\n");
              dp->mfs_rcdir_flags = UNDELETE_RECOVERABLE;
             } else {
-          dp->mfs_rcdir_flags = UNDELETE_NONE;
+               /* has a parent but not a recoverable dir */
+               dp->mfs_rcdir_flags = UNDELETE_NONE;
             }
+  } else {
+          /* no parent and no show_hidden option */
+            dp->mfs_rcdir_flags = UNDELETE_NONE;
   }
   for (i = 0; i < MFS_NAME_MAX && string[i]; i++) dp->mfs_d_name[i] = string[i];
   sp = ldir_ptr->i_sp; 
   dp->mfs_d_ino = conv4(sp->s_native, (int) *numb);
-  MARKDIRTY(bp);
+    MARKDIRTY(bp);
   put_block(bp);
   ldir_ptr->i_update |= CTIME | MTIME;	/* mark mtime for update later */
   IN_MARKDIRTY(ldir_ptr);

@@ -17,6 +17,8 @@ static int remove_dir(struct inode *rldirp, struct inode *rip, char
 	dir_name[MFS_NAME_MAX]);
 static int unlink_file(struct inode *dirp, struct inode *rip, char
 	file_name[MFS_NAME_MAX]);
+static int unlink_file_expand(struct inode *dirp, struct inode *rip, char
+	file_name[MFS_NAME_MAX], int always);
 static int undelete_file(struct inode *dirp, struct inode *rip, char
 	file_name[MFS_NAME_MAX]);
 static off_t nextblock(off_t pos, int zone_size);
@@ -242,7 +244,7 @@ char dir_name[MFS_NAME_MAX];		/* name of directory to be removed */
   int r;
 
   /* search_dir checks that rip is a directory too. */
-  if ((r = search_dir(rip, "", NULL, IS_EMPTY)) != OK)
+  if ((r = search_dir_expand(rip, "", NULL, IS_EMPTY, 1)) != OK)
   	return(r);
 
   if (rip->i_num == ROOT_INODE) return(EBUSY); /* can't remove 'root' */
@@ -253,7 +255,7 @@ char dir_name[MFS_NAME_MAX];		/* name of directory to be removed */
   /* Unlink . and .. from the dir. The super user can link and unlink any dir,
    * so don't make too many assumptions about them.
    */
-  (void) unlink_file(rip, NULL, ".");
+  (void) unlink_file_expand(rip, NULL, ".", 1);
   (void) unlink_file(rip, NULL, "..");
   return(OK);
 }
@@ -280,8 +282,6 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
   
   return(r);
 }
-
-
 /*===========================================================================*
  *				unlink_file				     *
  *===========================================================================*/
@@ -289,6 +289,17 @@ static int unlink_file(dirp, rip, file_name)
 struct inode *dirp;		/* parent directory of file */
 struct inode *rip;		/* inode of file, may be NULL too. */
 char file_name[MFS_NAME_MAX];	/* name of file to be removed */
+{
+   return unlink_file_expand(dirp, rip, file_name, 0);
+}
+/*===========================================================================*
+ *				unlink_file_expand				     *
+ *===========================================================================*/
+static int unlink_file_expand(dirp, rip, file_name, always)
+struct inode *dirp;		/* parent directory of file */
+struct inode *rip;		/* inode of file, may be NULL too. */
+char file_name[MFS_NAME_MAX];	/* name of file to be removed */
+int always; /* if nonzero, always actually unlink the file as opposed to allowing recovery */
 {
 /* Unlink 'file_name'; rip must be the inode of 'file_name' or NULL. */
 
@@ -305,7 +316,7 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
 	dup_inode(rip);		/* inode will be returned with put_inode */
   }
 
-  r = search_dir(dirp, file_name, NULL, DELETE);
+  r = search_dir_expand(dirp, file_name, NULL, DELETE, always);
 
   if (r == OK) {
 	rip->i_nlinks--;	/* entry deleted from parent's dir */
