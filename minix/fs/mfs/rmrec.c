@@ -15,6 +15,7 @@ return 0;
 
 //TODO Edit read_super, write_super, rw_super? to read/write s_rcdir_inode
 
+//struct buf *get_block_map(register struct inode *rip, u64_t position);
 //Set buf to inode list
 //Return size of buffer = #inodes pointers * sizeof(uint32_t)
 size_t get_recovery(void *buf, dev_t dev)
@@ -28,14 +29,11 @@ size_t get_recovery(void *buf, dev_t dev)
 	size_t size = sp->s_ninodes*sizeof(uint32_t); //Size of list
 	uint32_t rcinode = sp->s_rcdir_inode;  /* inode that stores rcdir list */
 
-	struct fsdriver_data *data;
-	off_t position; //TODO what does this need to be
-	fs_readwrite((ino_t)rcinode,data,size,position,FSC_READ);
-	
+	struct buf = get_block_map((ino_t)rcinode,0);
 	//give inode list in buf?	
 	return size;
 }
-void put_recovery(void *buf, dev_t dev)
+void put_recovery(struct *buf, dev_t dev)
 {
 	struct super_block *sp;//get super here(read)
 	sp->s_dev = dev;
@@ -46,8 +44,16 @@ void put_recovery(void *buf, dev_t dev)
 	uint32_t rcinode = sp->s_rcdir_inode;  /* inode that stores rcdir list */
 	size_t size = sp->s_ninodes*sizeof(uint32_t);
 
-	struct fs_driver_data *data = buf; //TODO not sure if correct
-	off_t position; //TODO what does this need to be
+	put_block(buf);
 	//put inode list back
 	//write list to block
+}
+//Return status for success
+int recovery_add(ino_t inode)
+{
+	return OK;
+}
+void recovery_remove(ino_t inode)
+{
+
 }
