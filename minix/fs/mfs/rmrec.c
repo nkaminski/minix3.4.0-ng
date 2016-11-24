@@ -46,7 +46,5 @@ void put_recovery(void *buf)
 	struct fs_driver_data *data = buf; //TODO not sure if correct
 	off_t position; //TODO what does this need to be
 	//put inode list back
-	fs_readwrite((ino_t)rcinode,data,size,position,FSC_WRITE);
-	//put back (write)super block
-	write_super(sp);
+	//write list to block
 }
