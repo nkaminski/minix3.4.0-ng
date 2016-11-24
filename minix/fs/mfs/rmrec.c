@@ -75,7 +75,7 @@ int recovery_add(dev_t dev,ino_t inode)
 	{
 		if(inols[i] == 0)
 		{
-			inols[i] = node;
+			inols[i] = inode;
 			r = OK;
 			break;
 		}
