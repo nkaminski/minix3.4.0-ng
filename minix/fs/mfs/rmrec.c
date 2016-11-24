@@ -32,6 +32,7 @@ struct buf get_recovery(void *buf, dev_t dev)
 	struct buf sbuf = get_block_map((ino_t)rcinode,0);
 	buf = sbuf->data;
 	assert(size == sbuf->lmfs_bytes);
+	MARKDIRTY(sbuf);
 	//give inode list in buf?	
 	return size;
 }
@@ -46,7 +47,7 @@ void put_recovery(struct *sbuf, dev_t dev)
 	uint32_t rcinode = sp->s_rcdir_inode;  /* inode that stores rcdir list */
 	size_t size = (sp->s_block_size/sizeof(uint32_t))-1; //Size of list
 
-	put_block(buf);
+	put_block(sbuf);
 	//put inode list back
 	//write list to block
 }
