@@ -17,9 +17,10 @@ return 0;
 
 //Set buf to inode list
 //Return size of buffer = #inodes pointers * sizeof(uint32_t)
-size_t get_recovery(void *buf)
+size_t get_recovery(void *buf, dev_t dev)
 {
 	struct super_block *sp;//get super here(read)
+	sp->s_dev = dev;
 
 	if(read_super(sp) != OK)
 		panic("Couldnt Read Super for get Recovery");
@@ -34,9 +35,11 @@ size_t get_recovery(void *buf)
 	//give inode list in buf?	
 	return size;
 }
-void put_recovery(void *buf)
+void put_recovery(void *buf, dev_t dev)
 {
 	struct super_block *sp;//get super here(read)
+	sp->s_dev = dev;
+
 	if(read_super(sp) != OK)
 		panic("Couldnt Read Super for put Recovery");
 
