@@ -94,7 +94,11 @@ int gc_undeletable(dev_t dev){
       printf("got list block\n");
 		struct rc_entry *inols = sbuf->data;
 		heap_size = ((sbuf->lmfs_bytes)/sizeof(struct rc_entry))-1;
-		
+		if (heap_size==0){
+              put_block(sbuf);
+              put_recovery();
+              return 0;
+      }
       if(inoheap != NULL)
 		   free(inoheap);
 		inoheap=malloc(sizeof(struct heap_entry)*(heap_size+1));//size+1 : binary heap uses index starting from 1.
@@ -122,12 +126,6 @@ int gc_undeletable(dev_t dev){
       put_recovery();
       printf("put back recovery\n");
 
-      	if (heap_size==0) 
-      	{
-      		puts("No more space can be freed.");
-      		return 0;
-      	}
-
 		for (i=(int)(heap_size/2);i>0;i--)
 		{
 			heapify(i,heap_size);
@@ -136,6 +134,9 @@ int gc_undeletable(dev_t dev){
 		changed=0;						// Mark the list as unchanged.
 
 	}
+   if (heap_size==0){
+           return 0;
+   }
 	struct rc_entry target;				// Information of i-node to be freed is stored in target.
 	target.i_file=inoheap[1].i_file;
 	target.i_pdir=inoheap[1].i_pdir;
