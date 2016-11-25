@@ -249,6 +249,9 @@ char dir_name[MFS_NAME_MAX];		/* name of directory to be removed */
 
   if (rip->i_num == ROOT_INODE) return(EBUSY); /* can't remove 'root' */
  
+  /* deallocate any recoverable files */
+  recovery_emptydir(fs_dev, rip->i_num);
+
   /* Actually try to unlink the file; fails if parent is mode 0 etc. */
   if ((r = unlink_file(rldirp, rip, dir_name)) != OK) return r;
 

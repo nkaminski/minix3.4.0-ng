@@ -220,7 +220,13 @@ int show_hidden; /* Show hidden/deleted directory entries */
       if (match) {
               /* LOOK_UP, UNDELETE or DELETE found what it wanted. */
               r = OK;
-              if (flag == IS_EMPTY) r = ENOTEMPTY;
+              /* could be more robust */
+              if (flag == IS_EMPTY){
+                      if(dp->mfs_rcdir_flags & UNDELETE_RECOVERABLE)
+                              r = (OK);
+                      else
+                              r = ENOTEMPTY;
+              }
               else if (flag == UNDELETE){
                       dp->mfs_rcdir_flags = UNDELETE_RECOVERABLE; /* unhide entry */
                       printf("About to call recovery_remove\n");

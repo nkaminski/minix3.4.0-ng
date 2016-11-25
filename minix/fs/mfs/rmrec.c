@@ -249,7 +249,56 @@ int recovery_add(dev_t dev,uint32_t inode_nr_file, uint32_t inode_nr_pdir)
    printf("put recovery\n");
 	return r;
 }
+//Actually deletes all recoverable files in a recoverable dir
+void recovery_emptydir(dev_t dev,uint32_t inode_nr_dir)
+{
+        register struct inode *ip;
+        const char emptystr[] = "";
+        ino_t it_temp;
+        get_recovery(dev);
+        printf("got recovery: unlinking all recoverable files in %d\n",inode_nr_dir);
 
+        size_t size = ((sbuf->lmfs_bytes)/sizeof(struct rc_entry))-1;
+
+        struct rc_entry *inols = sbuf->data;
+        size_t i;
+        for(i = 0; i < size; i++)
+        {
+                if(inols[i].i_file == 0)
+                {
+                        break;
+                }
+                if(inols[i].i_pdir == inode_nr_dir){
+                        //File is in the directory to be deleted
+                        ip = get_inode(dev, inode_nr_dir);
+                        if(ip != NULL){
+                                printf("parent dirent removed in emptydir\n");
+                                //Parent dir is valid
+                                it_temp = inols[i].i_file;
+                                put_recovery();
+                                search_dir_expand(ip, emptystr, &it_temp, I_DELETE, 1);
+                                get_recovery(dev);
+                                IN_MARKDIRTY(ip);
+                                put_inode(ip);
+                        } else {
+                                printf("Parent dir inode not found in emptydir\n");
+                        }
+                        ip = get_inode(dev, inols[i].i_file); //Get file's inode
+                        if(ip != NULL){
+                                printf("file unlinked in emptydir\n");
+                                if(ip->i_nlinks>0)
+                                        ip->i_nlinks--;
+                                printf("file has link count %d, ref count %d in emptydir\n", ip->i_nlinks, ip->i_count);
+                                IN_MARKDIRTY(ip);
+                                put_inode(ip);
+                        } else {
+                                printf("File inode not found in emptydir\n");
+                        }      
+                }
+        }
+        put_recovery();
+        printf("put recovery\n");
+}
 //Deletes a hidden(deleted) file and containing dir pair from the rc list by file inode number
 void recovery_remove(dev_t dev,uint32_t inode_nr_file)
 {
