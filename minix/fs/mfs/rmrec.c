@@ -13,14 +13,111 @@ struct rc_entry {
         uint32_t i_pdir; //the inode number of the containing directory
 };
 
-//TODO implement!
-/* This will get called one or more times when space is needed, return nonzero if you were able to free at least one disk block or zero if you cant */
-int gc_undeletable(dev_t dev){
 
-/* 0 means NO space was able to be reclaimed,
-non zero means at least one zone was freed */
-return 0;
+
+
+/*-------------------------------------Yi's code starts here---------------------------------------*/
+static char changed=1;
+/* 	About state variable changed:	0 is unchanged, 1 is changed
+	Things you have to do :			Whenever you add a new i-node to the list, mark it to be 1
+*/
+
+size_t heap_size = 0;
+
+struct heap_entry{
+	uint32_t i_file;
+	uint32_t i_pdir;
+	u32_t i_mtime;//the only field needed is last modified time
 }
+
+static struct heap_entry *inoheap=NULL;//global heap since I have a recursive heapify call
+
+void print_heap(int size)
+{
+	int i;
+	for (i=1;i<=size;i++) printf("%d  ",inoheap[i].i_mtime);
+	puts("");
+}
+
+// Heapify procedure
+void heapify(int current, int size)
+{
+	if (current*2>size) return;				// Current entry has no child
+	struct heap_entry tmp;
+	if (size>=current*2+1)					// Current entry has 2 children
+	{
+		if ((inoheap[current].i_mtime>inoheap[current*2].i_mtime)||(inoheap[current].i_mtime>inoheap[current*2+1].i_mtime))
+		{
+			if ((inoheap[current*2].i_mtime<inoheap[current*2+1].i_mtime))
+			{
+				tmp=inoheap[current];
+				inoheap[current]=inoheap[current*2];
+				inoheap[current*2]=tmp;
+				heapify(current*2,size);
+			}
+			else
+			{
+				tmp=inoheap[current];
+				inoheap[current]=inoheap[current*2+1];
+				inoheap[current*2+1]=tmp;
+				heapify(current*2+1,size);
+			}
+		}
+	}
+	else									// Current entry only has left child
+	{
+		if (inoheap[current].i_mtime>inoheap[current*2].i_mtime)
+		{
+			tmp=inoheap[current];
+			inoheap[current]=inoheap[current*2];
+			inoheap[current*2]=tmp;
+			heapify(current*2,size);
+		}
+	}
+	return;
+}
+
+
+//Frees the oldest hidden i-node in the list. Returns 0 if no more space can be freed, 1 on success.
+int gc_undeletable(dev_t dev){
+	int i;
+	if (changed==1)						// New i-node in list, rescan the list and heapify
+	{
+		get_recovery();
+		sbuf = get_block_map(ino, NORMAL);
+		struct rc_entry *inols = sbuf->data;
+		heap_size = ((sbuf->lmfs_bytes)/sizeof(struct rc_entry))-1;
+		if (heap_size==0) return 0;
+		free(inoheap);
+		inoheap=malloc(sizeof(struct heap_entry)*(heap_size+1));//size+1 : binary heap uses index starting from 1.
+		for (i=0;i<heap_size;i++)
+		{
+			inoheap[i+1].i_file=inols[i].i_file;
+			inoheap[i+1].i_pdir=inols[i].i_pdir;
+			inoheap[i+1].i_mtime=find_inode(dev,inoheap[i].i_file)->i_mtime;
+		}
+
+		for (i=(int)(heap_size/2);i>0;i--)
+		{
+			heapify(i,heap_size);
+		}
+		print_heap(heap_size);
+		changed=0;						// Mark the list as unchanged.
+
+	}
+
+
+	struct rc_entry target;				// Information of i-node to be freed is stored in target.
+	target.i_file=inoheap[1].i_file;
+	target.i_pdir=inoheap[1].i_pdir;	
+	inoheap[1].i_file=inoheap[heap_size].i_file;
+	inoheap[1].i_pdir=inoheap[heap_size].i_pdir;
+	heap_size--;
+	hepaify(1,heap_size);
+	return 1;
+}
+/*-------------------------------------Yi's code ends here---------------------------------------*/
+
 
 /* Gets the recoverable file list from the disk referenced by dev and points sbuf at it
    its size is (sbuf->lmfs_bytes/sizeof(struct rc_entry))-1)
@@ -85,7 +182,8 @@ int recovery_add(dev_t dev,uint32_t inode_nr_file, uint32_t inode_nr_pdir)
 	}
 	if(r != OK)
 		printf("Recovery list is full, cannot add entry\n");
-   
+   	else
+   		changed=1;		// Mark the list changed upon successful add.
 	put_recovery();
    printf("put recovery\n");
 	return r;
