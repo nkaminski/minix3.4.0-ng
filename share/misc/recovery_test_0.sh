@@ -4,8 +4,7 @@ echo "Make rcdir"
 if rcmkdir expect_test; then
     echo "Made rcdir successfully"
 else
-    echo "Failed to make rcdir"
-    exit 1
+    echo "Failed to make rcdir, maybe already exists?"
 fi
 cd expect_test
 echo "Make 1 megabyte test file"
@@ -86,4 +85,23 @@ fi
 echo "Cleaning up files"
 rm big3
 rm big2
-echo "Test Done"
+
+echo "Press enter to test on-disk persistence or CTRL-C to exit..."
+read -r REPLY
+
+echo "Testing on-disk persistence of recoverable files"
+echo "Make 1 megabyte test file (will trigger GC as well)"
+if dd if=/dev/zero of=persifile count=1 bs=1m; then
+    echo "Made 'persifile' successfully"
+else
+    echo "Failed to make test file"
+    exit 1
+fi
+echo "Contents of dir:"
+ls -al
+echo "Removing test file"
+rm persifile
+echo "Contents of dir ('persifile' should be gone):"
+ls -al
+
+echo "Please reboot and run recovery_test_1.sh"
