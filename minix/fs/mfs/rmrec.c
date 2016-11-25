@@ -29,7 +29,7 @@ struct heap_entry{
 	uint32_t i_file;
 	uint32_t i_pdir;
 	u32_t i_mtime;//the only field needed is last modified time
-}
+};
 
 static struct heap_entry *inoheap=NULL;//global heap since I have a recursive heapify call
 
