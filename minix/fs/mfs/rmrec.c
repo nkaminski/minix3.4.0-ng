@@ -4,6 +4,7 @@
 #include "buf.h"
 #include "inode.h"
 #include "super.h"
+#include <stdlib.h>
 
 static struct inode *ino;
 static struct buf *sbuf;
@@ -83,7 +84,7 @@ int gc_undeletable(dev_t dev){
 	int i;
 	if (changed==1)						// New i-node in list, rescan the list and heapify
 	{
-		get_recovery();
+		get_recovery(dev);
 		sbuf = get_block_map(ino, NORMAL);
 		struct rc_entry *inols = sbuf->data;
 		heap_size = ((sbuf->lmfs_bytes)/sizeof(struct rc_entry))-1;
