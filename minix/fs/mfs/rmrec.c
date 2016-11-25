@@ -158,7 +158,7 @@ int gc_undeletable(dev_t dev){
            if(ip->i_nlinks>0)
                ip->i_nlinks--;
            printf("file has link count %d, ref count %d\n", ip->i_nlinks, ip->i_count);
-//           assert(ip->i_count == 1);
+           //assert(ip->i_count == 1);
            IN_MARKDIRTY(ip);
            //shouldnt be needed
            while(ip->i_count != 0)
@@ -166,9 +166,10 @@ int gc_undeletable(dev_t dev){
    } else {
            printf("File inode not found in GC\n");
    }
-
+   /* Redundant! called inside search_dir_expand 
    printf("calling recovery_remove in GC\n");
    recovery_remove(dev, target.i_file);
+   */
    inoheap[1].i_file=inoheap[heap_size].i_file;
 	inoheap[1].i_pdir=inoheap[heap_size].i_pdir;
 	heap_size--;

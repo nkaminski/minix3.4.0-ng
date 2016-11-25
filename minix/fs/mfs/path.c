@@ -230,7 +230,7 @@ int show_hidden; /* Show hidden/deleted directory entries */
                       IN_MARKDIRTY(ldir_ptr);
                       MARKDIRTY(bp);
               }
-              else if (flag == DELETE) {
+              else if (flag == DELETE || flag == I_DELETE) {
                       /* show hidden == 1 for delete --> delete unconditionally! */
                       if((dp->mfs_rcdir_flags & UNDELETE_RECOVERABLE) && (!show_hidden)){
                               /* deleting a recoverable file and no force delete option */
@@ -259,7 +259,7 @@ int show_hidden; /* Show hidden/deleted directory entries */
                       } else{
                               /* force delete or not recoverable */
                               if(dp->mfs_rcdir_flags & UNDELETE_HIDDEN){
-                                      printf("Deleted a hidden file, removing from recovery list");
+                                      printf("Deleted a hidden file with name %s, removing from recovery list", dp->mfs_d_name);
                                       recovery_remove(ldir_ptr->i_dev, dp->mfs_d_ino);
                               }
                               /* Save d_ino for recovery. */

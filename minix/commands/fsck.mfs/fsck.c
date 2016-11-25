@@ -1622,6 +1622,11 @@ char **argv;
 
   register int devgiven = 0;
   register char *arg;
+  
+  /* Remove if modified to support recovery */
+  printf("fsck for mfs not supported due to addition of recoverable files\n");
+  return (0);
+
 
   if ((1 << BITSHIFT) != 8 * sizeof(bitchunk_t)) {
 	printf("Fsck was compiled with the wrong BITSHIFT!\n");
