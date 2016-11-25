@@ -113,7 +113,7 @@ int gc_undeletable(dev_t dev){
 	inoheap[1].i_file=inoheap[heap_size].i_file;
 	inoheap[1].i_pdir=inoheap[heap_size].i_pdir;
 	heap_size--;
-	hepaify(1,heap_size);
+	heapify(1,heap_size);
 	return 1;
 }
 /*-------------------------------------Yi's code ends here---------------------------------------*/
