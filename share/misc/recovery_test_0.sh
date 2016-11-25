@@ -8,8 +8,8 @@ else
     exit 1
 fi
 cd expect_test
-echo "Make tiny test file"
-if touch smallfile; then
+echo "Make 1 megabyte test file"
+if dd if=/dev/zero of=smallfile count=1 bs=1m; then
     echo "Made 'smallfile' successfully"
 else
     echo "Failed to make first test file"
@@ -22,7 +22,6 @@ rm smallfile
 echo "Contents of dir ('smallfile' should be gone):"
 ls -al
 echo "Recovering test file"
-echo "Make tiny test file"
 if undelete smallfile; then
     echo "Undeleted 'smallfile' successfully"
 else

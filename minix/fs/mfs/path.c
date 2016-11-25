@@ -259,7 +259,7 @@ int show_hidden; /* Show hidden/deleted directory entries */
                       } else{
                               /* force delete or not recoverable */
                               if(dp->mfs_rcdir_flags & UNDELETE_HIDDEN){
-                                      printf("Deleted a hidden file with name %s, removing from recovery list", dp->mfs_d_name);
+                                      printf("Deleted a hidden file with name %s, removing from recovery list\n", dp->mfs_d_name);
                                       recovery_remove(ldir_ptr->i_dev, dp->mfs_d_ino);
                               }
                               /* Save d_ino for recovery. */
