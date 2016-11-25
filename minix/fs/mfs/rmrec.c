@@ -8,7 +8,7 @@
 
 static struct inode *ino;
 static struct buf *sbuf;
-
+const char emptystr[] = "";
 struct rc_entry {
         uint32_t i_file; //the hidden file's inode number
         uint32_t i_pdir; //the inode number of the containing directory
@@ -36,7 +36,7 @@ static struct heap_entry *inoheap=NULL;//global heap since I have a recursive he
 void print_heap(int size)
 {
 	int i;
-	for (i=1;i<=size;i++) printf("%d  ",inoheap[i].i_mtime);
+	for (i=1;i<=size;i++) printf("%d  ",inoheap[i].i_file);
 	puts("");
 }
 
@@ -82,21 +82,46 @@ void heapify(int current, int size)
 //Frees the oldest hidden i-node in the list. Returns 0 if no more space can be freed, 1 on success.
 int gc_undeletable(dev_t dev){
 	int i;
+   ino_t it_temp;
+   register struct inode *ip;
+   printf("Space is needed, performing a GC\n");
 	if (changed==1)						// New i-node in list, rescan the list and heapify
 	{
-		get_recovery(dev);
+		printf("changes were made in GC\n");
+      get_recovery(dev);
+      printf("got recovery\n");
 		sbuf = get_block_map(ino, NORMAL);
+      printf("got list block\n");
 		struct rc_entry *inols = sbuf->data;
 		heap_size = ((sbuf->lmfs_bytes)/sizeof(struct rc_entry))-1;
-		if (heap_size==0) return 0;
-		free(inoheap);
+		if (heap_size==0){
+              put_block(sbuf);
+              put_recovery();
+              return 0;
+      }
+      if(inoheap != NULL)
+		   free(inoheap);
 		inoheap=malloc(sizeof(struct heap_entry)*(heap_size+1));//size+1 : binary heap uses index starting from 1.
+      assert(inoheap != NULL);
+
 		for (i=0;i<heap_size;i++)
 		{
 			inoheap[i+1].i_file=inols[i].i_file;
 			inoheap[i+1].i_pdir=inols[i].i_pdir;
-			inoheap[i+1].i_mtime=find_inode(dev,inoheap[i].i_file)->i_mtime;
+         printf("getting inode %d for mtime compare\n", inoheap[i+1].i_file);
+         ip = get_inode(dev,inoheap[i+1].i_file);
+         printf("got inode %d for mtime compare\n", inoheap[i+1].i_file);
+         if(ip != NULL){
+			   inoheap[i+1].i_mtime=ip->i_mtime;
+            put_inode(ip);
+         } else {
+            panic("Unable to find inode to get mtime\n");
+         }
 		}
+      printf("copied list\n");
+      put_block(sbuf);
+      put_recovery();
+      printf("put back recovery\n");
 
 		for (i=(int)(heap_size/2);i>0;i--)
 		{
@@ -110,12 +135,36 @@ int gc_undeletable(dev_t dev){
 
 	struct rc_entry target;				// Information of i-node to be freed is stored in target.
 	target.i_file=inoheap[1].i_file;
-	target.i_pdir=inoheap[1].i_pdir;	
-	inoheap[1].i_file=inoheap[heap_size].i_file;
+	target.i_pdir=inoheap[1].i_pdir;
+   //get parent dir's inode from disk/cache and remove the dirent
+   ip = get_inode(dev, target.i_pdir);
+   if(ip != NULL){
+           printf("parent dirent removed\n");
+           //Parent dir is valid
+           it_temp = target.i_file;
+           search_dir_expand(ip, emptystr, &it_temp, I_DELETE, 1);
+           IN_MARKDIRTY(ip);
+           put_inode(ip);
+   } else {
+           printf("Parent dir inode not found in GC\n");
+   }
+   ip = get_inode(dev, target.i_file); //Get file's inode
+   if(ip != NULL){
+           printf("file unlinked\n");
+           ip->i_nlinks--;
+           IN_MARKDIRTY(ip);
+           put_inode(ip);
+   } else {
+           printf("File inode not found in GC\n");
+   }
+
+   printf("calling recovery_remove in GC\n");
+   recovery_remove(dev, target.i_file);
+   inoheap[1].i_file=inoheap[heap_size].i_file;
 	inoheap[1].i_pdir=inoheap[heap_size].i_pdir;
 	heap_size--;
 	heapify(1,heap_size);
-	return 1;
+   return 1;
 }
 /*-------------------------------------Yi's code ends here---------------------------------------*/
 
@@ -162,7 +211,7 @@ void put_recovery()
 int recovery_add(dev_t dev,uint32_t inode_nr_file, uint32_t inode_nr_pdir)
 {
    get_recovery(dev);
-   printf("got recovery\n");
+   printf("got recovery: adding pdir %d and file %d\n",inode_nr_pdir, inode_nr_file);
 
 	//add to list here
    size_t size = ((sbuf->lmfs_bytes)/sizeof(struct rc_entry))-1;
@@ -183,8 +232,8 @@ int recovery_add(dev_t dev,uint32_t inode_nr_file, uint32_t inode_nr_pdir)
 	}
 	if(r != OK)
 		printf("Recovery list is full, cannot add entry\n");
-   	else
-   		changed=1;		// Mark the list changed upon successful add.
+   else
+   	changed=1;		// Mark the list changed upon successful add.
 	put_recovery();
    printf("put recovery\n");
 	return r;
