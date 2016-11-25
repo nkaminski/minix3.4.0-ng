@@ -106,6 +106,8 @@ int gc_undeletable(dev_t dev){
 
 		for (i=0;i<heap_size;i++)
 		{
+         if(inols[i].i_file==0)
+                 break;
 			inoheap[i+1].i_file=inols[i].i_file;
 			inoheap[i+1].i_pdir=inols[i].i_pdir;
          printf("getting inode %d for mtime compare\n", inoheap[i+1].i_file);
@@ -118,6 +120,7 @@ int gc_undeletable(dev_t dev){
             panic("Unable to find inode to get mtime\n");
          }
 		}
+      heap_size = i;
       printf("copied list\n");
       put_block(sbuf);
       put_recovery();
@@ -131,8 +134,9 @@ int gc_undeletable(dev_t dev){
 		changed=0;						// Mark the list as unchanged.
 
 	}
-
-
+   if (heap_size==0){
+           return 0;
+   }
 	struct rc_entry target;				// Information of i-node to be freed is stored in target.
 	target.i_file=inoheap[1].i_file;
 	target.i_pdir=inoheap[1].i_pdir;
@@ -151,9 +155,14 @@ int gc_undeletable(dev_t dev){
    ip = get_inode(dev, target.i_file); //Get file's inode
    if(ip != NULL){
            printf("file unlinked\n");
-           ip->i_nlinks--;
+           if(ip->i_nlinks>0)
+               ip->i_nlinks--;
+           printf("file has link count %d, ref count %d\n", ip->i_nlinks, ip->i_count);
+//           assert(ip->i_count == 1);
            IN_MARKDIRTY(ip);
-           put_inode(ip);
+           //shouldnt be needed
+           while(ip->i_count != 0)
+               put_inode(ip);
    } else {
            printf("File inode not found in GC\n");
    }
@@ -163,6 +172,7 @@ int gc_undeletable(dev_t dev){
    inoheap[1].i_file=inoheap[heap_size].i_file;
 	inoheap[1].i_pdir=inoheap[heap_size].i_pdir;
 	heap_size--;
+   printf("new heap is of size %d\n",heap_size);
 	heapify(1,heap_size);
    return 1;
 }
