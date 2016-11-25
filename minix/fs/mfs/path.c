@@ -121,6 +121,7 @@ int show_hidden; /* Show hidden/deleted directory entries */
 /* This function searches the directory whose inode is pointed to by 'ldip':
  * if (flag == ENTER)  enter 'string' in the directory with inode # '*numb';
  * if (flag == DELETE) delete 'string' from the directory;
+ * if (flag == I_DELETE) delete the entry from the directory with inode number *numb;
  * if (flag == LOOK_UP) search for 'string' and return inode # in 'numb';
  * if (flag == IS_EMPTY) return OK if only . and .. in dir else ENOTEMPTY;
  * if (flag == UNDELETE) return OK if the file with name 'string' is able to be undeleted;
@@ -143,9 +144,14 @@ int show_hidden; /* Show hidden/deleted directory entries */
 	return(ENOTDIR);
    }
 
-  if((flag == DELETE || flag == ENTER) && ldir_ptr->i_sp->s_rd_only)
+  if((flag == DELETE || flag == I_DELETE || flag == ENTER) && ldir_ptr->i_sp->s_rd_only)
 	return EROFS;
   
+  if(flag == I_DELETE){
+   assert(numb != NULL);
+   assert(show_hidden != 0);
+  }
+
   /* Step through the directory one block at a time. */
   old_slots = (unsigned) (ldir_ptr->i_size/DIR_ENTRY_SIZE);
   new_slots = 0;
@@ -195,8 +201,8 @@ int show_hidden; /* Show hidden/deleted directory entries */
 				    strcmp(dp->mfs_d_name, "..") != 0)
 					match = 1;
 			} else {
-				if (strncmp(dp->mfs_d_name, string,
-					sizeof(dp->mfs_d_name)) == 0){
+				if (((strncmp(dp->mfs_d_name, string, sizeof(dp->mfs_d_name)) == 0) && (flag != I_DELETE)) || 
+               ((*numb == dp->mfs_d_ino) && (flag == I_DELETE))){
                     /* entry found, is it hidden(deleted) or is the option set to show hidden entries? */
                     if(dp->mfs_rcdir_flags & UNDELETE_HIDDEN){
                             /* hidden, bit 1 bust be set else inconsistent state */

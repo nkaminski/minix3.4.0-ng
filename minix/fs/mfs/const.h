@@ -36,6 +36,7 @@
 #define DELETE             2 /* tells search_dir to delete entry */
 #define IS_EMPTY           3 /* tells search_dir to ret. OK or ENOTEMPTY */  
 #define UNDELETE           4 /* tells search_dir to undelete entry */  
+#define I_DELETE             5 /* tells search_dir to delete entry by inode, MUST be used with show_hidden*/
 
 /* write_map() args */
 #define WMAP_FREE	(1 << 0)
