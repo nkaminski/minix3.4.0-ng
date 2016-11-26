@@ -21,6 +21,7 @@ struct buf *get_block(dev_t dev, block_t block, int how);
 int gc_undeletable(dev_t);
 void recovery_remove(dev_t dev,uint32_t inode_nr_file);
 int recovery_add(dev_t dev,uint32_t inode_nr_file, uint32_t inode_nr_pdir);
+void recovery_emptydir(dev_t dev,uint32_t inode_nr_dir);
 void get_recovery(dev_t dev);
 void put_recovery();
 
