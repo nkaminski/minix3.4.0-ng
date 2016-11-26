@@ -190,6 +190,7 @@ int gc_undeletable(dev_t dev){
 */
 void get_recovery(dev_t dev)
 {
+   printf("get recovery\n");
 	struct super_block sp;//get super here(read)
 	sp.s_dev = dev;
 
@@ -201,7 +202,7 @@ void get_recovery(dev_t dev)
 
 	ino = get_inode(dev,rcinode);
 	sbuf = get_block_map(ino, NORMAL);
-   printf("sbuf->lmfs_bytes=%d, size=%d\n",sbuf->lmfs_bytes,size); 
+   printf("GRC done: sbuf->lmfs_bytes=%d, size=%d\n",sbuf->lmfs_bytes,size); 
    assert(sbuf != NULL);
 	assert(size == (sbuf->lmfs_bytes/sizeof(struct rc_entry))-1);
 	//give inode list in buf?	
@@ -209,11 +210,12 @@ void get_recovery(dev_t dev)
 /* decrements the ref count and syncs the changes to the cache and disk */
 void put_recovery()
 {
-   
+   printf("put recovery\n");
 	MARKDIRTY(sbuf);
    IN_MARKDIRTY(ino);
 	put_block(sbuf);
 	put_inode(ino);
+   printf("put recovery done\n");
 	//put inode list back
 	//write list to block
 }
@@ -252,9 +254,6 @@ int recovery_add(dev_t dev,uint32_t inode_nr_file, uint32_t inode_nr_pdir)
 //Actually deletes all recoverable files in a recoverable dir
 void recovery_emptydir(dev_t dev,uint32_t inode_nr_dir)
 {
-        //debugging only, causes a resource leak
-        printf("empty_dir called on inode %d\n",inode_nr_dir);
-        return;
         register struct inode *ip;
         const char emptystr[] = "";
         ino_t it_temp;
@@ -278,9 +277,10 @@ void recovery_emptydir(dev_t dev,uint32_t inode_nr_dir)
                                 printf("parent dirent removed in emptydir\n");
                                 //Parent dir is valid
                                 it_temp = inols[i].i_file;
-                                put_recovery();
+                               
+                                //put_recovery();
                                 search_dir_expand(ip, emptystr, &it_temp, I_DELETE, 1);
-                                get_recovery(dev);
+                                //get_recovery(dev);
                                 IN_MARKDIRTY(ip);
                                 put_inode(ip);
                         } else {
@@ -300,7 +300,6 @@ void recovery_emptydir(dev_t dev,uint32_t inode_nr_dir)
                 }
         }
         put_recovery();
-        printf("put recovery\n");
 }
 //Deletes a hidden(deleted) file and containing dir pair from the rc list by file inode number
 void recovery_remove(dev_t dev,uint32_t inode_nr_file)
