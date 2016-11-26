@@ -243,8 +243,8 @@ char dir_name[MFS_NAME_MAX];		/* name of directory to be removed */
    */
   int r;
 
-  /* search_dir checks that rip is a directory too. */
-  if ((r = search_dir_expand(rip, "", NULL, IS_EMPTY, 1)) != OK)
+  /* search_dir checks that rip is a directory too. Are there any visible files? */
+  if ((r = search_dir(rip, "", NULL, IS_EMPTY)) != OK)
   	return(r);
 
   if (rip->i_num == ROOT_INODE) return(EBUSY); /* can't remove 'root' */
@@ -259,7 +259,7 @@ char dir_name[MFS_NAME_MAX];		/* name of directory to be removed */
    * so don't make too many assumptions about them.
    */
   (void) unlink_file_expand(rip, NULL, ".", 1);
-  (void) unlink_file(rip, NULL, "..");
+  (void) unlink_file_expand(rip, NULL, "..",1);
   return(OK);
 }
 /*===========================================================================*
@@ -327,6 +327,7 @@ int always; /* if nonzero, always actually unlink the file as opposed to allowin
 	IN_MARKDIRTY(rip);
   } else if( r == HIDDEN ){
 	/* file was hidden and not actually deleted */
+   assert(always==0);
    printf("Recoverable hidden file resulted from unlink() call! Still has %d links.\n",rip->i_nlinks);
 	assert(rip->i_nlinks > 0);	/* entry NOT deleted from parent's dir */
   rip->i_update |= CTIME;

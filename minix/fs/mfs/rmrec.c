@@ -252,6 +252,9 @@ int recovery_add(dev_t dev,uint32_t inode_nr_file, uint32_t inode_nr_pdir)
 //Actually deletes all recoverable files in a recoverable dir
 void recovery_emptydir(dev_t dev,uint32_t inode_nr_dir)
 {
+        //debugging only, causes a resource leak
+        printf("empty_dir called on inode %d\n",inode_nr_dir);
+        return;
         register struct inode *ip;
         const char emptystr[] = "";
         ino_t it_temp;

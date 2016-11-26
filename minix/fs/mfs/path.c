@@ -198,8 +198,16 @@ int show_hidden; /* Show hidden/deleted directory entries */
 			if (flag == IS_EMPTY) {
 				/* If this test succeeds, dir is not empty. */
 				if (strcmp(dp->mfs_d_name, "." ) != 0 &&
-				    strcmp(dp->mfs_d_name, "..") != 0)
-					match = 1;
+				    strcmp(dp->mfs_d_name, "..") != 0){
+					/* consider the vaue of show hidden */
+               if(show_hidden){
+                  match = 1;
+               } else {
+                  /* if entry visible, set match */
+                  if(~(dp->mfs_rcdir_flags) & UNDELETE_HIDDEN )
+                     match = 1;
+               }
+            }
 			} else {
 				if (((strncmp(dp->mfs_d_name, string, sizeof(dp->mfs_d_name)) == 0) && (flag != I_DELETE)) || 
                ((*numb == dp->mfs_d_ino) && (flag == I_DELETE))){
@@ -220,12 +228,8 @@ int show_hidden; /* Show hidden/deleted directory entries */
       if (match) {
               /* LOOK_UP, UNDELETE or DELETE found what it wanted. */
               r = OK;
-              /* could be more robust */
               if (flag == IS_EMPTY){
-                      if(dp->mfs_rcdir_flags & UNDELETE_RECOVERABLE)
-                              r = (OK);
-                      else
-                              r = ENOTEMPTY;
+                     r = ENOTEMPTY;
               }
               else if (flag == UNDELETE){
                       dp->mfs_rcdir_flags = UNDELETE_RECOVERABLE; /* unhide entry */
