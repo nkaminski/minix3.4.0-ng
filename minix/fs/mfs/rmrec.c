@@ -6,8 +6,8 @@
 #include "super.h"
 #include <stdlib.h>
 
-static struct inode *ino;
-static struct buf *sbuf;
+struct inode *ino;
+struct buf *sbuf;
 const char emptystr[] = "";
 struct rc_entry {
         uint32_t i_file; //the hidden file's inode number
