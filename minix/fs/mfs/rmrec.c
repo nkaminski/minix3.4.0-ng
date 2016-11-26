@@ -89,7 +89,6 @@ int gc_undeletable(dev_t dev){
 	{
 		printf("changes were made in GC\n");
       get_recovery(dev);
-      printf("got recovery\n");
 		sbuf = get_block_map(ino, NORMAL);
       printf("got list block\n");
 		struct rc_entry *inols = sbuf->data;
@@ -124,7 +123,6 @@ int gc_undeletable(dev_t dev){
       printf("copied list\n");
       put_block(sbuf);
       put_recovery();
-      printf("put back recovery\n");
 
 		for (i=(int)(heap_size/2);i>0;i--)
 		{
@@ -224,7 +222,7 @@ void put_recovery()
 int recovery_add(dev_t dev,uint32_t inode_nr_file, uint32_t inode_nr_pdir)
 {
    get_recovery(dev);
-   printf("got recovery: adding pdir %d and file %d\n",inode_nr_pdir, inode_nr_file);
+   printf("adding pdir %d and file %d\n",inode_nr_pdir, inode_nr_file);
 
 	//add to list here
    size_t size = ((sbuf->lmfs_bytes)/sizeof(struct rc_entry))-1;
@@ -248,7 +246,6 @@ int recovery_add(dev_t dev,uint32_t inode_nr_file, uint32_t inode_nr_pdir)
    else
    	changed=1;		// Mark the list changed upon successful add.
 	put_recovery();
-   printf("put recovery\n");
 	return r;
 }
 //Actually deletes all recoverable files in a recoverable dir
@@ -258,7 +255,7 @@ void recovery_emptydir(dev_t dev,uint32_t inode_nr_dir)
         const char emptystr[] = "";
         ino_t it_temp;
         get_recovery(dev);
-        printf("got recovery: unlinking all recoverable files in %d\n",inode_nr_dir);
+        printf("unlinking all recoverable files in %d\n",inode_nr_dir);
 
         size_t size = ((sbuf->lmfs_bytes)/sizeof(struct rc_entry))-1;
 
